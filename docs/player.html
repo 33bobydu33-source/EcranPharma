@@ -206,7 +206,7 @@ html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:'Nuni
 
 .ntag{font-size:28px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--acc)}
 .nw{display:flex;gap:30px;align-items:stretch;height:700px}
-.nh{flex:1.45;min-width:0;border-radius:44px;background:#1D2A44;color:#FDE4D4;padding:50px 56px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;box-shadow:0 14px 40px rgba(15,22,40,.25)}
+.nh{flex:1.25;min-width:0;border-radius:44px;background:#1D2A44;color:#FDE4D4;padding:50px 56px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;box-shadow:0 14px 40px rgba(15,22,40,.25)}
 .npill{align-self:flex-start;background:#F26B1D;color:#1D2A44;font-size:28px;font-weight:800;letter-spacing:2px;text-transform:uppercase;border-radius:999px;padding:9px 26px}
 .nht{margin:28px 0 0;color:#fff;line-height:1.1;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:5;overflow:hidden}
 .nhx{font-size:36px;line-height:1.3;font-weight:600;margin-top:24px;color:#FDE4D4;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:4;overflow:hidden}
@@ -214,7 +214,13 @@ html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:'Nuni
 .nl{flex:1;min-width:0;display:flex;flex-direction:column;gap:22px}
 .nlh{font-size:28px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--sub)}
 .ni{flex:1;min-height:0;border-radius:34px;padding:22px 34px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;border-left:12px solid #F26B1D;box-shadow:0 10px 30px rgba(15,22,40,.12)}
-.nit{font-size:36px;line-height:1.16;font-weight:800;margin-top:6px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}
+.nit{font-size:34px;line-height:1.16;font-weight:800;margin-top:6px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.nix{font-size:27px;line-height:1.25;font-weight:600;color:var(--sub);margin-top:10px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}
+.nl.one .ni{padding:40px 44px}
+.nl.one .ntag{font-size:30px}
+.nl.one .nit{font-size:46px;-webkit-line-clamp:4;margin-top:12px}
+.nl.one .nix{font-size:33px;line-height:1.3;-webkit-line-clamp:6;margin-top:20px}
+.nisrc{font-size:24px;font-weight:700;color:var(--sub);margin-top:14px;opacity:.85}
 .nw.solo .nh{flex:none;width:100%;padding:60px 90px}
 
 .mw{display:flex;gap:16px;justify-content:center;margin-top:50px}
@@ -1118,10 +1124,10 @@ function newsLead(it, pill, small){
 /* Écran 1 : une actualité à la une, les autres en titres. */
 function newsHTML(a, hi, secs){
   var tb=tipBg(), it=a.items[hi], n=a.items.length, rest=[];
-  for (var k=1;k<n && rest.length<3;k++) rest.push(a.items[(hi+k)%n]);
+  for (var k=1;k<n && rest.length<2;k++) rest.push(a.items[(hi+k)%n]);
   var lead=newsLead(it,newsTag(it))+(it.texte?'<div class="nhx">'+esc(it.texte)+'</div>':'')+'<div class="nhs">Source : '+esc(it.source||'')+'</div></div>';
-  var side=rest.map(function(r){ return '<div class="ni" style="background:'+tb+'"><div class="ntag">'+esc(newsTag(r))+'</div><div class="nit">'+esc(r.titre)+'</div></div>'; }).join('');
-  return bxFrame("L'actualité santé", '<div class="nw'+(rest.length?'':' solo')+'">'+lead+(rest.length?'<div class="nl"><div class="nlh">Aussi en ce moment</div>'+side+'</div>':'')+'</div>', 'Mis à jour le '+esc(a.maj||'')+' · sources officielles', secs);
+  var side=rest.map(function(r){ return '<div class="ni" style="background:'+tb+'"><div class="ntag">'+esc(newsTag(r))+'</div><div class="nit">'+esc(r.titre)+'</div>'+(r.texte?'<div class="nix">'+esc(r.texte)+'</div>':'')+(rest.length===1?'<div class="nisrc">Source : '+esc(r.source||'')+'</div>':'')+'</div>'; }).join('');
+  return bxFrame("L'actualité santé", '<div class="nw'+(rest.length?'':' solo')+'">'+lead+(rest.length?'<div class="nl'+(rest.length===1?' one':'')+'"><div class="nlh">Aussi en ce moment</div>'+side+'</div>':'')+'</div>', 'Mis à jour le '+esc(a.maj||'')+' · sources officielles', secs);
 }
 /* Écran 2 : les points clés de l'actualité à la une. */
 function newsZoomHTML(a, i, secs){
