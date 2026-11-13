@@ -196,6 +196,40 @@ html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:'Nuni
 .tc .av{width:200px;height:200px;border-radius:50%;margin:0 auto;background:#1D2A44;border:6px solid #F26B1D;display:flex;align-items:center;justify-content:center}
 .tc .tn{font-size:54px;font-weight:800;margin-top:26px}
 .tc .tr{font-size:32px;font-weight:600;color:var(--sub);margin-top:6px;line-height:1.2}
+.kb{position:relative;height:800px}
+.kben{position:absolute;left:-20px;bottom:0;width:400px;height:458px;overflow:visible}
+.kben.kjump{animation:kjump .7s ease-in-out infinite alternate}
+@keyframes kjump{from{transform:translateY(0)}to{transform:translateY(-22px)}}
+.kbub{position:absolute;left:430px;top:8px;max-width:1280px;background:#fff;color:#1D2A44;border-radius:40px;padding:26px 46px;font-size:60px;line-height:1.12;box-shadow:0 12px 34px rgba(15,22,40,.18)}
+.kbub:after{content:"";position:absolute;left:-26px;top:62px;border:26px solid transparent;border-right-color:#fff;border-left:0}
+.kst{position:absolute;left:430px;top:196px;width:1314px;height:604px}
+.kfd{width:1300px;height:590px;border-radius:44px;background:#FFF6EC;overflow:hidden;box-shadow:0 14px 40px rgba(15,22,40,.18)}
+.kfd svg{width:100%;height:100%;display:block}
+.kfd .kring,.kcard .kring{stroke:#F26B1D;stroke-width:8}
+.knb{position:absolute;right:-6px;top:-76px;width:170px;height:170px;border-radius:50%;background:#F26B1D;color:#1D2A44;font-size:110px;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 26px rgba(15,22,40,.25)}
+.krow{display:flex;gap:48px;height:590px}
+.kcard{flex:none;width:520px;border-radius:52px;background:#FDE4D4;display:flex;align-items:center;justify-content:center;box-shadow:0 14px 40px rgba(15,22,40,.18)}
+.kcard svg{width:440px;height:440px}
+.kol{flex:1;display:flex;flex-direction:column;justify-content:center;gap:30px}
+.ko{background:#fff;color:#1D2A44;border-radius:40px;padding:30px 40px;font-size:54px;font-weight:800;line-height:1.1;display:flex;align-items:center;gap:26px;box-shadow:0 10px 30px rgba(15,22,40,.12)}
+.ko i{font-style:normal;flex:none;width:80px;height:80px;border-radius:50%;background:#1D2A44;color:#fff;display:flex;align-items:center;justify-content:center;font-size:46px}
+.ko.ok{background:#F26B1D}.ko.no{opacity:.4}
+.kmr{display:flex;gap:30px;height:420px;margin-top:70px}
+.kmc{flex:1;border-radius:44px;background:#FFF6EC;display:flex;align-items:center;justify-content:center;position:relative;box-shadow:0 14px 40px rgba(15,22,40,.18)}
+.kmc svg{width:230px;height:230px}
+.kmc.ok{background:#F26B1D}
+.kgo{animation:kout .5s 6s forwards}
+.kq{position:absolute;font-size:200px;color:#F26B1D;opacity:0;animation:kin .5s 6s forwards}
+.kt2{position:absolute;left:46px;top:26px;white-space:nowrap;opacity:0;animation:kin .5s 6s forwards}
+.kt1{display:inline-block;min-width:660px;animation:kout .5s 6s forwards}
+@keyframes kout{to{opacity:0}}
+@keyframes kin{to{opacity:1}}
+.kstar{position:absolute;font-size:84px;color:#FFD45C;text-shadow:0 4px 0 #E8A800;animation:fn-twinkle 1.2s ease-in-out infinite}
+.kbig .kben{left:60px;width:640px;height:733px}
+.kbig .kbub{left:760px;top:120px;font-size:78px;max-width:960px;padding:40px 56px}
+.kbig .kbub:after{top:110px}
+.kbig .kst{left:760px;top:520px;width:960px;height:auto}
+.kmv{font-size:44px;font-weight:700;color:var(--sub)}
 .kf{display:flex;gap:48px;align-items:center;margin-top:34px}
 .kfield{flex:none;width:1120px;height:600px;border-radius:44px;position:relative;overflow:hidden}
 .kfield svg{width:100%;height:100%;display:block}
@@ -934,54 +968,104 @@ function teamHTML(secs){
   return bxFrame('Votre équipe','<h1 class="russo bxt" style="font-size:80px">À votre écoute chaque jour</h1><div class="tm">'+cards+'</div>','Une question ? Votre pharmacien vous répond.', secs);
 }
 
-var KCOL = { orange:'#F26B1D', bleu:'#5DB7E8', vert:'#6BCB9A', jaune:'#F6D86B' };
-var KNAME = { star:{ n:'étoiles', c:{orange:'orange',bleu:'bleues',vert:'vertes',jaune:'jaunes'} }, circle:{ n:'ronds', c:{orange:'orange',bleu:'bleus',vert:'verts',jaune:'jaunes'} }, tri:{ n:'triangles', c:{orange:'orange',bleu:'bleus',vert:'verts',jaune:'jaunes'} } };
+/* ---------- COIN DES ENFANTS : Benny le renard et ses jeux ---------- */
 function rnd(n){ return Math.floor(Math.random()*n); }
 function shuffle(a){ return a.slice().sort(function(){ return Math.random()-0.5; }); }
-function kPlace(items,W,H,kind,color,target,count,rmin,rmax){
-  for (var k=0;k<count;k++){ var r=rmin+Math.random()*(rmax-rmin), x,y,t=0;
-    do { x=r+20+Math.random()*(W-2*r-40); y=r+20+Math.random()*(H-2*r-40); t++; } while(!kFree(items,x,y,r)&&t<250);
-    if (t<250) items.push({kind:kind,color:KCOL[color],cname:color,target:target,x:x,y:y,r:r,rot:Math.round(Math.random()*40-20)}); }
+/* Benny. o = { l, r : bras (down, wave, up, hip, belly, nose), eyes : open|happy|wink, mouth : smile|open, foot : pied levé, lift : décollage } */
+function bennyG(o){
+  o=o||{}; var O='#F26B1D', C='#FFF1E4', N='#1D2A44', P='#A8430F';
+  var ARM={ down:['M262 322 Q290 344 284 376',284,378], wave:['M262 314 Q312 306 338 276',340,273], up:['M262 312 Q345 300 388 236',390,232],
+            hip:['M262 320 Q312 342 272 374',270,376], belly:['M262 322 Q286 356 236 366',232,366], nose:['M266 322 Q312 290 236 246',228,240] };
+  function arm(k,left){ var a=ARM[k]||ARM.down; return '<g'+(left?' transform="translate(400 0) scale(-1 1)"':'')+'><path d="'+a[0]+'" stroke="'+O+'" stroke-width="30" stroke-linecap="round" fill="none"/><circle cx="'+a[1]+'" cy="'+a[2]+'" r="18" fill="'+P+'"/></g>'; }
+  var l=o.l||'down', r=o.r||'down', back='', front='';
+  if (l==='nose') front+=arm(l,true); else back+=arm(l,true);
+  if (r==='nose') front+=arm(r,false); else back+=arm(r,false);
+  var eyeL='<circle cx="150" cy="176" r="16" fill="'+N+'"/><circle cx="156" cy="170" r="5.5" fill="#fff"/>', eyeR='<circle cx="250" cy="176" r="16" fill="'+N+'"/><circle cx="256" cy="170" r="5.5" fill="#fff"/>';
+  var arcL='<path d="M134 182 Q150 160 166 182" stroke="'+N+'" stroke-width="8" stroke-linecap="round" fill="none"/>', arcR='<path d="M234 182 Q250 160 266 182" stroke="'+N+'" stroke-width="8" stroke-linecap="round" fill="none"/>';
+  var eyes = o.eyes==='happy' ? arcL+arcR : (o.eyes==='wink' ? eyeL+arcR : eyeL+eyeR);
+  var mouth = o.mouth==='open' ? '<path d="M178 248 Q200 282 222 248Z" fill="'+N+'"/>' : '<path d="M180 250 Q200 266 220 250" stroke="'+N+'" stroke-width="6" stroke-linecap="round" fill="none"/>';
+  return '<ellipse cx="200" cy="462" rx="'+(o.lift?92:128)+'" ry="13" fill="rgba(29,42,68,.18)"/><g transform="translate(0,'+(o.lift?-48:0)+')">'+
+    '<path d="M250 392 C375 392 400 290 352 215 C345 272 305 318 245 326Z" fill="'+O+'"/><path d="M352 215 C380 258 378 300 356 330 C336 300 338 258 352 215Z" fill="'+C+'"/>'+
+    '<ellipse cx="160" cy="440" rx="36" ry="17" fill="'+P+'"/>'+(o.foot?'<ellipse cx="266" cy="408" rx="36" ry="17" fill="'+P+'" transform="rotate(-28 266 408)"/>':'<ellipse cx="240" cy="440" rx="36" ry="17" fill="'+P+'"/>')+
+    '<ellipse cx="200" cy="350" rx="86" ry="96" fill="'+O+'"/><ellipse cx="200" cy="368" rx="50" ry="66" fill="'+C+'"/>'+back+
+    '<path d="M85 150 L66 30 L170 85Z" fill="'+O+'"/><path d="M93 118 L84 60 L134 86Z" fill="'+P+'"/><path d="M315 150 L334 30 L230 85Z" fill="'+O+'"/><path d="M307 118 L316 60 L266 86Z" fill="'+P+'"/>'+
+    '<path d="M200 66 C272 66 322 118 332 178 C348 190 362 204 368 216 C332 254 272 280 200 280 C128 280 68 254 32 216 C38 204 52 190 68 178 C78 118 128 66 200 66Z" fill="'+O+'"/>'+
+    '<path d="M32 216 C80 198 132 190 162 216 C180 232 190 238 200 238 C210 238 220 232 238 216 C268 190 320 198 368 216 C332 254 272 280 200 280 C128 280 68 254 32 216Z" fill="'+C+'"/>'+
+    '<circle cx="112" cy="232" r="15" fill="#F9B48A" opacity=".7"/><circle cx="288" cy="232" r="15" fill="#F9B48A" opacity=".7"/>'+eyes+
+    '<ellipse cx="200" cy="228" rx="17" ry="12" fill="'+N+'"/>'+mouth+front+'</g>';
 }
-function kFree(items,x,y,r){ for (var i=0;i<items.length;i++){ if (Math.hypot(items[i].x-x,items[i].y-y)<items[i].r+r+14) return false; } return true; }
+function bennySVG(o, cls){ return '<svg class="kben'+(cls?' '+cls:'')+'" viewBox="-40 -70 480 550">'+bennyG(o)+'</svg>'; }
 
-/* jeu 1 : compter (forme et couleur au hasard) */
+/* les objets des jeux : dessinés autour de (0,0), dans un carré de 100 */
+var KOBJ = {
+  pomme:{ a:'Une pomme', d:'la pomme', pl:'pommes', s:'<path d="M0 -22 C-14 -34 -42 -26 -40 4 C-38 34 -18 46 0 38 C18 46 38 34 40 4 C42 -26 14 -34 0 -22Z" fill="#E8503C"/><path d="M0 -22 Q2 -36 8 -42" stroke="#7A4A21" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M8 -36 Q24 -48 34 -36 Q20 -26 8 -36Z" fill="#5FBF5F"/>' },
+  banane:{ a:'Une banane', d:'la banane', pl:'bananes', s:'<path d="M-40 -18 C-30 28 14 44 44 18 C48 14 44 8 40 10 C14 22 -16 8 -28 -24 C-30 -30 -42 -26 -40 -18Z" fill="#F6D032"/><path d="M-41 -19 l-4 -10 l10 -3 l5 9Z" fill="#7A4A21"/>' },
+  carotte:{ a:'Une carotte', d:'la carotte', pl:'carottes', s:'<path d="M0 -20 L-14 -46 M0 -20 L0 -48 M0 -20 L14 -46" stroke="#4FB35A" stroke-width="8" stroke-linecap="round"/><path d="M-14 -20 L14 -20 Q18 -10 0 46 Q-18 -10 -14 -20Z" fill="#F28A1D"/>' },
+  brosse:{ a:'Une brosse à dents', d:'la brosse à dents', pl:'brosses à dents', s:'<g transform="rotate(40)"><rect x="-7" y="-22" width="14" height="70" rx="7" fill="#3DB6C9"/><rect x="-9" y="-50" width="18" height="36" rx="8" fill="#3DB6C9"/><rect x="-25" y="-47" width="17" height="27" rx="4" fill="#fff" stroke="#BFE3EA" stroke-width="2"/></g>' },
+  ballon:{ a:'Un ballon', d:'le ballon', pl:'ballons', s:'<path d="M0 30 Q-8 40 2 48" stroke="#8A93A6" stroke-width="3" fill="none" stroke-linecap="round"/><ellipse cx="0" cy="-10" rx="30" ry="38" fill="#E8503C"/><path d="M-6 30 L6 30 L0 22Z" fill="#E8503C"/><ellipse cx="-10" cy="-24" rx="6" ry="10" fill="#fff" opacity=".5"/>' },
+  poisson:{ a:'Un poisson', d:'le poisson', pl:'poissons', s:'<path d="M22 0 L46 -22 L46 22Z" fill="#3DA7D9"/><ellipse cx="-6" cy="0" rx="36" ry="24" fill="#5DB7E8"/><circle cx="-24" cy="-6" r="5" fill="#1D2A44"/>' },
+  parapluie:{ a:'Un parapluie', d:'le parapluie', pl:'parapluies', s:'<path d="M0 -8 V34 Q0 46 -12 44" stroke="#1D2A44" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M-44 -4 A44 40 0 0 1 44 -4 Z" fill="#9B6BD6"/>' },
+  fleur:{ a:'Une fleur', d:'la fleur', pl:'fleurs', s:'<path d="M0 0 V48" stroke="#4FB35A" stroke-width="7" stroke-linecap="round"/><g fill="#F27BA5"><circle cx="0" cy="-34" r="14"/><circle cx="19" cy="-20" r="14"/><circle cx="12" cy="2" r="14"/><circle cx="-12" cy="2" r="14"/><circle cx="-19" cy="-20" r="14"/></g><circle cx="0" cy="-14" r="12" fill="#F6D032"/>' },
+  etoile:{ a:'Une étoile', d:"l'étoile", pl:'étoiles', s:'<polygon points="0,-46 13,-15 46,-14 20,7 29,40 0,21 -29,40 -20,7 -46,-14 -13,-15" fill="#F6C832" stroke="#F6C832" stroke-width="6" stroke-linejoin="round"/>' },
+  coeur:{ a:'Un cœur', d:'le cœur', pl:'cœurs', s:'<path d="M0 40 C-50 4 -40 -38 -18 -38 C-6 -38 0 -28 0 -22 C0 -28 6 -38 18 -38 C40 -38 50 4 0 40Z" fill="#E8503C"/>' },
+  champignon:{ a:'Un champignon', d:'le champignon', pl:'champignons', s:'<rect x="-12" y="0" width="24" height="42" rx="10" fill="#F5E6D0" stroke="#D9C4A5" stroke-width="3"/><path d="M-44 6 A44 42 0 0 1 44 6 Z" fill="#E8503C"/><circle cx="-18" cy="-12" r="7" fill="#fff"/><circle cx="12" cy="-20" r="8" fill="#fff"/><circle cx="24" cy="-4" r="5" fill="#fff"/>' },
+  canard:{ a:'Un canard', d:'le canard', pl:'canards', s:'<ellipse cx="-4" cy="16" rx="36" ry="24" fill="#F6D032"/><circle cx="20" cy="-18" r="20" fill="#F6D032"/><path d="M36 -20 L52 -14 L36 -8Z" fill="#F28A1D"/><circle cx="24" cy="-22" r="4" fill="#1D2A44"/>' },
+  glace:{ a:'Une glace', d:'la glace', pl:'glaces', s:'<path d="M-22 -2 L22 -2 L0 48Z" fill="#E0A458"/><circle cx="0" cy="-16" r="28" fill="#F27BA5"/>' },
+  maison:{ a:'Une maison', d:'la maison', pl:'maisons', s:'<rect x="-32" y="-6" width="64" height="50" fill="#F6D8A8"/><path d="M-44 -4 L0 -44 L44 -4Z" fill="#E8503C"/><rect x="-10" y="14" width="20" height="30" fill="#7A4A21"/>' },
+  lune:{ a:'Une lune', d:'la lune', pl:'lunes', s:'<path d="M14 -42 A44 44 0 1 0 40 22 A34 34 0 1 1 14 -42Z" fill="#F6C832"/>' },
+  cle:{ a:'Une clé', d:'la clé', pl:'clés', s:'<circle cx="-24" cy="0" r="16" fill="none" stroke="#C99A2E" stroke-width="10"/><path d="M-8 0 H42 M28 0 V14 M40 0 V12" stroke="#C99A2E" stroke-width="10" stroke-linecap="round" fill="none"/>' },
+  papillon:{ a:'Un papillon', d:'le papillon', pl:'papillons', s:'<ellipse cx="-22" cy="-14" rx="20" ry="24" fill="#9B6BD6"/><ellipse cx="22" cy="-14" rx="20" ry="24" fill="#9B6BD6"/><ellipse cx="-18" cy="22" rx="14" ry="16" fill="#F27BA5"/><ellipse cx="18" cy="22" rx="14" ry="16" fill="#F27BA5"/><rect x="-4" y="-32" width="8" height="64" rx="4" fill="#1D2A44"/>' },
+  pansement:{ a:'Un pansement', d:'le pansement', pl:'pansements', s:'<g transform="rotate(-35)"><rect x="-46" y="-16" width="92" height="32" rx="16" fill="#F2B98A"/><rect x="-14" y="-16" width="28" height="32" fill="#FBE6D2"/></g>' }
+};
+var KIDS = Object.keys(KOBJ);
+var KSIL = '<filter id="ksil" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="0 0 0 0 0.114 0 0 0 0 0.165 0 0 0 0 0.267 0 0 0 1 0"/></filter>';
+function kobj(id,x,y,s,rot,extra){ return '<g transform="translate('+Math.round(x)+' '+Math.round(y)+') rotate('+(rot||0)+') scale('+s+')"'+(extra||'')+'>'+KOBJ[id].s+'</g>'; }
+function kpick(n, not){ return shuffle(KIDS.filter(function(k){ return !not||not.indexOf(k)<0; })).slice(0,n); }
+function kScatter(list, W, H, r){
+  var out=[];
+  list.forEach(function(it){ var x,y,t=0, ok;
+    do { x=r+16+Math.random()*(W-2*r-32); y=(it.top||0)+r+16+Math.random()*(H-(it.top||0)-2*r-32); t++; ok=out.every(function(p){ return Math.hypot(p.x-x,p.y-y)>2*r+10; }); } while(!ok&&t<400);
+    if (ok) out.push({ id:it.id, target:it.target, x:x, y:y, rot:Math.round(Math.random()*30-15) }); });
+  return out;
+}
+var KW=1300, KH=590;
+
+/* jeu : l'ombre mystère */
+function gameOmbre(){ var p=kpick(3), order=shuffle([0,1,2]); return { type:'ombre', id:p[0], opts:order.map(function(i){ return p[i]; }), ok:order.indexOf(0), q1:11, q2:7 }; }
+/* jeu : combien y en a-t-il ? */
 function gameCount(){
-  var W=1120,H=600, kinds=['star','circle','tri'], cols=['orange','bleu','vert','jaune'];
-  var tk=kinds[rnd(3)], tc=cols[rnd(4)], n=3+rnd(5), items=[];
-  kPlace(items,W,H,tk,tc,true,n,40,48);
-  var combos=[]; kinds.forEach(function(k){ cols.forEach(function(c){ if (!(k===tk&&c===tc)) combos.push([k,c]); }); });
-  shuffle(combos).slice(0,8).forEach(function(cb){ kPlace(items,W,H,cb[0],cb[1],false,2,40,48); });
-  var cnt=items.filter(function(x){return x.target;}).length;
-  return { type:'field', title:'Combien de '+KNAME[tk].n+' '+KNAME[tk].c[tc]+' vois-tu ?', W:W,H:H, items:items, ans:String(cnt), bravo:'Bravo !', q1:12, q2:7 };
+  var p=kpick(4), n=3+rnd(5), list=[];
+  for (var i=0;i<n;i++) list.push({ id:p[0], target:true });
+  p.slice(1).forEach(function(id){ list.push({id:id}); list.push({id:id}); });
+  var items=kScatter(list,KW,KH,74);
+  return { type:'count', id:p[0], items:items, n:items.filter(function(x){ return x.target; }).length, q1:12, q2:7 };
 }
-/* jeu 2 : trouve l'intrus */
+/* jeu : trouve l'intrus */
 function gameIntrus(){
-  var W=1120,H=600, kinds=['star','circle','tri'], cols=['orange','bleu','vert','jaune'];
-  var bk=kinds[rnd(3)], bc=cols[rnd(4)], odd=rnd(12), byColor=Math.random()<0.5, items=[];
-  var ok=kinds.filter(function(k){return k!==bk;})[rnd(2)], oc=cols.filter(function(c){return c!==bc;})[rnd(3)];
-  for (var i=0;i<12;i++){
-    var isOdd=(i===odd), kind=isOdd&&!byColor?ok:bk, col=isOdd&&byColor?oc:bc;
-    items.push({kind:kind,color:KCOL[col],target:isOdd,x:140+(i%4)*280,y:100+Math.floor(i/4)*200,r:58,rot:Math.round(Math.random()*30-15)});
-  }
-  return { type:'field', title:"Trouve l'intrus !", W:W,H:H, items:items, ans:'✓', bravo:'Le voilà !', q1:12, q2:6, noNum:true };
+  var p=kpick(2), odd=rnd(15), items=[];
+  for (var i=0;i<15;i++) items.push({ id:(i===odd?p[1]:p[0]), target:i===odd, x:130+(i%5)*260, y:105+Math.floor(i/5)*190, rot:Math.round(Math.random()*20-10) });
+  return { type:'intrus', items:items, q1:11, q2:6 };
 }
-/* jeu 3 : calcul et suites */
-function gameMath(){
-  var t=rnd(3), W=1120,H=600, items=[], title, ans, svg='';
-  function dots(n,x0,y0,col,cross){ var o=''; for (var i=0;i<n;i++){ var cx=x0+Math.floor(i/2)*128+64, cy=y0+(i%2)*130; o+='<circle cx="'+cx+'" cy="'+cy+'" r="52" fill="'+col+'"/>'; } return o; }
-  if (t===0){ var a=1+rnd(5), b=1+rnd(5); if (a+b>9) b=9-a; if (b<1) b=1; ans=String(a+b); title='Combien font '+a+' + '+b+' ?';
-    var wA=Math.ceil(a/2)*128, wB=Math.ceil(b/2)*128, tot=wA+170+wB, x0=(W-tot)/2;
-    svg=dots(a,x0,215,KCOL.orange)+'<text x="'+(x0+wA+85)+'" y="330" text-anchor="middle" font-size="130" fill="#FDE4D4" font-family="Nunito Sans,sans-serif" font-weight="800">+</text>'+dots(b,x0+wA+170,215,KCOL.bleu); }
-  else if (t===1){ var n=4+rnd(6), m=1+rnd(n-2); ans=String(n-m); title='Combien font '+n+' − '+m+' ?';
-    var w=Math.ceil(n/2)*128, x1=(W-w)/2; svg=dots(n,x1,215,KCOL.orange);
-    svg+='<g class="kx">'; for (var i=n-m;i<n;i++){ var cx=x1+Math.floor(i/2)*128+64, cy=215+(i%2)*130; svg+='<g class="kxx" data-x="1"><line x1="'+(cx-40)+'" y1="'+(cy-40)+'" x2="'+(cx+40)+'" y2="'+(cy+40)+'"/><line x1="'+(cx+40)+'" y1="'+(cy-40)+'" x2="'+(cx-40)+'" y2="'+(cy+40)+'"/></g>'; } svg+='</g>'; }
-  else { var step=[1,2,3,5,10][rnd(5)], st=step*(1+rnd(3)); ans=String(st+4*step); title='Quel est le prochain nombre ?';
-    for (var k=0;k<5;k++){ var cx2=130+k*215, last=(k===4);
-      svg+='<g data-last="'+(last?1:0)+'"><circle cx="'+cx2+'" cy="300" r="88" fill="'+(last?'none':'#2C3C60')+'" '+(last?'stroke="#F26B1D" stroke-width="8" stroke-dasharray="14 12"':'')+' class="'+(last?'klast':'')+'"/><text x="'+cx2+'" y="'+(last?'330':'330')+'" text-anchor="middle" font-size="90" font-family="Russo One,Arial Black,sans-serif" fill="'+(last?'#F26B1D':'#FDE4D4')+'" '+(last?'class="ktxt"':'')+'>'+(last?'?':String(st+k*step))+'</text></g>'; } }
-  return { type:'math', title:title, W:W,H:H, svg:svg, ans:ans, bravo:'Bravo !', q1:12, q2:6, kind:t };
+/* jeu : où se cache Benny ? */
+function gameCache(){
+  var p=kpick(9), list=p.map(function(id,i){ return { id:id, target:i===0, top:i===0?110:0 }; }).concat(kpick(3).map(function(id){ return {id:id}; }));
+  return { type:'cache', items:kScatter(list,KW,KH,82), q1:12, q2:6 };
 }
-/* jeu 4 : quiz des enfants (même mécanique que le quiz) */
+/* jeu : lequel a disparu ? */
+function gameMemo(){ var p=kpick(4); return { type:'memo', ids:p, miss:rnd(4), q1:13, q2:6 }; }
+/* jeu : fais comme Benny */
+var KMOVES = [
+  { t:'Lève les deux bras !', o:{l:'up',r:'up',mouth:'open'} },
+  { t:'Fais coucou de la main !', o:{l:'wave',mouth:'open'} },
+  { t:'Touche ton nez !', o:{r:'nose'} },
+  { t:'Mets les mains sur les hanches !', o:{l:'hip',r:'hip'} },
+  { t:'Mains sur le ventre, et respire fort !', o:{l:'belly',r:'belly',eyes:'happy'} },
+  { t:'Tiens sur un pied !', o:{l:'wave',r:'wave',foot:true} },
+  { t:'Fais ton plus grand sourire !', o:{eyes:'happy',mouth:'open'} },
+  { t:'Ferme un œil comme un pirate !', o:{eyes:'wink',l:'hip'} }
+];
+function gameBouge(){ var m=shuffle(KMOVES).slice(0,2); return { type:'bouge', m:m, q1:8, q2:8 }; }
+/* quiz des enfants (même mécanique que le quiz) */
 var QUIZK = [
   { q:'Combien de fois par jour se brosse-t-on les dents ?', o:['1 fois','2 fois : matin et soir','10 fois'], ok:1, exp:'Matin et soir, pendant 2 minutes. Les dents sont contentes !' },
   { q:'Un médicament, c’est comme un bonbon ?', o:['Oui, on peut en manger','Non, seulement avec un adulte','Oui, s’il est sucré'], ok:1, exp:'Un médicament, ce n’est pas un bonbon : on le prend seulement avec un adulte.' },
@@ -1000,7 +1084,7 @@ var QUIZK = [
   { q:"Quelle boisson est la meilleure pour le goûter ?", o:["De l'eau", "Un soda", "Un café"], ok:0, exp:"L'eau est la seule boisson indispensable. Les sodas, c'est seulement de temps en temps." },
   { q:"Le soir, avant de dormir, il vaut mieux…", o:["Lire une histoire", "Regarder un écran", "Manger des bonbons"], ok:0, exp:"Une histoire aide à s'endormir. Les écrans, eux, réveillent le cerveau." }
 ];
-/* jeu 5 : quelle lettre manque ? */
+/* quelle lettre manque ? */
 var MOTS = ['PHARMACIE','SIROP','VITAMINE','BROSSE','SOURIRE','SAVON','DENTISTE','MEDECIN','PANSEMENT','THERMOMETRE'];
 function gameMot(){
   var w=MOTS[rnd(MOTS.length)], pos=rnd(w.length), good=w.charAt(pos), alpha='ABCDEFGHIJLMNOPRSTUV', opts=[good];
@@ -1009,28 +1093,28 @@ function gameMot(){
   return { type:'mot', title:'Quelle lettre manque ?', word:w, pos:pos, opts:opts, ok:opts.indexOf(good), good:good, q1:11, q2:7 };
 }
 function makeKid(not){
-  var all=['count','intrus','math','quiz','mot'].filter(function(k){ return not.indexOf(k)<0; });
+  var all=['ombre','cache','bouge','count','intrus','memo','quiz','mot'].filter(function(k){ return not.indexOf(k)<0; });
   var k=all[rnd(all.length)];
+  if (k==='ombre') return { id:k, g:gameOmbre() };
+  if (k==='cache') return { id:k, g:gameCache() };
+  if (k==='bouge') return { id:k, g:gameBouge() };
   if (k==='count') return { id:k, g:gameCount() };
   if (k==='intrus') return { id:k, g:gameIntrus() };
-  if (k==='math') return { id:k, g:gameMath() };
+  if (k==='memo') return { id:k, g:gameMemo() };
   if (k==='mot') return { id:k, g:gameMot() };
   var qz=drawQuiz(QUIZK,'k'), order=shuffle([0,1,2]);
   return { id:k, g:{ type:'quiz', c:{ q:qz.q, exp:qz.exp, o:order.map(function(i){return qz.o[i];}), ok:order.indexOf(qz.ok), label:'Quiz des enfants' }, q1:10, q2:9 } };
 }
-function shapeSVG(it, reveal){
-  var g='<g transform="translate('+it.x+' '+it.y+') rotate('+it.rot+')">';
-  if (it.kind==='circle') g+='<circle r="'+it.r+'" fill="'+it.color+'"/>';
-  else if (it.kind==='tri') g+='<polygon points="0,'+(-it.r)+' '+(it.r*0.95)+','+(it.r*0.75)+' '+(-it.r*0.95)+','+(it.r*0.75)+'" fill="'+it.color+'"/>';
-  else { var pts=[]; for (var i=0;i<10;i++){ var a=-Math.PI/2+i*Math.PI/5, rr=(i%2?it.r*0.45:it.r); pts.push((Math.cos(a)*rr).toFixed(1)+','+(Math.sin(a)*rr).toFixed(1)); } g+='<polygon points="'+pts.join(' ')+'" fill="'+it.color+'" stroke-linejoin="round"/>'; }
-  if (reveal && it.target) g+='<circle class="kring" r="'+(it.r+16)+'"/>';
-  return g+'</g>';
+var KSTARS = '<span class="kstar" style="left:360px;top:-10px">★</span><span class="kstar" style="left:-30px;top:250px;font-size:56px;animation-delay:.5s">★</span><span class="kstar" style="left:1690px;top:60px;font-size:64px;animation-delay:.9s">★</span>';
+/* cadre commun : Benny à gauche, sa bulle, puis le jeu */
+function kidScene(bubble, stage, benny, foot, secs, reveal, big){
+  return bxFrame('Coin des enfants','<div class="kb'+(big?' kbig':'')+'">'+bennySVG(benny, reveal?'kjump':'')+'<div class="kbub russo">'+bubble+'</div><div class="kst">'+stage+'</div>'+(reveal?KSTARS:'')+'</div>', foot, secs);
 }
-function kidFrame(title, field, sideTop, sideBottom, foot, secs){
-  return bxFrame('Coin des enfants','<h1 class="russo bxt" style="font-size:70px">'+title+'</h1><div class="kf">'+field+'<div class="kside">'+sideTop+'<div class="bxs" style="margin:10px 0 0;font-size:52px">'+sideBottom+'</div></div></div>', foot, secs);
-}
+function kField(inner){ return '<div class="kfd"><svg viewBox="0 0 '+KW+' '+KH+'">'+inner+'</svg></div>'; }
+function kRing(x,y,r){ return '<circle class="kring" cx="'+Math.round(x)+'" cy="'+Math.round(y)+'" r="'+r+'"/>'; }
 function kidsHTML(kid, reveal, secs){
   var g=kid.g, tb=tipBg(), foot=reveal?'À toi de jouer au prochain passage !':'Cherche bien, la réponse arrive.';
+  var idle={l:'wave'}, joy={l:'wave',r:'wave',eyes:'happy',mouth:'open',lift:true};
   if (g.type==='quiz') return quizHTML(g.c, reveal, secs);
   if (g.type==='mot'){
     var L=['A','B','C'], letters='';
@@ -1039,15 +1123,37 @@ function kidsHTML(kid, reveal, secs){
     var opts=g.opts.map(function(t,i){ var cls=reveal?(i===g.ok?' ok':' no'):''; return '<div class="qo'+cls+'" style="background:'+tb+';justify-content:center"><i>'+L[i]+'</i><span style="font-size:80px" class="russo">'+t+'</span></div>'; }).join('');
     return bxFrame('Coin des enfants','<h1 class="russo bxt" style="font-size:70px">'+g.title+'</h1><div class="mw">'+letters+'</div><div class="qa" style="margin-top:50px">'+opts+'</div>', reveal?'Bravo ! Le mot est '+g.word.charAt(0)+g.word.slice(1).toLowerCase()+'.':foot, secs);
   }
-  var field, top, bottom;
-  if (g.type==='field'){
-    field='<div class="kfield" style="background:#1D2A44"><svg viewBox="0 0 '+g.W+' '+g.H+'">'+g.items.map(function(x){ return shapeSVG(x,reveal); }).join('')+'</svg></div>';
-  } else {
-    field='<div class="kfield'+(reveal?' kreveal':'')+'" style="background:#1D2A44"><svg viewBox="0 0 '+g.W+' '+g.H+'">'+g.svg+'</svg></div>';
+  if (g.type==='ombre'){
+    var card='<div class="kcard"><svg viewBox="-70 -70 140 140">'+KSIL+'<g'+(reveal?'':' filter="url(#ksil)"')+'>'+KOBJ[g.id].s+'</g></svg></div>';
+    var ol=g.opts.map(function(id,i){ return '<div class="ko'+(reveal?(i===g.ok?' ok':' no'):'')+'"><i>'+(reveal&&i===g.ok?'✓':(i+1))+'</i>'+KOBJ[id].a+'</div>'; }).join('');
+    return kidScene(reveal?'Bravo ! '+KOBJ[g.id].a+' !':"Devine l'ombre mystère !", '<div class="krow">'+card+'<div class="kol">'+ol+'</div></div>', reveal?joy:idle, foot, secs, reveal);
   }
-  if (g.noNum) { top='<div class="russo knum" style="font-size:200px">'+(reveal?'✓':'?')+'</div>'; bottom=reveal?g.bravo:'Cherche bien…'; }
-  else { top='<div class="russo knum">'+(reveal?g.ans:'?')+'</div>'; bottom=reveal?g.bravo:'Réfléchis bien…'; }
-  return kidFrame(g.title, field, top, bottom, foot, secs);
+  if (g.type==='count'){
+    var f=g.items.map(function(x){ return kobj(x.id,x.x,x.y,1.4,x.rot)+(reveal&&x.target?kRing(x.x,x.y,86):''); }).join('');
+    return kidScene(reveal?'Bravo ! Il y en a '+g.n+' !':'Combien de '+KOBJ[g.id].pl+' vois-tu ?', kField(f)+(reveal?'<div class="knb russo">'+g.n+'</div>':''), reveal?joy:idle, foot, secs, reveal);
+  }
+  if (g.type==='intrus'){
+    var f2=g.items.map(function(x){ return kobj(x.id,x.x,x.y,1.4,x.rot)+(reveal&&x.target?kRing(x.x,x.y,92):''); }).join('');
+    return kidScene(reveal?'Le voilà, bien joué !':"Trouve l'intrus !", kField(f2), reveal?joy:idle, foot, secs, reveal);
+  }
+  if (g.type==='cache'){
+    var f3='';
+    g.items.forEach(function(x){
+      if (x.target) f3+='<g transform="translate('+Math.round(x.x-80)+' '+Math.round(x.y-(reveal?215:150))+') scale(.4)">'+bennyG(reveal?{eyes:'happy',mouth:'open',l:'wave',r:'wave'}:{}).replace(/<ellipse cx="200" cy="462"[^>]*>/,'')+'</g>';
+      f3+=kobj(x.id,x.x,x.y,1.55,x.target?0:x.rot);
+      if (reveal&&x.target) f3+=kRing(x.x,x.y-60,150);
+    });
+    return kidScene(reveal?'Coucou, j\'étais là !':'Où est-ce que je me cache ?', kField(f3), reveal?joy:{l:'hip',r:'hip',eyes:'wink'}, foot, secs, reveal);
+  }
+  if (g.type==='memo'){
+    var cards=g.ids.map(function(id,i){ var m=(i===g.miss);
+      var inner='<svg viewBox="-70 -70 140 140"'+(m&&!reveal?' class="kgo"':'')+'>'+KOBJ[id].s+'</svg>'+(m&&!reveal?'<b class="kq russo">?</b>':'');
+      return '<div class="kmc'+(m&&reveal?' ok':'')+'">'+inner+'</div>'; }).join('');
+    var bub=reveal?'C\'était '+KOBJ[g.ids[g.miss]].d+' !':'<span class="kt1">Regarde bien…</span><span class="kt2">Lequel a disparu ?</span>';
+    return kidScene(bub, '<div class="kmr">'+cards+'</div>', reveal?joy:idle, foot, secs, reveal);
+  }
+  var mv=g.m[reveal?1:0];
+  return kidScene((reveal?'Et maintenant… ':'Fais comme moi ! ')+'<br>'+mv.t, '<div class="kmv">Tout doucement, sans bousculer personne.</div>', mv.o, reveal?'Bravo ! On rejoue au prochain passage.':'Regarde Benny et fais comme lui.', secs, false, true);
 }
 
 /* ---------- ACTUALITÉS SANTÉ (fichier actualites.js à côté de cette page) ---------- */
