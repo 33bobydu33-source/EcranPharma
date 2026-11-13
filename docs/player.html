@@ -204,13 +204,18 @@ html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:'Nuni
 .kring{fill:none;stroke:#FDE4D4;stroke-width:6;stroke-dasharray:10 8;animation:kp 1.2s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
 @keyframes kp{0%,100%{transform:scale(1)}50%{transform:scale(1.18)}}
 
-.ng{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin-top:24px;margin-bottom:12px}
-.nc{display:flex;gap:28px;border-radius:40px;padding:30px 40px;box-sizing:border-box;min-height:330px}
-.nn{flex:none;width:84px;height:84px;border-radius:50%;background:#F26B1D;color:#1D2A44;display:flex;align-items:center;justify-content:center;font-size:48px}
 .ntag{font-size:28px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--acc)}
-.ntit{font-size:44px;line-height:1.12;margin-top:8px}
-.ntx{font-size:31px;line-height:1.26;font-weight:600;color:var(--sub);margin-top:14px}
-.nsrc{font-size:26px;font-weight:700;color:var(--sub);margin-top:16px}
+.nw{display:flex;gap:30px;align-items:stretch;height:700px}
+.nh{flex:1.45;min-width:0;border-radius:44px;background:#1D2A44;color:#FDE4D4;padding:50px 56px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;box-shadow:0 14px 40px rgba(15,22,40,.25)}
+.npill{align-self:flex-start;background:#F26B1D;color:#1D2A44;font-size:28px;font-weight:800;letter-spacing:2px;text-transform:uppercase;border-radius:999px;padding:9px 26px}
+.nht{margin:28px 0 0;color:#fff;line-height:1.1;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:5;overflow:hidden}
+.nhx{font-size:36px;line-height:1.3;font-weight:600;margin-top:24px;color:#FDE4D4;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:4;overflow:hidden}
+.nhs{font-size:26px;font-weight:700;margin-top:26px;color:#F9B48A}
+.nl{flex:1;min-width:0;display:flex;flex-direction:column;gap:22px}
+.nlh{font-size:28px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--sub)}
+.ni{flex:1;min-height:0;border-radius:34px;padding:22px 34px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;border-left:12px solid #F26B1D;box-shadow:0 10px 30px rgba(15,22,40,.12)}
+.nit{font-size:36px;line-height:1.16;font-weight:800;margin-top:6px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}
+.nw.solo .nh{flex:none;width:100%;padding:60px 90px}
 
 .mw{display:flex;gap:16px;justify-content:center;margin-top:50px}
 .ml,.mi{width:150px;height:180px;display:flex;align-items:center;justify-content:center;font-family:'Russo One','Arial Black',sans-serif;font-size:120px;border-radius:26px;background:var(--track)}
@@ -222,13 +227,12 @@ html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:'Nuni
 .kreveal .klast{stroke:none;fill:#F26B1D}
 .kreveal .ktxt{fill:#1D2A44}
 
-.zm{display:flex;gap:56px;align-items:center;margin-top:10px}
-.zl{width:640px;flex:none}
-.zn{width:130px;height:130px;font-size:76px}
-.zt{margin:12px 0 0;font-size:62px;line-height:1.1}
-.zr{flex:1;display:flex;flex-direction:column;gap:22px}
-.zp{display:flex;gap:26px;align-items:center;border-radius:34px;padding:28px 36px;font-size:40px;line-height:1.25;font-weight:700}
-.zc{flex:none;width:26px;height:26px;border-radius:50%;background:#F26B1D}
+.zm{display:flex;gap:30px;align-items:stretch;height:700px}
+.zm .nh{flex:none;width:660px}
+.zr{flex:1;min-width:0;display:flex;flex-direction:column;gap:20px;justify-content:center}
+.zh{font-size:28px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--sub)}
+.zp{display:flex;gap:28px;align-items:center;border-radius:34px;padding:24px 34px;line-height:1.24;font-weight:700}
+.zc{flex:none;width:70px;height:70px;border-radius:50%;background:#F26B1D;color:#1D2A44;display:flex;align-items:center;justify-content:center;font-size:38px}
 
 .bx{padding-bottom:128px}
 .bxbrand{color:var(--ink);font-weight:700}
@@ -361,7 +365,10 @@ body.tv{cursor:none}
   </label>
   <label>Actualités santé :
     <select id="s-news">
-      <option value="1" selected>oui</option>
+      <option value="1">à chaque passage</option>
+      <option value="2">1 passage sur 2</option>
+      <option value="3" selected>1 passage sur 3</option>
+      <option value="4">1 passage sur 4</option>
       <option value="0">non</option>
     </select>
   </label>
@@ -1091,23 +1098,37 @@ var ACTUS_DEFAULT = {
     }
   ]
 };
+/* Sujets internes aux institutions (nominations, appels à candidatures, colloques...) : sans intérêt pour le public, jamais affichés. */
+var NEWS_BRUIT=/appels? [àa] (candidature|projet|manifestation)|candidature|nomination|nomm[ée]e? |d[ée]placement|inaugur|discours|conseil d.administration|conseil scientifique|comit[ée]|rapport annuel|rapport d.activit|march[ée] public|recrute|offre d.emploi|colloque|s[ée]minaire|webinaire|congr[èe]s|rencontres de|consultation publique|d[ée]cret|ministre|projet de loi|la sant[ée] en action|open data|\bG7\b|\bG20\b|point de situation|ans d.engagement/i;
 function getActus(){
   var a=EB.state.news;
-  if (a && a.items && a.items.length) return a;
+  if (a && a.items && a.items.length) {
+    if (!a.auto) return a;
+    var ok=a.items.filter(function(it){ return it && it.titre && !NEWS_BRUIT.test(it.titre); });
+    return { maj:a.maj, items:ok, auto:true };
+  }
   return ACTUS_DEFAULT;
 }
-function newsZoomHTML(a, i, secs){
-  var it=a.items[i], tb=tipBg();
-  var det = (it.detail && it.detail.length) ? it.detail : [it.texte];
-  var pts = det.slice(0,4).map(function(t){ return '<div class="zp" style="background:'+tb+'"><span class="zc"></span><span>'+t+'</span></div>'; }).join('');
-  return bxFrame("Zoom sur l'actualité", '<div class="zm"><div class="zl"><div class="nn russo zn">'+(i+1)+'</div><div class="ntag" style="font-size:34px;margin-top:26px">'+it.tag+'</div><h1 class="russo zt">'+it.titre+'</h1><div class="nsrc" style="font-size:30px">Source : '+it.source+'</div></div><div class="zr">'+pts+'</div></div>', 'Une question ? Votre pharmacien vous répond.', secs);
+function newsTag(it){ return (it.tag && it.tag!==it.source) ? it.tag : 'Info santé'; }
+function newsPoints(it){ return (it.detail||[]).filter(function(t){ return t && String(t).trim(); }).slice(0,4); }
+function newsLead(it, pill, small){
+  var n=String(it.titre||'').length, fs = (n<=45?72 : n<=70?62 : n<=95?52 : 46) - (small?12:0);
+  return '<div class="nh"><div class="npill">'+esc(pill)+'</div><h1 class="russo nht" style="font-size:'+fs+'px">'+esc(it.titre)+'</h1>';
 }
-function newsHTML(secs){
-  var a=getActus(), tb=tipBg();
-  var cards=a.items.slice(0,4).map(function(it,i){
-    return '<div class="nc" style="background:'+tb+'"><div class="nn russo">'+(i+1)+'</div><div class="nt"><div class="ntag">'+it.tag+'</div><div class="ntit russo">'+it.titre+'</div><div class="ntx">'+it.texte+'</div><div class="nsrc">Source : '+it.source+'</div></div></div>';
-  }).join('');
-  return bxFrame("L'actualité santé", '<div class="ng">'+cards+'</div>', 'Mis à jour le '+a.maj+' · informations issues de sources officielles', secs);
+/* Écran 1 : une actualité à la une, les autres en titres. */
+function newsHTML(a, hi, secs){
+  var tb=tipBg(), it=a.items[hi], n=a.items.length, rest=[];
+  for (var k=1;k<n && rest.length<3;k++) rest.push(a.items[(hi+k)%n]);
+  var lead=newsLead(it,newsTag(it))+(it.texte?'<div class="nhx">'+esc(it.texte)+'</div>':'')+'<div class="nhs">Source : '+esc(it.source||'')+'</div></div>';
+  var side=rest.map(function(r){ return '<div class="ni" style="background:'+tb+'"><div class="ntag">'+esc(newsTag(r))+'</div><div class="nit">'+esc(r.titre)+'</div></div>'; }).join('');
+  return bxFrame("L'actualité santé", '<div class="nw'+(rest.length?'':' solo')+'">'+lead+(rest.length?'<div class="nl"><div class="nlh">Aussi en ce moment</div>'+side+'</div>':'')+'</div>', 'Mis à jour le '+esc(a.maj||'')+' · sources officielles', secs);
+}
+/* Écran 2 : les points clés de l'actualité à la une. */
+function newsZoomHTML(a, i, secs){
+  var it=a.items[i], tb=tipBg(), det=newsPoints(it); if (!det.length) det=[it.texte];
+  var len=det.join('').length, fs = det.length>=4||len>330 ? 34 : len>220 ? 38 : 42;
+  var pts=det.map(function(t,k){ return '<div class="zp" style="background:'+tb+';font-size:'+fs+'px"><span class="zc russo">'+(k+1)+'</span><span>'+esc(t)+'</span></div>'; }).join('');
+  return bxFrame("L'actualité santé", '<div class="zm">'+newsLead(it,newsTag(it),true)+'<div class="nhs">Source : '+esc(it.source||'')+'</div></div><div class="zr"><div class="zh">Ce qu\'il faut retenir</div>'+pts+'</div></div>', 'Une question ? Votre pharmacien vous répond.', secs);
 }
 
 var bonusQueue=[], bonusPos=0, lastBonusKinds=[], lastKid=null;
@@ -1177,8 +1198,13 @@ function enterPromo(){
   phase='promo'; scPromo.innerHTML=promoHTML(promoQueue[promoPos],promoPos,promoQueue.length); showOnly(scPromo);
   phaseDur=CFG.promoSeconds*1000; phaseStart=Date.now(); setStatus();
 }
+var newsPass=0, newsTurn=0;
 function afterPromos(){
-  var nw=[]; if (CFG.news) { var aa=getActus(), zi=rnd(Math.min(4,aa.items.length)); nw=[{ title:'Actualités santé', secs:CFG.newsSeconds, html:newsHTML }, { title:'Zoom actualité '+(zi+1), secs:CFG.newsSeconds, html:function(sec){ return newsZoomHTML(aa,zi,sec); } }]; }
+  var nw=[], every=Math.max(1, +CFG.newsEvery||3); newsPass++;
+  if (CFG.news && (newsPass-1)%every===0) { var aa=getActus(), nn=aa.items.length;
+    if (nn) { var hi=(newsTurn++)%nn;
+      nw=[{ title:'Actualités santé', secs:CFG.newsSeconds, html:function(sec){ return newsHTML(aa,hi,sec); } }];
+      if (newsPoints(aa.items[hi]).length>=2) nw.push({ title:'Actualité : points clés', secs:CFG.newsSeconds, html:function(sec){ return newsZoomHTML(aa,hi,sec); } }); } }
   bonusQueue=nw.concat(CFG.bonusCount>0?pickBonus():[]); bonusPos=0;
   if (bonusQueue.length) enterBonus(); else enterAnnounce();
 }
@@ -1281,7 +1307,7 @@ document.getElementById('b-full').onclick=toggleFull;
 document.getElementById('s-home').onchange=function(){ CFG.homeSeconds=+this.value; if(phase==='home') phaseDur=CFG.homeSeconds*1000; this.blur(); };
 document.getElementById('s-homes').onchange=function(){ CFG.homeMode=this.value; this.blur(); };
 document.getElementById('s-rappel').onchange=function(){ CFG.rappel=this.value; this.blur(); };
-document.getElementById('s-news').onchange=function(){ CFG.news=this.value==='1'; this.blur(); };
+document.getElementById('s-news').onchange=function(){ var v=+this.value; CFG.news=v>0; if (v>0) CFG.newsEvery=v; this.blur(); };
 document.getElementById('s-bonus').onchange=function(){ CFG.bonusCount=+this.value; this.blur(); };
 document.getElementById('s-pollen').onchange=function(){ CFG.pollenMode=this.value; this.blur(); };
 document.getElementById('s-promo').onchange=function(){ CFG.promoCount=+this.value; this.blur(); };
@@ -1412,7 +1438,7 @@ function refreshFiles(){
 function refreshNews(force){
   if (!CFG.gasUrl || !CFG.newsAuto) return;
   var n=EB.state.news||{}; if (!force && n.fetched && Date.now()-n.fetched < 6*3600*1000) return;
-  EB.gas({ action:'news' }).then(function(j){ if (j && j.items && j.items.length>=2) EB.set('news', { maj:j.maj, items:j.items.slice(0,4), auto:true, fetched:Date.now() }); }).catch(function(){});
+  EB.gas({ action:'news' }).then(function(j){ if (j && j.items && j.items.length>=1) EB.set('news', { maj:j.maj, items:j.items.slice(0,4), auto:true, fetched:Date.now() }); }).catch(function(){});
 }
 setInterval(refreshFiles, 10*60*1000); setInterval(function(){ refreshNews(false); }, 30*60*1000);
 setInterval(function(){ if (HAS_SHELL || Media.want.length) { rebuild(); } }, 15000);
