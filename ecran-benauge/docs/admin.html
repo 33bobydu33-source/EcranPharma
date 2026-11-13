@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Écran Benauge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&family=Russo+One&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#1D2A44;--navy2:#2C3C60;--peach:#FDE4D4;--peach2:#F9D3BA;--or:#E85D0C;--ink:#1D2A44;--sub:#5A678A;--line:#E9D3C4;--card:#FFFFFF;--ok:#2E9E6A;--bad:#C83A2A}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--peach);color:var(--ink);font-family:'Nunito Sans',system-ui,-apple-system,'Segoe UI',sans-serif;font-size:16px;line-height:1.4;-webkit-text-size-adjust:100%}
+h1,h2,h3{margin:0;font-weight:800}
+.russo{font-family:'Russo One','Arial Black',sans-serif;font-weight:400}
+header{background:var(--navy);color:var(--peach);padding:14px 16px 0;position:sticky;top:0;z-index:5}
+.hrow{display:flex;align-items:center;gap:12px;max-width:860px;margin:0 auto}
+.hrow h1{font-size:19px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chip{font-size:13px;font-weight:800;border-radius:99px;padding:5px 11px;background:var(--navy2);white-space:nowrap}
+.chip.on{background:var(--ok);color:#fff}.chip.off{background:var(--bad);color:#fff}
+nav{display:flex;gap:2px;overflow-x:auto;max-width:860px;margin:10px auto 0;scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+nav button{flex:none;font:inherit;font-weight:800;font-size:15px;color:#F6C7A9;background:none;border:0;border-bottom:4px solid transparent;padding:10px 13px 9px;cursor:pointer}
+nav button.on{color:#fff;border-bottom-color:#F26B1D}
+main{max-width:860px;margin:0 auto;padding:16px 16px 90px}
+.card{background:var(--card);border-radius:18px;padding:16px;margin-bottom:14px;box-shadow:0 2px 0 var(--line)}
+.card h2{font-size:17px;margin-bottom:4px}
+.hint{color:var(--sub);font-size:14px;margin:2px 0 10px}
+.row{display:flex;align-items:center;gap:12px;padding:11px 0;border-top:1px solid #F3E4DA}
+.row:first-of-type{border-top:0}
+.row .lab{flex:1;min-width:0;font-weight:700}
+.row .lab small{display:block;font-weight:600;color:var(--sub);font-size:13px}
+select,input[type=text],input[type=date],input[type=time],input[type=number],textarea{font:inherit;font-weight:700;color:var(--ink);background:#FFF7F2;border:2px solid var(--line);border-radius:10px;padding:9px 10px;min-height:44px;max-width:100%}
+textarea{width:100%;min-height:76px;font-weight:600}
+input[type=text].wide{width:100%}
+select:focus,input:focus,textarea:focus,button:focus-visible{outline:3px solid #F26B1D;outline-offset:1px}
+.btn{font:inherit;font-weight:800;border-radius:12px;border:2px solid var(--navy);background:#fff;color:var(--navy);padding:10px 14px;min-height:44px;cursor:pointer}
+.btn.pri{background:var(--or);border-color:var(--or);color:#fff}
+.btn.dark{background:var(--navy);color:var(--peach)}
+.btn.sm{padding:6px 10px;min-height:38px;font-size:14px}
+.btn.danger{border-color:var(--bad);color:var(--bad)}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+.sw{position:relative;flex:none;width:52px;height:30px}
+.sw input{position:absolute;inset:0;opacity:0;width:100%;height:100%;margin:0;cursor:pointer;z-index:1}
+.sw span{position:absolute;inset:0;border-radius:99px;background:#D9C6BA;transition:background .15s}
+.sw span:after{content:"";position:absolute;left:3px;top:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:transform .15s}
+.sw input:checked+span{background:var(--or)}
+.sw input:checked+span:after{transform:translateX(22px)}
+.sw input:disabled+span{opacity:.5}
+.now{background:var(--navy);color:var(--peach);border-radius:18px;padding:18px 16px;margin-bottom:14px}
+.now .l{font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#F6C7A9}
+.now .t{font-size:24px;font-weight:800;margin:2px 0 12px;line-height:1.2}
+.now .ctl{display:flex;gap:10px}
+.now .ctl button{flex:1;font:inherit;font-size:24px;min-height:56px;border-radius:14px;border:0;background:var(--navy2);color:#fff;cursor:pointer}
+.now .ctl button.main{background:#F26B1D}
+.vid{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid #F3E4DA}
+.vid:first-child{border-top:0}
+.vid{flex-wrap:wrap}
+.vid .mid{flex:1 1 150px;min-width:0}
+.vid .mid input{width:100%}
+.vid .fn{font-size:12px;color:var(--sub);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px}
+.tag{display:inline-block;font-size:11px;font-weight:800;border-radius:6px;padding:1px 6px;background:var(--navy);color:var(--peach);margin-right:4px}
+.tag.o{background:var(--or);color:#fff}
+.arr{display:flex;flex-direction:column;gap:4px}
+.arr button{font:inherit;font-size:13px;line-height:1;width:38px;height:26px;border-radius:8px;border:2px solid var(--line);background:#fff;cursor:pointer;color:var(--navy)}
+.mem{display:grid;grid-template-columns:64px 1fr;gap:12px;padding:12px 0;border-top:1px solid #F3E4DA}
+.mem:first-child{border-top:0}
+.mem .av{width:64px;height:64px;border-radius:50%;overflow:hidden;background:var(--navy2);display:flex;align-items:center;justify-content:center;color:#F26B1D;font-size:38px;line-height:1;font-weight:800}
+.mem .av img,.mem .av svg{width:100%;height:100%;object-fit:cover;display:block}
+.mem .f{display:flex;flex-wrap:wrap;gap:8px}
+.mem .f input[type=text]{flex:1 1 140px;min-width:0}
+#toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--navy);color:#fff;font-weight:800;padding:11px 18px;border-radius:12px;display:none;z-index:9;max-width:92vw;text-align:center}
+#gate{max-width:480px;margin:0 auto;padding:40px 20px}
+#gate h1{font-size:30px;line-height:1.1;margin-bottom:8px}
+#gate .card{margin-top:16px}
+.code{font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:700;background:#FFF7F2;border:2px dashed var(--line);border-radius:10px;padding:8px 10px;word-break:break-all}
+.empty{color:var(--sub);font-weight:700;padding:14px 0}
+@media (min-width:700px){body{font-size:17px}.hrow h1{font-size:22px}}
+</style>
+</head>
+<body>
+<div id="gate" hidden>
+  <h1 class="russo">ÉCRAN BENAUGE</h1>
+  <div class="hint">La page de contrôle de l'écran de la pharmacie.</div>
+  <div class="card"><h2>J'ai un code d'accès</h2><div class="hint">Celui que l'on t'a transmis, ou le lien de partage.</div>
+    <div class="btns"><input type="text" id="g-code" class="wide" placeholder="code d'accès" autocomplete="off" autocapitalize="none"><button class="btn pri" id="g-go">Ouvrir</button></div></div>
+  <div class="card"><h2>Première installation</h2><div class="hint">Crée l'écran de la pharmacie. Un code d'accès est généré : garde-le, il sert de clé pour toute l'équipe.</div>
+    <button class="btn dark" id="g-new">Créer mon écran</button></div>
+  <div class="hint" id="g-mock"></div>
+</div>
+<div id="app" hidden>
+<header>
+  <div class="hrow"><h1 id="h-name">Écran</h1><span class="chip" id="h-chip">…</span></div>
+  <nav id="tabs"></nav>
+</header>
+<main id="main"></main>
+</div>
+<div id="toast"></div>
+<script src="config.js"></script>
+<script src="store.js"></script>
+<script>
+var TABS=[['direct','En direct'],['videos','Vidéos'],['promos','Promos'],['ecrans','Écrans'],['equipe','Équipe'],['reglages','Réglages']];
+var tab=localStorage.getItem('eb_tab')||'direct', dirty=false;
+function $(id){ return document.getElementById(id); }
+function esc(t){ return String(t==null?'':t).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+function toast(m){ var t=$('toast'); t.textContent=m; t.style.display='block'; clearTimeout(toast.t); toast.t=setTimeout(function(){ t.style.display='none'; }, 2600); }
+function fail(e){ toast('Erreur : '+(e && e.message || e)); }
+function cfg(){ return EB.cfg(); }
+function setCfg(k,v){ var o={}; o[k]=v; return EB.patch('config', o).catch(fail); }
+function cmd(type,arg){ return EB.set('cmd', { type:type, arg:arg||'', ts:Date.now() }).then(function(){ toast('Envoyé à l\'écran'); }).catch(fail); }
+function sw(id, on, dis){ return '<label class="sw"><input type="checkbox" data-k="'+id+'" '+(on?'checked':'')+(dis?' disabled':'')+'><span></span></label>'; }
+function sel(id, val, opts){ return '<select data-k="'+id+'">'+opts.map(function(o){ return '<option value="'+o[0]+'"'+(String(o[0])===String(val)?' selected':'')+'>'+o[1]+'</option>'; }).join('')+'</select>'; }
+function row(label, hint, control){ return '<div class="row"><div class="lab">'+label+(hint?'<small>'+hint+'</small>':'')+'</div>'+control+'</div>'; }
+
+/* ---------- données dérivées ---------- */
+function videoList(){
+  var f=(EB.state.files||{}).videos||[], meta=EB.state.videos||{}, c=cfg();
+  var rid=c.rappelId || ((f.filter(function(x){ return /rappel/i.test(x.name); })[0]||{}).id)||'';
+  return f.map(function(x){ var m=meta[x.id]||{}; var fixed=!!(m.fixed||x.base);
+    return { id:x.id, name:x.name, base:!!x.base, fixed:fixed, rappel:x.id===rid, title:m.title||EB.titleFromName(x.name),
+      on: fixed ? true : (m.on==null ? c.autoAdd!==false : m.on===true), pos:(m.pos==null?9999:m.pos) }; })
+    .sort(function(a,b){ return a.pos-b.pos || a.name.localeCompare(b.name); });
+}
+function metaOf(v){ return { title:v.title, on:v.on, fixed:v.fixed && !v.base ? true : (v.fixed?true:false), pos:v.pos }; }
+function saveOrder(list){ var o={}; list.forEach(function(v,i){ v.pos=i; o[v.id]=metaOf(v); }); return EB.patch('videos', o).catch(fail); }
+
+/* ---------- onglets ---------- */
+function msgCard(){
+  var o=EB.opening();
+  return '<div class="card"><h2>Message spécial</h2><div class="hint">Une fermeture, une info rapide : il s\'affiche en grand sur l\'écran des horaires, juste après l\'accueil.</div>'+
+    row('Afficher le message','', '<label class="sw"><input type="checkbox" data-o="msgOn" '+(o.msgOn?'checked':'')+'><span></span></label>')+
+    '<input type="text" class="wide" data-o="msgTitle" placeholder="Titre (ex. Fermeture exceptionnelle)" value="'+esc(o.msgTitle)+'" style="margin:6px 0 8px">'+
+    '<textarea data-o="msgText" placeholder="Ton message (ex. La pharmacie sera fermée samedi 21 novembre.)">'+esc(o.msgText)+'</textarea>'+
+    row('Retirer le message après le','Laisse vide pour le garder', '<input type="date" data-o="msgUntil" value="'+esc(o.msgUntil)+'">')+
+    '<div class="btns"><button class="btn sm" data-show="hours">Le montrer maintenant</button></div></div>';
+}
+function hoursCard(){
+  var o=EB.opening();
+  var h='<div class="card"><h2>Horaires de la pharmacie</h2>'+
+    row('Afficher après l\'accueil','', '<label class="sw"><input type="checkbox" data-o="show" '+(o.show?'checked':'')+'><span></span></label>')+
+    row('Durée','', '<select data-o="seconds">'+[8,10,12,15,20,30].map(function(n){ return '<option value="'+n+'"'+(+o.seconds===n?' selected':'')+'>'+n+' s</option>'; }).join('')+'</select>')+
+    '<input type="text" class="wide" data-o="title" value="'+esc(o.title)+'" aria-label="Titre" style="margin:6px 0 4px">';
+  o.lines.forEach(function(l,i){ h+='<div class="vid"><div class="mid"><input type="text" data-ol="'+i+':days" placeholder="Jours" value="'+esc(l.days)+'" style="margin-bottom:6px"><input type="text" data-ol="'+i+':hours" placeholder="Heures" value="'+esc(l.hours)+'"></div><button class="btn sm danger" data-odel="'+i+'">Retirer</button></div>'; });
+  return h+'<div style="margin-top:10px"><button class="btn sm" id="o-add"'+(o.lines.length>=5?' disabled':'')+'>Ajouter une ligne</button></div></div>';
+}
+
+var V={};
+V.direct=function(){
+  var s=EB.state.status||{}, age=s.ts?Date.now()-s.ts:1e12, live=age<150000, vids=videoList().filter(function(v){ return v.on && !v.rappel; });
+  var h='<div class="now"><div class="l">'+(live?(s.sleeping?'Écran en veille (hors horaires)':s.paused?'En pause':'À l\'écran en ce moment'):'Écran injoignable')+'</div>'+
+    '<div class="t">'+(live?esc(s.label||'…'):'Aucune nouvelle de l\'écran depuis '+(s.ts?Math.round(age/60000)+' min':'le début'))+'</div>'+
+    '<div class="ctl"><button data-cmd="prev" aria-label="Précédent">⏮</button><button class="main" data-cmd="'+(s.paused?'play':'pause')+'" aria-label="Pause ou lecture">'+(s.paused?'▶':'⏸')+'</button><button data-cmd="next" aria-label="Suivant">⏭</button></div></div>';
+  h+=msgCard();
+  h+='<div class="card"><h2>Montrer maintenant</h2><div class="hint">L\'écran y passe tout de suite, puis reprend sa boucle.</div><div class="btns">'+
+    '<button class="btn" data-show="home">Accueil</button><button class="btn" data-show="home2">Accueil infos</button><button class="btn" data-show="hours">Horaires</button><button class="btn" data-show="promos">Promos</button><button class="btn" data-show="bonus">Actualités et bonus</button></div></div>';
+  h+='<div class="card"><h2>Lancer une vidéo</h2>'+(vids.length?vids.map(function(v){ return '<div class="vid"><div class="mid"><b>'+esc(v.title)+'</b></div><button class="btn sm" data-play="'+v.id+'">Lire</button></div>'; }).join(''):'<div class="empty">Aucune vidéo pour l\'instant. Dépose des fichiers dans Google Drive, puis onglet Vidéos.</div>')+'</div>';
+  h+='<div class="card"><h2>Associer un écran</h2><div class="hint">Tape le code à 6 caractères affiché sur la TV.</div><div class="btns"><input type="text" id="pair-in" placeholder="ABC 123" autocomplete="off" style="width:150px;text-transform:uppercase"><button class="btn dark" id="pair-go">Associer</button></div></div>';
+  h+='<div class="card"><h2>Aperçu et dépannage</h2><div class="btns"><a class="btn" target="_blank" href="player.html?bar=1&code='+encodeURIComponent(EB.code())+(EB.mock?'&mock=1':'')+'" style="text-decoration:none">Voir l\'aperçu ici</a><button class="btn" data-cmd="sync">Relire Google Drive</button><button class="btn" data-cmd="reload">Redémarrer l\'écran</button></div></div>';
+  return h;
+};
+V.videos=function(){
+  var c=cfg(), l=videoList(), f=EB.state.files||{};
+  var h='<div class="card"><h2>Lecture</h2>'+
+    row('Ordre','', sel('order', c.order, [['manual','Dans l\'ordre de la liste'],['random','Au hasard']]))+
+    row('Vitesse des vidéos','1 = vitesse normale', sel('videoRate', c.videoRate, [[0.6,'× 0,6'],[0.7,'× 0,7'],[0.8,'× 0,8'],[0.9,'× 0,9'],[1,'× 1']]))+
+    row('Annoncer le thème avant la vidéo','Écran « Thème du moment »', sw('announce', c.announce))+
+    (c.announce?row('Durée de l\'annonce','', sel('announceSeconds', c.announceSeconds, [[5,'5 s'],[8,'8 s'],[12,'12 s']])):'')+
+    row('Activer les nouvelles vidéos toutes seules','Celles que Claude ou toi déposez dans Drive', sw('autoAdd', c.autoAdd!==false))+
+    row('Vidéo de rappel des documents','Avant chaque écran d\'accueil', sel('rappel', c.rappel, [['every','À chaque passage'],['every2','Un passage sur deux'],['off','Jamais']]))+'</div>';
+  h+='<div class="card"><h2>Vidéos ('+l.filter(function(v){return v.on&&!v.rappel;}).length+' actives sur '+l.filter(function(v){return !v.rappel;}).length+')</h2>'+
+    '<div class="hint">Coche celles qui passent. « Base » : toujours diffusée. Pour ajouter ou supprimer une vidéo, fais-le dans Google Drive.</div>'+
+    '<div class="btns" style="margin-bottom:6px"><button class="btn sm" id="v-all">Tout activer</button><button class="btn sm" id="v-none">Tout désactiver</button><button class="btn sm" id="v-sync">Relire Google Drive</button>'+(f.folder?'<a class="btn sm" target="_blank" href="'+esc(f.folder)+'" style="text-decoration:none">Ouvrir le dossier</a>':'')+'</div>';
+  if (!l.length) h+='<div class="empty">Aucun fichier trouvé. Vérifie l\'adresse du script dans Réglages, puis « Relire Google Drive ».</div>';
+  l.forEach(function(v,i){
+    h+='<div class="vid">'+sw('v:'+v.id, v.on, v.fixed||v.rappel)+'<div class="mid"><input type="text" data-title="'+v.id+'" value="'+esc(v.title)+'" aria-label="Titre affiché">'+
+      '<div class="fn">'+(v.rappel?'<span class="tag o">Rappel</span>':'')+(v.fixed?'<span class="tag">Base</span>':'')+esc(v.name)+'</div></div>'+
+      '<div class="arr"><button data-up="'+i+'" aria-label="Monter">▲</button><button data-down="'+i+'" aria-label="Descendre">▼</button></div>'+
+      '<select data-role="'+v.id+'" aria-label="Rôle" style="width:104px"><option value="">Normale</option><option value="fixed"'+(v.fixed&&!v.rappel?' selected':'')+(v.base?' disabled':'')+'>Base</option><option value="rappel"'+(v.rappel?' selected':'')+'>Rappel</option></select></div>';
+  });
+  return h+'</div>';
+};
+V.promos=function(){
+  var c=cfg(), f=(EB.state.files||{}).promos||[], meta=EB.state.promos||{};
+  var h='<div class="card"><h2>Diffusion</h2>'+
+    row('Promos par passage','Tirées au hasard à chaque tour', sel('promoCount', c.promoCount, [[0,'Aucune'],[1,'1'],[2,'2'],[3,'3'],[4,'4'],[5,'5']]))+
+    row('Durée de chaque promo','', sel('promoSeconds', c.promoSeconds, [[8,'8 s'],[10,'10 s'],[12,'12 s'],[15,'15 s'],[20,'20 s']]))+
+    row('Promos d\'exemple','Affichées tant qu\'il n\'y a aucun fichier', sw('demoPromos', c.demoPromos))+'</div>';
+  h+='<div class="card"><h2>Fichiers ('+f.length+')</h2><div class="hint">PDF (1re page) ou images déposés dans le dossier « Promos » de Drive. Une date de fin retire la promo toute seule.</div>';
+  if (!f.length) h+='<div class="empty">Aucune promo dans le dossier.</div>';
+  f.forEach(function(x){ var m=meta[x.id]||{};
+    h+='<div class="vid">'+sw('p:'+x.id, m.on!==false)+'<div class="mid"><b>'+esc(x.name.replace(/\.[a-z0-9]+$/i,''))+'</b><div class="fn">Fin : '+(m.until?esc(m.until):'sans date')+'</div></div><input type="date" data-until="'+x.id+'" value="'+esc(m.until||'')+'" aria-label="Date de fin"></div>'; });
+  return h+'</div>';
+};
+V.ecrans=function(){
+  var c=cfg(), k=c.bonusKinds, n=EB.state.news||{}, items=(n.items||[]);
+  var h='<div class="card"><h2>Écrans d\'accueil</h2>'+
+    row('Affichage','', sel('homeMode', c.homeMode, [['alt','Alterner les 2 écrans'],['1','Toujours le conseil'],['2','Toujours les 3 infos'],['both','Les 2 à la suite']]))+
+    row('Durée','', sel('homeSeconds', c.homeSeconds, [[10,'10 s'],[15,'15 s'],[20,'20 s'],[30,'30 s'],[45,'45 s'],[60,'1 min'],[90,'1 min 30'],[120,'2 min']]))+
+    row('Météo','Réelle à Bordeaux, ou forcée pour essayer', sel('weatherMode', c.weatherMode, [['auto','Réelle'],['soleil','Soleil'],['couvert','Couvert'],['pluie','Pluie'],['orage','Orage'],['nuit','Nuit']]))+'</div>';
+  h+=hoursCard();
+  h+='<div class="card"><h2>Écrans bonus</h2>'+
+    row('Nombre par passage','', sel('bonusCount', c.bonusCount, [[0,'Aucun'],[1,'1'],[2,'2'],[3,'3']]))+
+    row('Quiz santé','', sw('bk:quiz', k.quiz))+row('Air et pollens','', sw('bk:air', k.air))+row('Nos services','', sw('bk:services', k.services))+
+    row('L\'équipe','Voir l\'onglet Équipe', sw('bk:equipe', k.equipe))+row('Coin des enfants','5 jeux tirés au hasard', sw('bk:enfants', k.enfants))+'</div>';
+  h+='<div class="card"><h2>Actualités santé</h2>'+
+    row('Afficher les actualités','4 points, puis un zoom sur l\'un d\'eux', sw('news', c.news))+
+    row('Mise à jour automatique','Depuis les flux officiels, plusieurs fois par jour', sw('newsAuto', c.newsAuto))+
+    row('Durée de chaque écran','', sel('newsSeconds', c.newsSeconds, [[10,'10 s'],[12,'12 s'],[16,'16 s'],[20,'20 s']]))+
+    '<div class="hint" style="margin-top:8px">'+(n.maj?'Dernière mise à jour : '+esc(n.maj)+'.':'Pas encore d\'actualités enregistrées : l\'écran affiche celles d\'origine.')+(c.newsAuto?' Coupe la mise à jour automatique pour les écrire toi-même.':'')+'</div>';
+  if (!c.newsAuto) { for (var i=0;i<4;i++){ var it=items[i]||{};
+      h+='<div style="border-top:1px solid #F3E4DA;padding:12px 0"><div class="f" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px"><input type="text" data-n="'+i+':tag" placeholder="Rubrique" value="'+esc(it.tag)+'" style="flex:1 1 120px"><input type="text" data-n="'+i+':source" placeholder="Source" value="'+esc(it.source)+'" style="flex:1 1 160px"></div>'+
+        '<input type="text" class="wide" data-n="'+i+':titre" placeholder="Titre '+(i+1)+'" value="'+esc(it.titre)+'" style="margin-bottom:8px"><textarea data-n="'+i+':texte" placeholder="Phrase courte">'+esc(it.texte)+'</textarea>'+
+        '<textarea data-n="'+i+':detail" placeholder="Détails pour le zoom : une phrase par ligne (4 au plus)" style="margin-top:8px">'+esc((it.detail||[]).join('\n'))+'</textarea></div>'; }
+    h+='<button class="btn pri" id="n-save">Enregistrer les actualités</button>'; }
+  else h+='<button class="btn sm" id="n-now">Mettre à jour maintenant</button>';
+  h+='</div><div class="card"><h2>Allumage de l\'écran</h2><div class="hint">En dehors de ces heures, l\'écran devient noir. Laisse vide pour ne jamais l\'éteindre.</div>'+
+    row('Allumage','', '<input type="time" data-k="hoursOn" value="'+esc(c.hoursOn)+'">')+row('Extinction','', '<input type="time" data-k="hoursOff" value="'+esc(c.hoursOff)+'">')+'</div>';
+  return h;
+};
+var AVS={ f:'👩', m:'👨', croix:'✚' };
+var TONES=['','\u{1F3FB}','\u{1F3FC}','\u{1F3FD}','\u{1F3FE}','\u{1F3FF}'];
+function toned(base,tone){ var cp=Array.from(base||''); if (!cp.length || !tone) return base; return cp[0]+tone+cp.slice(1).join(''); }
+var EMOJIS=["👩‍⚕️", "👨‍⚕️", "🧑‍⚕️", "👩", "👨", "🧑", "👩‍🦰", "👨‍🦰", "👩‍🦱", "👨‍🦱", "👩‍🦳", "👨‍🦳", "👱‍♀️", "👱‍♂️", "🧔", "🧕", "👵", "👴"];
+V.equipe=function(){
+  var t=EB.state.team||{}, ms=t.members||[];
+  var h='<div class="card"><h2>Écran « Votre équipe »</h2>'+row('Afficher l\'équipe','', sw('team:show', t.show!==false))+
+    '<div class="hint" style="margin-top:8px">Jusqu\'à 5 personnes. Pour chacune : un émoji, une croix ou une photo, avec son accord.</div>';
+  ms.forEach(function(m,i){
+    h+='<div class="mem"><div class="av">'+(m.avatar==='photo'&&m.photo?'<img src="'+m.photo+'" alt="">':(m.avatar==='emoji'&&m.emoji?m.emoji:(AVS[m.avatar]||'✚')))+'</div><div><div class="f">'+
+      '<input type="text" data-m="'+i+':name" placeholder="Prénom" value="'+esc(m.name)+'"><input type="text" data-m="'+i+':role" placeholder="Rôle" value="'+esc(m.role)+'"></div>'+
+      '<div class="f" style="margin-top:8px"><select data-m="'+i+':avatar" style="font-size:20px">'+EMOJIS.map(function(e){ return '<option value="e:'+e+'"'+(m.avatar==='emoji'&&(m.ebase||m.emoji)===e?' selected':'')+'>'+e+'</option>'; }).join('')+'<option value="croix"'+(m.avatar==='croix'||!m.avatar?' selected':'')+'>Croix</option><option value="photo"'+(m.avatar==='photo'?' selected':'')+'>Photo</option></select>'+(m.avatar==='emoji'?'<select data-m="'+i+':tone" aria-label="Couleur de peau" style="font-size:20px">'+TONES.map(function(t){ return '<option value="'+t+'"'+((m.tone||'')===t?' selected':'')+'>'+(t?'✋'+t:'Jaune')+'</option>'; }).join('')+'</select>':'')+
+      (m.avatar==='photo'?'<label class="btn sm" style="display:inline-flex;align-items:center">Choisir la photo<input type="file" accept="image/*" data-photo="'+i+'" hidden></label>':'')+
+      '<button class="btn sm danger" data-del="'+i+'">Retirer</button></div></div></div>'; });
+  h+='<div style="margin-top:10px"><button class="btn dark" id="m-add"'+(ms.length>=5?' disabled':'')+'>Ajouter une personne</button></div></div>';
+  return h;
+};
+V.reglages=function(){
+  var c=cfg(), link=location.origin+location.pathname+'#'+EB.code();
+  return '<div class="card"><h2>Google Drive</h2><div class="hint">Adresse de l\'application web du script (voir le guide). C\'est elle qui donne accès aux vidéos et aux promos.</div>'+
+    '<input type="text" class="wide" data-k="gasUrl" placeholder="https://script.google.com/macros/s/…/exec" value="'+esc(c.gasUrl)+'"><div class="btns" style="margin-top:10px"><button class="btn" id="g-test">Tester</button></div></div>'+
+    '<div class="card"><h2>Nom affiché ici</h2><input type="text" class="wide" data-k="name" value="'+esc(c.name)+'"></div>'+
+    '<div class="card"><h2>Accès de l\'équipe</h2><div class="hint">Toute personne qui a ce lien peut régler l\'écran. Envoie-le seulement à l\'équipe.</div><div class="code">'+esc(link)+'</div>'+
+    '<div class="btns" style="margin-top:10px"><button class="btn" id="c-copy">Copier le lien</button><button class="btn danger" id="c-out">Se déconnecter de cet appareil</button></div></div>'+
+    (EB.mock?'<div class="card"><h2>Mode essai</h2><div class="hint">Aucune base Firebase n\'est renseignée dans config.js : les réglages restent dans ce navigateur.</div></div>':'');
+};
+
+/* ---------- rendu ---------- */
+function render(force){
+  var a=document.activeElement;
+  if (!force && a && $('main').contains(a) && (a.tagName==='TEXTAREA' || (a.tagName==='INPUT' && a.type!=='checkbox' && a.type!=='file'))) { dirty=true; return; }
+  dirty=false;
+  var c=cfg(), s=EB.state.status||{}, live=s.ts && Date.now()-s.ts<150000;
+  $('h-name').textContent=c.name||'Écran';
+  $('h-chip').textContent=live?(s.paused?'En pause':'En ligne'):'Hors ligne'; $('h-chip').className='chip '+(live?'on':'off');
+  $('tabs').innerHTML=TABS.map(function(t){ return '<button data-tab="'+t[0]+'" class="'+(t[0]===tab?'on':'')+'">'+t[1]+'</button>'; }).join('');
+  var y=scrollY; $('main').innerHTML=V[tab](); scrollTo(0,y);
+}
+addEventListener('focusout', function(){ setTimeout(function(){ if (dirty) render(); }, 150); });
+setInterval(function(){ if (tab==='direct') render(); }, 30000);
+
+/* ---------- actions ---------- */
+document.addEventListener('click', function(e){
+  var t=e.target.closest('button,a'); if (!t) return; var d=t.dataset, id=t.id;
+  if (d.tab) { tab=d.tab; localStorage.setItem('eb_tab',tab); render(true); scrollTo(0,0); }
+  else if (d.cmd) cmd(d.cmd);
+  else if (d.show) cmd('show', d.show);
+  else if (d.play) cmd('playVideo', d.play);
+  else if (d.up!=null || d.down!=null) { var l=videoList(), i=+(d.up!=null?d.up:d.down), j=i+(d.up!=null?-1:1); if (j<0||j>=l.length) return; var x=l[i]; l[i]=l[j]; l[j]=x; saveOrder(l); }
+  else if (id==='v-all' || id==='v-none') { var o={}; videoList().forEach(function(v,i){ v.pos=i; v.on=(id==='v-all'); o[v.id]=metaOf(v); }); EB.patch('videos',o).catch(fail); }
+  else if (id==='v-sync' || id==='n-now') { syncDrive(id==='n-now'); }
+  else if (id==='pair-go') { var pc=$('pair-in').value.replace(/[^a-z0-9]/gi,'').toUpperCase(); if (pc.length!==6) return toast('Le code a 6 caractères');
+    EB.rawSet('pair/'+pc, { code:EB.code(), ts:Date.now() }).then(function(){ toast('Écran associé : il démarre dans quelques secondes'); $('pair-in').value=''; }).catch(fail); }
+  else if (id==='m-add') { var tm=team(); tm.members.push({ name:'', role:'', avatar:'croix' }); EB.set('team', tm).catch(fail); }
+  else if (d.del!=null) { var t2=team(); t2.members.splice(+d.del,1); EB.set('team', t2).catch(fail); }
+  else if (id==='n-save') saveNews();
+  else if (id==='o-add') { var ls=EB.opening().lines.slice(); ls.push({ days:'', hours:'' }); EB.patch('opening', { lines:ls }).catch(fail); }
+  else if (d.odel!=null) { var ls2=EB.opening().lines.slice(); ls2.splice(+d.odel,1); EB.patch('opening', { lines:ls2 }).catch(fail); }
+  else if (id==='g-test') { EB.gas({ action:'list' }).then(function(j){ toast('Connexion réussie : '+(j.videos||[]).length+' vidéo(s), '+(j.promos||[]).length+' promo(s)'); return EB.set('files', { videos:j.videos||[], promos:j.promos||[], folder:j.folder||'', ts:Date.now() }); }).catch(fail); }
+  else if (id==='c-copy') { var link=location.origin+location.pathname+'#'+EB.code(); (navigator.clipboard?navigator.clipboard.writeText(link):Promise.reject()).then(function(){ toast('Lien copié'); }, function(){ toast('Copie impossible : sélectionne le lien à la main'); }); }
+  else if (id==='c-out') { if (confirm('Oublier le code sur cet appareil ?')) { localStorage.removeItem('eb_code'); location.hash=''; location.reload(); } }
+});
+function team(){ var t=EB.state.team||{}; return { show:t.show!==false, members:(t.members||[]).map(function(m){ return Object.assign({}, m); }) }; }
+function syncDrive(news){
+  toast('Lecture de Google Drive…');
+  var p = news ? EB.gas({ action:'news' }).then(function(j){ if (!j.items || !j.items.length) throw new Error('aucun flux d\'actualités ne répond'); return EB.set('news', { maj:j.maj, items:j.items.slice(0,4), auto:true, fetched:Date.now() }); })
+               : EB.gas({ action:'list' }).then(function(j){ return EB.set('files', { videos:j.videos||[], promos:j.promos||[], folder:j.folder||'', ts:Date.now() }); });
+  p.then(function(){ toast('C\'est à jour'); }).catch(fail);
+}
+function saveNews(){
+  var items=[]; for (var i=0;i<4;i++){ var g=function(f){ var el=document.querySelector('[data-n="'+i+':'+f+'"]'); return el?el.value.trim():''; };
+    if (!g('titre')) continue;
+    items.push({ tag:g('tag')||'Info santé', titre:g('titre'), texte:g('texte'), source:g('source')||'Pharmacie de la Benauge', detail:g('detail').split('\n').map(function(x){return x.trim();}).filter(Boolean).slice(0,4) }); }
+  var d=new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});
+  EB.set('news', { maj:d, items:items, auto:false, fetched:Date.now() }).then(function(){ toast('Actualités enregistrées'); }).catch(fail);
+}
+document.addEventListener('change', function(e){
+  var t=e.target, d=t.dataset;
+  if (d.k) { var k=d.k, v = t.type==='checkbox' ? t.checked : t.value;
+    if (k.indexOf('v:')===0) { var l=videoList(), o={}; l.forEach(function(x,i){ x.pos=i; if (x.id===k.slice(2)) x.on=v; o[x.id]=metaOf(x); }); EB.patch('videos',o).catch(fail); }
+    else if (k.indexOf('p:')===0) EB.patch('promos/'+k.slice(2), { on:v }).catch(fail);
+    else if (k.indexOf('bk:')===0) { var o2={}; o2[k.slice(3)]=v; EB.patch('config/bonusKinds', o2).catch(fail); }
+    else if (k==='team:show') { var tm=team(); tm.show=v; EB.set('team', tm).catch(fail); }
+    else { if (/^(homeSeconds|announceSeconds|promoCount|promoSeconds|bonusCount|newsSeconds|videoRate)$/.test(k)) v=+v; if (k==='gasUrl') v=String(v).trim(); setCfg(k, v); } }
+  else if (d.o) { var ov={}; ov[d.o]= t.type==='checkbox' ? t.checked : (d.o==='seconds' ? +t.value : t.value); EB.patch('opening', ov).catch(fail); }
+  else if (d.ol) { var q=d.ol.split(':'), ls3=EB.opening().lines.map(function(x){ return Object.assign({}, x); }); ls3[+q[0]][q[1]]=t.value.trim(); EB.patch('opening', { lines:ls3 }).catch(fail); }
+  else if (d.title) EB.patch('videos/'+d.title, { title:t.value.trim() }).catch(fail);
+  else if (d.role) { var id=d.role, val=t.value, c=cfg(), was=videoList().filter(function(x){return x.rappel;})[0];
+    var ps=[EB.patch('videos/'+id, { fixed: val==='fixed' })];
+    if (val==='rappel') ps.push(setCfg('rappelId', id)); else if (was && was.id===id) ps.push(setCfg('rappelId', 'aucune'));
+    Promise.all(ps).catch(fail); }
+  else if (d.until) EB.patch('promos/'+d.until, { until:t.value||null }).catch(fail);
+  else if (d.m) { var p=d.m.split(':'), tm2=team(), mm=tm2.members[+p[0]]; if (p[1]==='avatar' && t.value.indexOf('e:')===0) { mm.avatar='emoji'; mm.ebase=t.value.slice(2); mm.emoji=toned(mm.ebase, mm.tone||''); } else if (p[1]==='tone') { mm.tone=t.value; mm.emoji=toned(mm.ebase||mm.emoji, mm.tone); } else mm[p[1]]=t.value.trim(); EB.set('team', tm2).catch(fail); }
+  else if (d.photo!=null && t.files && t.files[0]) { var i=+d.photo, img=new Image(), u=URL.createObjectURL(t.files[0]);
+    img.onload=function(){ var s=320, c2=document.createElement('canvas'); c2.width=c2.height=s; var m=Math.min(img.width,img.height);
+      c2.getContext('2d').drawImage(img,(img.width-m)/2,(img.height-m)/2,m,m,0,0,s,s); URL.revokeObjectURL(u);
+      var tm3=team(); tm3.members[i].photo=c2.toDataURL('image/jpeg',.82); tm3.members[i].avatar='photo'; EB.set('team', tm3).then(function(){ toast('Photo enregistrée'); }).catch(fail); };
+    img.onerror=function(){ toast('Image illisible'); }; img.src=u; }
+});
+
+/* ---------- entrée ---------- */
+/* On attend que le focus soit posé avant de redessiner, pour ne pas faire sauter le champ en cours de saisie. */
+var askT;
+function ask(){ clearTimeout(askT); askT=setTimeout(function(){ render(); }, 180); }
+function open(){ $('gate').hidden=true; $('app').hidden=false; render(true); EB.listen(ask); }
+(function(){
+  var h=location.hash.replace(/^#/,'').trim(); if (h.length>=10) EB.setCode(h);
+  if (EB.code()) return open();
+  $('gate').hidden=false; if (EB.mock) $('g-mock').textContent='Mode essai : aucune base Firebase renseignée dans config.js.';
+  $('g-go').onclick=function(){ var c=$('g-code').value.trim().replace(/^.*#/,''); if (c.length<10) return toast('Code trop court'); EB.setCode(c); open(); };
+  $('g-new').onclick=function(){ var c=EB.newCode(14); EB.setCode(c);
+    EB.set('config', Object.assign({}, EB.DEFAULTS, { created:Date.now() })).then(function(){ location.hash=c; tab='reglages'; open(); toast('Écran créé. Garde bien le lien d\'accès.'); }).catch(fail); };
+})();
+</script>
+</body>
+</html>
