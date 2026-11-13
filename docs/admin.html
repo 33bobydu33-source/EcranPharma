@@ -150,6 +150,7 @@ V.direct=function(){
   var h='<div class="now"><div class="l">'+(live?(s.sleeping?'Écran en veille (hors horaires)':s.paused?'En pause':'À l\'écran en ce moment'):'Écran injoignable')+'</div>'+
     '<div class="t">'+(live?esc(s.label||'…'):'Aucune nouvelle de l\'écran depuis '+(s.ts?Math.round(age/60000)+' min':'le début'))+'</div>'+
     '<div class="ctl"><button data-cmd="prev" aria-label="Précédent">⏮</button><button class="main" data-cmd="'+(s.paused?'play':'pause')+'" aria-label="Pause ou lecture">'+(s.paused?'▶':'⏸')+'</button><button data-cmd="next" aria-label="Suivant">⏭</button></div></div>';
+  if (live && s.home===false) h+='<div class="card" style="border:2px solid #E8503C"><h2>La télé ne démarre plus sur l\'écran Benauge</h2><div class="hint">L\'accueil Google TV a repris la main (souvent après une mise à jour de la télé). L\'écran tourne encore, mais il ne se relancera pas tout seul au prochain allumage. Relance « installer » depuis le PC et réponds « o » à la question sur l\'écran d\'accueil.</div></div>';
   h+=msgCard();
   h+='<div class="card"><h2>Montrer maintenant</h2><div class="hint">L\'écran y passe tout de suite, puis reprend sa boucle.</div><div class="btns">'+
     '<button class="btn" data-show="home">Accueil</button><button class="btn" data-show="home2">Accueil infos</button><button class="btn" data-show="hours">Horaires</button><button class="btn" data-show="promos">Promos</button><button class="btn" data-show="bonus">Actualités et bonus</button></div></div>';

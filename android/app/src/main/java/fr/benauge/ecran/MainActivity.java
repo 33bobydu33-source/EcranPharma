@@ -2,6 +2,8 @@ package fr.benauge.ecran;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -122,6 +124,19 @@ public class MainActivity extends Activity {
             if (name == null || name.contains("/") || name.contains("..")) return false;
             File f = new File(mediaDir, name);
             return f.isFile() && f.length() > 0;
+        }
+
+        /** Vrai si cette appli est bien l'écran d'accueil de la TV (sinon l'accueil Google a repris la main). */
+        @JavascriptInterface
+        public boolean isHome() {
+            try {
+                Intent i = new Intent(Intent.ACTION_MAIN);
+                i.addCategory(Intent.CATEGORY_HOME);
+                ResolveInfo r = getPackageManager().resolveActivity(i, PackageManager.MATCH_DEFAULT_ONLY);
+                return r != null && r.activityInfo != null && getPackageName().equals(r.activityInfo.packageName);
+            } catch (Exception e) {
+                return false;
+            }
         }
 
         @JavascriptInterface

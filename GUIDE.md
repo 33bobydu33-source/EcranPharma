@@ -53,6 +53,10 @@ Chaque modification envoyée sur GitHub refabrique l'appli et met à jour la pag
 3. La TV affiche un **code à 6 caractères**. Sur le téléphone : onglet En direct > **Associer un écran**.
 4. Les vidéos se téléchargent dans la TV (quelques minutes la première fois), puis la boucle démarre.
 5. Réponds « o » à la question sur l'écran d'accueil pour que l'appli se lance à chaque allumage. `restaurer.bat` annule.
+   Le kit coupe aussi les pubs et le mode démo TCL. Il vérifie que la télé accepte bien le nouvel accueil et remet tout
+   en place tout seul si elle le refuse. Laisse le fichier `tv.sh` à côté de `installer.bat`.
+6. Si la page de contrôle affiche « La télé ne démarre plus sur l'écran Benauge », l'accueil Google est revenu
+   (souvent après une mise à jour de la télé) : relance `installer.bat` et réponds « o ».
 
 Sortie de secours sur la TV : cinq appuis rapides sur Retour ouvrent les paramètres Android.
 

@@ -17,21 +17,30 @@ if errorlevel 1 (
   )
 )
 if not exist "%~dp0EcranBenauge.apk" ( echo Place EcranBenauge.apk a cote de ce fichier, puis relance. & pause & exit /b 1 )
-set /p IP=Adresse IP de la TV (Parametres ^> Reseau) : 
-adb connect %IP%:5555
+if not exist "%~dp0tv.sh" ( echo Le fichier tv.sh doit rester a cote de ce fichier. & pause & exit /b 1 )
+set "PAIR="
+set /p PAIR=Appairage par code (Debogage sans fil ^> Associer avec un code) ? Tape IP:port, sinon Entree : 
+if not "%PAIR%"=="" adb pair %PAIR%
+set /p IP=Adresse IP de la TV (ou IP:port affiche par le debogage sans fil) : 
+echo %IP% | find ":" >nul
+if errorlevel 1 set "IP=%IP%:5555"
+adb connect %IP%
 echo Accepte la demande qui s'affiche sur la TV, puis appuie sur une touche.
 pause >nul
-adb -s %IP%:5555 install -r "%~dp0EcranBenauge.apk"
-adb -s %IP%:5555 shell appops set fr.benauge.ecran SYSTEM_ALERT_WINDOW allow
-adb -s %IP%:5555 shell am start -n fr.benauge.ecran/.MainActivity
+adb -s %IP% install -r "%~dp0EcranBenauge.apk"
+if errorlevel 1 ( echo Installation refusee. Sur la TV, choisis "Installer quand meme", puis relance. & pause & exit /b 1 )
+adb -s %IP% shell appops set fr.benauge.ecran SYSTEM_ALERT_WINDOW allow
+adb -s %IP% shell am start -n fr.benauge.ecran/.MainActivity
+adb -s %IP% push "%~dp0tv.sh" /data/local/tmp/benauge_crlf.sh >nul
+adb -s %IP% shell "tr -d '\r' < /data/local/tmp/benauge_crlf.sh > /data/local/tmp/benauge.sh; rm /data/local/tmp/benauge_crlf.sh"
 echo.
 echo L'appli est installee et lancee.
 echo.
-set /p HOME=La mettre comme ecran d'accueil de la TV, pour qu'elle demarre toute seule ? (o/n) : 
-if /i "%HOME%"=="o" (
-  adb -s %IP%:5555 shell cmd package set-home-activity fr.benauge.ecran/.MainActivity
-  adb -s %IP%:5555 shell pm disable-user --user 0 com.google.android.apps.tv.launcherx
-  adb -s %IP%:5555 shell pm disable-user --user 0 com.google.android.tungsten.setupwraith
-  echo Fait. Pour revenir en arriere : lance restaurer.bat
+set /p ACC=La mettre comme ecran d'accueil de la TV, pour qu'elle demarre toute seule ? (o/n) : 
+if /i "%ACC%"=="o" (
+  adb -s %IP% shell sh /data/local/tmp/benauge.sh installer accueil
+  echo Pour revenir en arriere : lance restaurer.bat
+) else (
+  adb -s %IP% shell sh /data/local/tmp/benauge.sh installer
 )
 pause

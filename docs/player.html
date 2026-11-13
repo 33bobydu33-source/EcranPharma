@@ -1534,7 +1534,7 @@ function pushStatus(){
     phase==='promo' ? 'Promo '+(promoPos+1)+'/'+promoQueue.length : phase==='bonus' ? ((bonusQueue[bonusPos]||{}).title||'Écran bonus') : phase==='home2' ? 'Accueil (infos)' : phase==='hours' ? 'Horaires de la pharmacie' : 'Accueil';
   var key=label+'|'+paused+'|'+sleeping+'|'+PLAYLIST.length+'|'+REAL_PROMOS.length;
   if (key===lastStatusKey) return; lastStatusKey=key;
-  EB.set('status', { label:label, phase:phase, paused:paused, sleeping:sleeping, videos:PLAYLIST.length, promos:REAL_PROMOS.length, videoId:(PLAYLIST[idx]||{}).id||'', shell:HAS_SHELL, ts:Date.now() }).catch(function(){});
+  EB.set('status', { label:label, phase:phase, paused:paused, sleeping:sleeping, videos:PLAYLIST.length, promos:REAL_PROMOS.length, videoId:(PLAYLIST[idx]||{}).id||'', shell:HAS_SHELL, home:(HAS_SHELL && typeof Shell.isHome==='function') ? !!Shell.isHome() : null, ts:Date.now() }).catch(function(){});
 }
 setInterval(function(){ lastStatusKey=''; }, 60000);
 
