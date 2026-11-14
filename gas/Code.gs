@@ -12,7 +12,6 @@
  *   Promos/        publicités en PDF (1re page affichée) ou en image (PNG, JPG).
  */
 var DOSSIER = 'Ecran Pharmacie';
-/* Flux d'actualités officiels (RSS). Modifiable. Le premier qui répond avec des articles est utilisé en priorité. */
 /* Site de la pharmacie : ses actualités santé passent en premier. Vide = flux officiels seulement. */
 var SITE = 'https://pharmacie-benauge.rocade.fr';
 var SITE_JOURS = 60;   // les actualités plus anciennes ne sont pas reprises
