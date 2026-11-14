@@ -1484,7 +1484,8 @@ function rebuild(){
     var m=meta[f.id]||{}, isR=(f.id===rid);
     var on = isR ? CFG.rappel!=='off' : (m.fixed || f.base) ? true : (m.on==null ? CFG.autoAdd!==false : m.on===true);
     if (!on) return;
-    want.push({ f:f, kind:'video' });
+    /* la vidéo de rappel est téléchargée en premier : sans elle, les premiers passages s'en passaient */
+    if (isR) want.unshift({ f:f, kind:'video' }); else want.push({ f:f, kind:'video' });
     var u=Media.url(f,'video'); if (!u) return;
     if (isR) { RAPPEL.file=u; return; }
     list.push({ id:f.id, file:u, title:m.title||EB.titleFromName(f.name), pos:(m.pos==null?9999:m.pos), name:f.name });
