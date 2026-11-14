@@ -166,7 +166,7 @@ V.direct=function(){
   if (live && s.home===false) h+='<div class="card" style="border:2px solid #E8503C"><h2>La télé ne démarre plus sur l\'écran Benauge</h2><div class="hint">L\'accueil Google TV a repris la main (souvent après une mise à jour de la télé). L\'écran tourne encore, mais il ne se relancera pas tout seul au prochain allumage. Relance « installer » depuis le PC et réponds « o » à la question sur l\'écran d\'accueil.</div></div>';
   h+=msgCard();
   h+='<div class="card"><h2>Montrer maintenant</h2><div class="hint">L\'écran y passe tout de suite, puis reprend sa boucle.</div><div class="btns">'+
-    '<button class="btn" data-show="home">Accueil</button><button class="btn" data-show="home2">Accueil infos</button><button class="btn" data-show="hours">Horaires</button><button class="btn" data-show="promos">Promos</button><button class="btn" data-show="bonus">Actualités et bonus</button></div></div>';
+    '<button class="btn" data-show="home">Accueil</button><button class="btn" data-show="hours">Horaires</button><button class="btn" data-show="promos">Promos</button><button class="btn" data-show="bonus">Actualités et bonus</button></div></div>';
   h+='<div class="card"><h2>Lancer une vidéo</h2>'+(vids.length?vids.map(function(v){ return '<div class="vid"><div class="mid"><b>'+esc(v.title)+'</b></div><button class="btn sm" data-play="'+v.id+'">Lire</button></div>'; }).join(''):'<div class="empty">Aucune vidéo pour l\'instant. Dépose des fichiers dans Google Drive, puis onglet Vidéos.</div>')+'</div>';
   h+='<div class="card"><h2>Associer un écran</h2><div class="hint">Tape le code à 6 caractères affiché sur la TV.</div><div class="btns"><input type="text" id="pair-in" placeholder="ABC 123" autocomplete="off" style="width:150px;text-transform:uppercase"><button class="btn dark" id="pair-go">Associer</button></div></div>';
   h+='<div class="card"><h2>Aperçu et dépannage</h2><div class="btns"><a class="btn" target="_blank" href="player.html?bar=1&code='+encodeURIComponent(EB.code())+(EB.mock?'&mock=1':'')+'" style="text-decoration:none">Voir l\'aperçu ici</a><button class="btn" data-cmd="sync">Relire Google Drive</button><button class="btn" data-cmd="reload">Redémarrer l\'écran</button></div></div>';
@@ -208,7 +208,6 @@ V.promos=function(){
 V.ecrans=function(){
   var c=cfg(), k=c.bonusKinds, n=EB.state.news||{}, items=(n.items||[]);
   var h='<div class="card"><h2>Écrans d\'accueil</h2>'+
-    row('Affichage','', sel('homeMode', c.homeMode, [['alt','Alterner les 2 écrans'],['1','Toujours le conseil'],['2','Toujours les 3 infos'],['both','Les 2 à la suite']]))+
     row('Durée','', sel('homeSeconds', c.homeSeconds, [[10,'10 s'],[15,'15 s'],[20,'20 s'],[30,'30 s'],[45,'45 s'],[60,'1 min'],[90,'1 min 30'],[120,'2 min']]))+
     row('Météo','Réelle à Bordeaux, ou forcée pour essayer', sel('weatherMode', c.weatherMode, [['auto','Réelle'],['soleil','Soleil'],['couvert','Couvert'],['pluie','Pluie'],['orage','Orage'],['nuit','Nuit']]))+'</div>';
   h+=hoursCard();
