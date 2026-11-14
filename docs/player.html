@@ -116,7 +116,7 @@ html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:'Nuni
 .rh.rwet{font-weight:800}
 .sc b{color:var(--acc);font-weight:800}
 .h1-left{position:absolute;left:88px;top:200px;width:940px}
-.pp{margin-top:30px}
+.pp{margin-top:56px}
 .pp-t{font-size:32px;font-weight:800;color:var(--sub)}
 .pp-r{display:flex;gap:18px;margin-top:14px;padding:6px 0}
 .pp-i{position:relative;transform-origin:center;display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.92);color:#1D2A44;border-radius:999px;padding:10px 26px 10px 14px;font-size:32px;font-weight:800;white-space:nowrap;box-shadow:0 6px 18px rgba(15,22,40,.12);opacity:0;animation:pp-pop .55s cubic-bezier(.34,1.56,.64,1) forwards, pp-glow 3.2s ease-in-out infinite}
@@ -967,14 +967,14 @@ function sceneOpen(variant, bandH, k, moon){
     sk.svg.replace('class="sc-city"','class="sc-city" style="bottom:'+(bandH-1)+'px"')+'<div class="sc-band" style="height:'+bandH+'px;background:'+th.city+'"></div>'+(season()==='noel'?ssnTree(bandH):season()==='paques'?ssnEggs(bandH):'');
 }
 function bandHTML(variant, bandH, cls, inner){ return '<div class="sc-band '+cls+'" style="height:'+bandH+'px">'+inner+'</div>'; }
-function helloWord(w,d){ return (w.variant==='nuit' || d.getHours()>=18 || d.getHours()<5) ? 'Bonsoir,' : 'Bonjour,'; }
+function helloWord(w,d){ return (w.variant==='nuit' || d.getHours()>=18 || d.getHours()<5) ? 'Bonsoir' : 'Bonjour'; }
 function brandHTML(){ return '<div class="sc-brand">'+CROSS+'<div>Pharmacie de la Benauge</div>'+seasonTag()+'</div>'; }
 
 function homeHTML(){
   var w=getWeather(), d=new Date();
   return sceneOpen(w.variant,190,.8,[1040,610,44])+
     '<div class="sc-top">'+brandHTML()+'<div class="sc-wx">'+wxIcon(w.variant,104)+'<div class="russo t">'+w.temp+'°</div><div><div class="l">'+w.label+' à Bordeaux</div><div class="m">Min '+w.min+'° · Max '+w.max+'°</div>'+rainHTML('m rh')+'</div></div></div>'+
-    '<div class="h1-left"><h1 class="russo h1-hello">'+helloWord(w,d)+'</h1><p class="h1-wel">bienvenue à la Pharmacie de la Benauge</p>'+prepHTML()+'</div>'+
+    '<div class="h1-left"><h1 class="russo h1-hello">'+helloWord(w,d)+'</h1>'+prepHTML()+'</div>'+
     '<div class="h1-right"><div class="russo h1-clock" id="h-time">'+fmtTime(d)+'</div><div class="h1-date" id="h-date">'+fmtDate(d)+'</div><div class="h1-saint" id="h-saint">'+saintHTML(d)+'</div></div>'+
     bandHTML(w.variant,190,'sc-tip','<div class="lab">Le conseil du moment</div><div class="txt">'+pickTip(w.variant)+'</div>')+'</div>';
 }
@@ -1030,7 +1030,7 @@ function home2HTML(){
   var cards = CARDS[w.variant].map(function(c){ return '<div class="h2-card"><div class="cl">'+c[0]+'</div><div class="ct">'+c[1]+'</div><div class="cb">'+c[2]+'</div></div>'; }).join('');
   return sceneOpen(w.variant,330,.68,[1090,470,40])+
     '<div class="sc-top">'+brandHTML()+'<div class="russo h2-clock" id="h2-time">'+fmtTime(d)+'</div></div>'+
-    '<div class="h2-left"><h1 class="russo h2-hello">'+helloWord(w,d)+'</h1><p class="h2-wel">bienvenue à la Pharmacie de la Benauge</p>'+
+    '<div class="h2-left"><h1 class="russo h2-hello">'+helloWord(w,d)+'</h1>'+
     '<div class="h2-date" id="h2-date">'+fmtDate(d)+'</div><div class="h2-saint" id="h2-saint">'+saintHTML(d)+'</div>'+prepHTML()+'</div>'+
     '<div class="h2-wx">'+wbHTML(w)+'</div>'+
     bandHTML(w.variant,330,'h2-cards',cards)+'</div>';
