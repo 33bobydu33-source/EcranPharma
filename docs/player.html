@@ -887,15 +887,23 @@ function wxIcon(variant, size){
   else g='<path d="M70 12A48 48 0 1 0 104 78A38 38 0 1 1 70 12Z" fill="#FDE4D4"/><circle class="fn-star" cx="98" cy="26" r="5" fill="#F26B1D"/>';
   return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 120 120" fill="none">'+g+'</svg>';
 }
-/* ---------- THÈMES DE SAISON (accueils, horaires, annonce) : décor seulement, sans symbole religieux ---------- */
+/* ---------- ÉVÉNEMENTS DU CALENDRIER (accueils, horaires, annonce) ---------- */
+function easter(y){ var a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=b%4,f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),h=(19*a+b-d-g+15)%30,i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,m=Math.floor((a+11*h+22*l)/451),mo=Math.floor((h+l-7*m+114)/31),da=((h+l-7*m+114)%31)+1; return new Date(y,mo-1,da); }
+function lastSunday(y,m){ var d=new Date(y,m+1,0); d.setDate(d.getDate()-d.getDay()); return d; }
+function nthSunday(y,m,n){ var d=new Date(y,m,1); d.setDate(1+(7-d.getDay())%7+(n-1)*7); return d; }
+function within(d, ref, before, after){ var t=new Date(d.getFullYear(),d.getMonth(),d.getDate()).getTime(), r=ref.getTime(); return t>=r-before*864e5 && t<=r+after*864e5; }
+/* événements du calendrier, sans décor permanent : rien en dehors de ces périodes */
 function seasonAuto(d){
-  var m=d.getMonth()+1, j=d.getDate();
-  if (m===12) return j<=25 ? 'noel' : 'fetes';
-  if (m===1 && j<=10) return 'nouvelan';
+  var y=d.getFullYear(), m=d.getMonth()+1, j=d.getDate();
+  if (m===12 && j<=25) return 'noel';
+  if ((m===12 && j>=26) || (m===1 && j<=10)) return 'nouvelan';
+  if (within(d, easter(y), 7, 1)) return 'paques';
+  var meres=lastSunday(y,4), pent=new Date(easter(y).getTime()+49*864e5);
+  if (meres.toDateString()===pent.toDateString()) meres=new Date(meres.getTime()+7*864e5);
+  if (within(d, meres, 6, 0)) return 'meres';
+  if (within(d, nthSunday(y,5,3), 6, 0)) return 'peres';
   if (m===10) return 'octobrerose';
-  if ((m===3 && j>=20) || m===4 || m===5 || (m===6 && j<=20)) return 'printemps';
-  if ((m===6 && j>=21) || m===7 || m===8 || (m===9 && j<=22)) return 'ete';
-  if ((m===9 && j>=23) || m===11) return 'automne';
+  if (m===11) return 'movember';
   return 'none';
 }
 function season(){ var s=CFG.seasonTheme||'auto'; return s==='auto' ? seasonAuto(new Date()) : s; }
@@ -911,7 +919,6 @@ function ssnGarland(colors, flags){
               : '<circle class="ssn-b" style="animation-delay:'+(i%4*0.6)+'s" cx="'+x+'" cy="'+(y+12)+'" r="10" fill="'+c+'"/>'; }
   return h+'</svg>';
 }
-var LEAF='M0 -14 C10 -10 12 2 0 14 C-12 2 -10 -10 0 -14Z';
 function ssnTree(bandH){
   var balls='', pts=[[150,95,'#F26B1D'],[118,150,'#FFD45C'],[178,160,'#5B9BF0'],[98,215,'#F27BA5'],[150,225,'#FFD45C'],[205,222,'#F26B1D'],[75,280,'#5B9BF0'],[130,290,'#F26B1D'],[185,285,'#F27BA5'],[232,282,'#FFD45C']];
   pts.forEach(function(p,i){ balls+='<circle class="ssn-b" style="animation-delay:'+(i%4*0.6)+'s" cx="'+p[0]+'" cy="'+p[1]+'" r="9" fill="'+p[2]+'"/>'; });
@@ -921,37 +928,43 @@ function ssnTree(bandH){
     gift(8,58,44,'#E8503C','#FFD45C')+gift(232,62,52,'#5B9BF0','#fff')+gift(60,40,30,'#F27BA5','#fff')+'</svg>';
 }
 function ssnFire(){
-  var h='', P=[[260,230,'#FFD45C'],[760,150,'#F27BA5'],[1180,260,'#5DCB8A'],[1560,170,'#F26B1D'],[980,420,'#5B9BF0']];
+  var h='', P=[[1070,230,'#FFD45C'],[1110,520,'#F27BA5'],[1500,640,'#5DCB8A']];
   P.forEach(function(p,i){ var r='';
-    for (var k=0;k<14;k++){ var a=k*Math.PI/7; r+='<line x1="'+(Math.cos(a)*26).toFixed(1)+'" y1="'+(Math.sin(a)*26).toFixed(1)+'" x2="'+(Math.cos(a)*110).toFixed(1)+'" y2="'+(Math.sin(a)*110).toFixed(1)+'" stroke="'+p[2]+'" stroke-width="7" stroke-linecap="round"/>'; }
+    for (var k=0;k<14;k++){ var a=k*Math.PI/7; r+='<line x1="'+(Math.cos(a)*20).toFixed(1)+'" y1="'+(Math.sin(a)*20).toFixed(1)+'" x2="'+(Math.cos(a)*80).toFixed(1)+'" y2="'+(Math.sin(a)*80).toFixed(1)+'" stroke="'+p[2]+'" stroke-width="7" stroke-linecap="round"/>'; }
     h+='<svg class="ssn-f" style="left:'+(p[0]-120)+'px;top:'+(p[1]-120)+'px;animation-delay:'+(i*0.8)+'s" width="240" height="240" viewBox="-120 -120 240 240">'+r+'</svg>'; });
   return h;
 }
-var RIBBON_P='M12 2C6 2 5 8 8 13L3 30l5-3 3 4 4-13M12 2c6 0 7 6 4 11l5 17-5-3-3 4-4-13';
+function ssnEggs(bandH){
+  var E=[[0,'#F27BA5','#FFD45C'],[70,'#5B9BF0','#fff'],[150,'#FFD45C','#F26B1D'],[214,'#5DCB8A','#fff']], h='';
+  E.forEach(function(e,i){ var x=e[0]+30, r=(i%2?-8:6);
+    h+='<g transform="translate('+x+' 70) rotate('+r+')"><ellipse cx="0" cy="0" rx="26" ry="34" fill="'+e[1]+'"/><path d="M-25 -4 q8 -8 16 0 t16 0 t16 0" fill="none" stroke="'+e[2]+'" stroke-width="5"/><path d="M-22 12 h44" stroke="'+e[2]+'" stroke-width="4" stroke-dasharray="4 6"/></g>'; });
+  return '<svg style="position:absolute;left:1000px;bottom:'+(bandH-12)+'px" width="300" height="110" viewBox="0 0 300 110"><path d="M0 104 q20 -26 30 0 q12 -24 24 0 q14 -28 28 0 q12 -24 26 0 q14 -28 28 0 q12 -24 26 0 q14 -28 28 0 q12 -24 26 0 q14 -28 28 0 q14 -24 28 0 q10 -20 28 0 V110 H0Z" fill="#5DCB8A"/>'+h+'</svg>';
+}
 function seasonDeco(bandH){
   var s=season();
-  if (s==='noel') return ssnGarland(['#F26B1D','#FFD45C','#5DCB8A','#5B9BF0','#F27BA5'],false)+ssnFall(26,function(){ var r=4+Math.random()*7; return '<i style="width:'+r+'px;height:'+r+'px;border-radius:50%;background:#fff;opacity:.85;display:block"></i>'; });
-  if (s==='fetes') return ssnGarland(['#F26B1D','#FFD45C','#5DCB8A','#5B9BF0','#F27BA5'],false)+ssnFall(26,function(){ var r=4+Math.random()*7; return '<i style="width:'+r+'px;height:'+r+'px;border-radius:50%;background:#fff;opacity:.85;display:block"></i>'; });
-  if (s==='nouvelan') return ssnFire()+ssnFall(30,function(i){ var c=['#F26B1D','#FFD45C','#5DCB8A','#5B9BF0','#F27BA5'][i%5]; return '<i class="ssn-r" style="width:12px;height:20px;background:'+c+';display:block;border-radius:2px"></i>'; });
-  if (s==='automne') return ssnFall(18,function(i){ var c=['#E8803C','#C9541A','#E3A93B','#A8430F'][i%4], z=(1+Math.random()).toFixed(2); return '<svg class="ssn-r" width="40" height="40" viewBox="-16 -16 32 32" style="transform-origin:center;scale:'+z+'"><path d="'+LEAF+'" fill="'+c+'"/><path d="M0 -12 V13" stroke="rgba(0,0,0,.25)" stroke-width="1.5"/></svg>'; });
-  if (s==='printemps') return ssnFall(18,function(i){ var c=['#F7A8C4','#FBD0DE','#FFFFFF'][i%3]; return '<i class="ssn-r" style="width:18px;height:12px;border-radius:60% 40% 60% 40%;background:'+c+';display:block"></i>'; });
-  if (s==='octobrerose') return ssnFall(14,function(){ return '<svg width="30" height="40" viewBox="0 0 24 32"><path d="'+RIBBON_P+'" fill="none" stroke="#F27BA5" stroke-width="3.4" stroke-linejoin="round" stroke-linecap="round"/></svg>'; });
-  if (s==='ete') return ssnGarland(['#F26B1D','#FFD45C','#3DB6C9','#F27BA5','#5DCB8A'],true);
+  if (s==='noel') return ssnGarland(['#F26B1D','#FFD45C','#5DCB8A','#5B9BF0','#F27BA5'],false)+ssnFall(12,function(){ var r=4+Math.random()*5; return '<i style="width:'+r+'px;height:'+r+'px;border-radius:50%;background:#fff;opacity:.8;display:block"></i>'; });
+  if (s==='nouvelan') return ssnFire();
   return '';
 }
-var RIBBON='<svg viewBox="0 0 24 32" width="30" height="40"><path d="M12 2C6 2 5 8 8 13L3 30l5-3 3 4 4-13M12 2c6 0 7 6 4 11l5 17-5-3-3 4-4-13" fill="none" stroke="#F27BA5" stroke-width="3.4" stroke-linejoin="round" stroke-linecap="round"/></svg>';
+/* ruban rose d'Octobre rose : boucle pleine, queues croisées coupées en V */
+function ribbonSVG(w){ return '<svg viewBox="0 0 40 60" width="'+w+'" height="'+Math.round(w*1.5)+'"><path d="M14.5 30 L5 55 L10.5 52 L13 58 L22.5 33Z" fill="#D9558A"/><path d="M20 4 C11 4 8.5 13 12 21 L25.5 33 L35 55 L29.5 52 L27 58 L18 37 L9 25 C4 16 9 1 20 1 C31 1 36 16 31 25 L26 30 L22 26 L26.5 21 C31.5 13 29 4 20 4Z" fill="#F27BA5"/><path d="M13 9 C15 6 18 5.5 20 5.5" stroke="#fff" stroke-opacity=".55" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>'; }
+var RIBBON=ribbonSVG(26);
+var MOUSTACHE='<svg viewBox="0 0 64 24" width="46" height="18"><path d="M32 8c-4-6-12-8-18-4-4 3-6 8-12 7 3 6 12 9 20 6 5-2 8-5 10-7 2 2 5 5 10 7 8 3 17 0 20-6-6 1-8-4-12-7-6-4-14-2-18 4z" fill="#1D2A44"/></svg>';
 function seasonTag(){
-  var s=season();
-  if (s==='noel') return '<span class="ssn-t">Joyeux Noël</span>';
-  if (s==='fetes') return '<span class="ssn-t">Bonnes fêtes de fin d\'année</span>';
-  if (s==='nouvelan') return '<span class="ssn-t">Bonne année '+new Date().getFullYear()+'</span>';
-  if (s==='octobrerose') return '<span class="ssn-t" style="background:#fff;color:#C2356E;padding-left:14px">'+RIBBON+'Octobre rose</span>';
-  return '';
+  var s=season(), t='';
+  if (s==='noel') t='Joyeux Noël';
+  else if (s==='nouvelan') t='Bonne année '+(new Date().getMonth()===11 ? new Date().getFullYear()+1 : new Date().getFullYear());
+  else if (s==='paques') t='Joyeuses Pâques';
+  else if (s==='meres') t='Bonne fête à toutes les mamans';
+  else if (s==='peres') t='Bonne fête à tous les papas';
+  else if (s==='octobrerose') return '<span class="ssn-t" style="background:#fff;color:#C2356E;padding-left:14px">'+RIBBON+'Octobre rose</span>';
+  else if (s==='movember') return '<span class="ssn-t" style="background:#fff;color:#1D2A44;padding-left:16px">'+MOUSTACHE+'Movember</span>';
+  return t ? '<span class="ssn-t">'+t+'</span>' : '';
 }
 function sceneOpen(variant, bandH, k, moon){
   var th=SKY[variant], sk=skylineSVG(k, th.city, !th.light, true);
   return '<div class="sc" style="--ink:'+th.ink+';--sub:'+th.sub+';--acc:'+th.acc+'"><div class="sc-sky" style="background:'+th.sky+'"></div><div class="sc-deco">'+skyDeco(variant,moon)+'</div><div class="ssn">'+seasonDeco(bandH)+'</div>'+
-    sk.svg.replace('class="sc-city"','class="sc-city" style="bottom:'+(bandH-1)+'px"')+'<div class="sc-band" style="height:'+bandH+'px;background:'+th.city+'"></div>'+(season()==='noel'?ssnTree(bandH):'');
+    sk.svg.replace('class="sc-city"','class="sc-city" style="bottom:'+(bandH-1)+'px"')+'<div class="sc-band" style="height:'+bandH+'px;background:'+th.city+'"></div>'+(season()==='noel'?ssnTree(bandH):season()==='paques'?ssnEggs(bandH):'');
 }
 function bandHTML(variant, bandH, cls, inner){ return '<div class="sc-band '+cls+'" style="height:'+bandH+'px">'+inner+'</div>'; }
 function helloWord(w,d){ return (w.variant==='nuit' || d.getHours()>=18 || d.getHours()<5) ? 'Bonsoir,' : 'Bonjour,'; }
