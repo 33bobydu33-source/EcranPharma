@@ -201,7 +201,7 @@ V.ecrans=function(){
   h+=hoursCard();
   h+='<div class="card"><h2>Écrans bonus</h2>'+
     row('Nombre par passage','', sel('bonusCount', c.bonusCount, [[0,'Aucun'],[1,'1'],[2,'2'],[3,'3']]))+
-    row('Quiz santé','', sw('bk:quiz', k.quiz))+row('Air et pollens','', sw('bk:air', k.air))+row('Nos services','', sw('bk:services', k.services))+row('Le conseil du mois','Repris du site de la pharmacie', sw('bk:conseil', k.conseil!==false))+row('Pharmacie de garde (3237)','Le soir à partir de '+esc(c.gardeFrom||'18:00')+', le samedi et le dimanche', sw('garde', c.garde!==false))+
+    row('Quiz santé','', sw('bk:quiz', k.quiz))+row('Air et pollens','', sw('bk:air', k.air))+row('Météo de la semaine','Prévisions, pluie, vent, UV, air et pollens', sw('bk:semaine', k.semaine!==false))+row('Nos services','', sw('bk:services', k.services))+row('Le conseil du mois','Repris du site de la pharmacie', sw('bk:conseil', k.conseil!==false))+row('Pharmacie de garde (3237)','Le soir à partir de '+esc(c.gardeFrom||'18:00')+', le samedi et le dimanche', sw('garde', c.garde!==false))+
     row('L\'équipe','Voir l\'onglet Équipe', sw('bk:equipe', k.equipe))+row('Coin des enfants','5 jeux tirés au hasard', sw('bk:enfants', k.enfants))+'</div>';
   h+='<div class="card"><h2>Actualités santé</h2>'+
     row('Afficher les actualités','Une actualité à la une, puis ses points clés', sw('news', c.news))+
