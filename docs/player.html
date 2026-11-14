@@ -103,15 +103,15 @@ html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:'Nuni
 .h1-left{position:absolute;left:88px;top:200px;width:940px}
 .pp{margin-top:30px}
 .pp-t{font-size:32px;font-weight:800;color:var(--sub)}
-.pp-r{display:flex;gap:16px;margin-top:12px}
-.pp-i{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.92);color:#1D2A44;border-radius:999px;padding:10px 26px 10px 14px;font-size:32px;font-weight:800;white-space:nowrap;box-shadow:0 6px 18px rgba(15,22,40,.12);opacity:0;animation:pp-pop .55s cubic-bezier(.34,1.56,.64,1) forwards, pp-glow 3.2s ease-in-out infinite}
+.pp-r{display:flex;gap:18px;margin-top:14px;padding:6px 0}
+.pp-i{position:relative;transform-origin:center;display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.92);color:#1D2A44;border-radius:999px;padding:10px 26px 10px 14px;font-size:32px;font-weight:800;white-space:nowrap;box-shadow:0 6px 18px rgba(15,22,40,.12);opacity:0;animation:pp-pop .55s cubic-bezier(.34,1.56,.64,1) forwards, pp-glow 3.2s ease-in-out infinite}
 .pp-c{opacity:0;animation:pp-in .01s linear forwards}
 .pp-k{display:inline-block;width:3px;height:1em;vertical-align:-.15em;margin-left:3px;background:currentColor;animation:pp-blink .5s steps(1) infinite, pp-out .2s linear forwards}
 @keyframes pp-in{to{opacity:1}}
 @keyframes pp-out{to{opacity:0;visibility:hidden}}
 @keyframes pp-blink{50%{opacity:0}}
 @keyframes pp-pop{0%{opacity:0;transform:translateY(24px) scale(.6)}100%{opacity:1;transform:none}}
-@keyframes pp-glow{0%,100%{box-shadow:0 6px 18px rgba(15,22,40,.12)}12%{box-shadow:0 0 0 6px rgba(242,107,29,.55),0 6px 18px rgba(15,22,40,.12)}24%{box-shadow:0 6px 18px rgba(15,22,40,.12)}}
+@keyframes pp-glow{0%,30%,100%{transform:scale(1);box-shadow:0 6px 18px rgba(15,22,40,.12)}13%{z-index:3;transform:scale(1.16);box-shadow:0 0 0 7px rgba(242,107,29,.6),0 10px 26px rgba(15,22,40,.22)}}
 .pp-i svg{width:46px;height:46px;flex:none}
 .h2-left .pp{margin-top:22px}
 .h2-left .pp-t{font-size:28px}
