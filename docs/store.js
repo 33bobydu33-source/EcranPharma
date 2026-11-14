@@ -92,7 +92,7 @@
     return function(){ es.close(); };
   };
   /* fréquence de chaque écran bonus : 0 = jamais, 1 = à chaque passage, 3 = 1 passage sur 3… */
-  EB.FREQ = { quiz:1, enfants:1, air:3, semaine:3, jours:4, services:4, equipe:3, conseil:3, garde:3, pluie:1 };
+  EB.FREQ = { quiz:1, enfants:1, air:3, semaine:3, jours:4, services:4, equipe:3, conseil:3, garde:3 };
   EB.freq = function(c, k){
     var f=(c.bonusFreq||{})[k]; if (f!=null && f!=='') return +f;
     if (k==='jours') return c.weekCarousel ? EB.FREQ.jours : 0;      // anciens réglages

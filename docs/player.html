@@ -83,12 +83,17 @@ html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:'Nuni
 .sc-wx .t{font-size:96px;line-height:1}
 .sc-wx .l{font-size:36px;font-weight:800;line-height:1.15}
 .sc-wx .m{font-size:28px;font-weight:700;color:var(--sub)}
-.plbox{border-radius:44px;padding:40px 50px 30px;margin-top:20px}
-.plt{font-size:72px;line-height:1.05}
-.pls{font-size:34px;font-weight:700;color:var(--sub);margin:10px 0 24px}
-.pll{display:flex;gap:40px;margin-top:14px;font-size:28px;font-weight:700;color:var(--sub)}
-.plg{display:flex;align-items:center;gap:12px}
-.plg i{width:28px;height:28px;border-radius:8px;display:inline-block}
+.rp{margin-top:30px;width:592px;border-radius:30px;padding:24px 26px 20px;box-sizing:border-box;background:rgba(29,42,68,.86);color:#FDE4D4}
+.rpt{font-size:26px;font-weight:800;letter-spacing:1px;text-transform:uppercase}
+.rph{display:flex;justify-content:space-between;font-size:26px;margin:16px 4px 8px;color:#FDE4D4}
+.rps{display:flex;gap:8px}
+.rpg{flex:1;height:58px;background:#fff;display:flex;align-items:center;justify-content:center;border-radius:12px;box-shadow:0 0 14px rgba(255,255,255,.35)}
+.rpg:first-child{border-radius:29px 12px 12px 29px}.rpg:last-child{border-radius:12px 29px 29px 12px}
+.rpk{position:relative;height:42px;font-size:24px;font-weight:700;opacity:.9}
+.rpk span{position:absolute;top:10px;transform:translateX(-50%)}
+.rpk span:before{content:'';position:absolute;left:50%;top:-12px;height:9px;border-left:2px solid currentColor;opacity:.6}
+.rpl{display:flex;justify-content:center;gap:18px;font-size:20px;font-weight:700;margin-top:14px;opacity:.9}
+.rpl span{display:flex;align-items:center;gap:4px}.rpl svg{width:22px;height:22px}
 .rh{display:flex;align-items:center;justify-content:center}
 .sc-wx .rh{justify-content:flex-start}
 .rh.rwet{color:var(--acc)!important;font-weight:800}
@@ -728,24 +733,19 @@ function rainSlots(n){
   return out.length ? out : null;
 }
 function rainLv(mm){ return mm<0.1 ? 0 : mm<0.5 ? 1 : mm<1.5 ? 2 : 3; }
-var RAIN_C=['','#7FC4F0','#2E8BD8','#1D4FA8'], RAIN_T=['Sec','Faible','Modérée','Forte'];
-function rainChart(W, H, dark){
-  var sl=rainSlots(8); if (!sl) return '';
-  var n=sl.length, gap=Math.round(W*0.018), bw=(W-gap*(n-1))/n, top=8, base=H-46, ink=dark?'#FDE4D4':'#1D2A44', track=dark?'rgba(253,228,212,.16)':'rgba(29,42,68,.10)', g='';
-  for (var lv=1; lv<=3; lv++){ var y=base-(base-top)*lv/3; g+='<line x1="0" x2="'+W+'" y1="'+y+'" y2="'+y+'" stroke="'+track+'" stroke-width="2" stroke-dasharray="6 8"/>'; }
-  sl.forEach(function(x,i){ var lv=rainLv(x.mm), h=lv?Math.max(14,(base-top)*Math.min(x.mm,2.5)/2.5):6, X=i*(bw+gap);
-    g+='<rect x="'+X.toFixed(1)+'" y="'+(base-h).toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+h.toFixed(1)+'" rx="'+Math.min(14,bw/4)+'" fill="'+(lv?RAIN_C[lv]:track)+'"/>';
-    if (i%2===0) g+='<text x="'+(X+2)+'" y="'+(H-8)+'" font-size="'+Math.min(34,Math.round(H*0.09))+'" font-weight="700" fill="'+ink+'" opacity=".75">'+(i===0?'Maint.':hm(x.d))+'</text>';
-  });
-  return '<svg viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'" style="display:block">'+g+'</svg>';
-}
 function rainSoon(){ var sl=rainSlots(8); return !!(sl && sl.some(function(x){ return rainLv(x.mm)>0; })); }
-function pluieHTML(secs){
-  var r=rainHour()||{ t:'Pas de pluie prévue' }, sl=rainSlots(8)||[], mx=0; sl.forEach(function(x){ mx=Math.max(mx,rainLv(x.mm)); });
-  var legend=[1,2,3].map(function(l){ return '<span class="plg"><i style="background:'+RAIN_C[l]+'"></i>'+RAIN_T[l]+'</span>'; }).join('');
-  return bxFrame('La pluie dans les 2 heures','<div class="plbox" style="background:'+tipBg()+'"><div class="russo plt">'+r.t+'</div>'+
-    '<div class="pls">'+(mx?'Intensité maximale : '+RAIN_T[mx].toLowerCase():'Rien à l\'horizon pour les 2 prochaines heures')+'</div>'+rainChart(1560,380,false)+'<div class="pll">'+legend+'</div></div>',
-    mx>=2?'Pensez au parapluie avant de repartir.':'Prévisions au quart d\'heure pour Bordeaux.', secs);
+/* « Précipitations dans l'heure » à la manière de Météo-France : 4 quarts d'heure, goutte selon l'intensité */
+var RAIN_C=['','#9FE3F5','#5B9BF0','#14148F'];
+function dropSVG(l){
+  if (!l) return '<svg viewBox="0 0 24 24" width="40" height="40"><path d="M12 3C9 8 6 11 6 15a6 6 0 0 0 12 0c0-4-3-7-6-12z" fill="#C9CED6"/><line x1="7" y1="20" x2="17" y2="5" stroke="#fff" stroke-width="3"/><line x1="7" y1="20" x2="17" y2="5" stroke="#C9CED6" stroke-width="1.6"/></svg>';
+  return '<svg viewBox="0 0 24 24" width="40" height="40"><path d="M12 3C9 8 6 11 6 15a6 6 0 0 0 12 0c0-4-3-7-6-12z" fill="'+RAIN_C[l]+'"/></svg>';
+}
+function rainPanel(){
+  var sl=rainSlots(4); if (!sl) return '';
+  var segs=sl.map(function(x){ return '<div class="rpg">'+dropSVG(rainLv(x.mm))+'</div>'; }).join('');
+  var ticks=sl.slice(1).map(function(x,k){ return '<span style="left:'+((k+1)*100/sl.length)+'%">'+hm(x.d)+'</span>'; }).join('');
+  var end=new Date(sl[sl.length-1].d.getTime()+15*60000), leg=[[0,'Pas de pluie'],[1,'Faibles'],[2,'Modérées'],[3,'Fortes']].map(function(x){ return '<span>'+dropSVG(x[0])+x[1]+'</span>'; }).join('');
+  return '<div class="rp"><div class="rpt">Précipitations dans l\'heure</div><div class="rph"><b>'+hm(sl[0].d)+'</b><b>'+hm(end)+'</b></div><div class="rps">'+segs+'</div><div class="rpk">'+ticks+'</div><div class="rpl">'+leg+'</div></div>';
 }
 function rainHTML(cls){ var r=rainHour(); return r ? '<div class="'+cls+(r.wet?' rwet':'')+'">'+DROP+r.t+'</div>' : ''; }
 function updateLive(){
@@ -870,9 +870,9 @@ function homeHTML(){
     '<div class="h1-right"><div class="russo h1-clock" id="h-time">'+fmtTime(d)+'</div><div class="h1-date" id="h-date">'+fmtDate(d)+'</div><div class="h1-saint" id="h-saint">'+saintHTML(d)+'</div></div>'+
     bandHTML(w.variant,190,'sc-tip','<div class="lab">Le conseil du moment</div><div class="txt">'+pickTip(w.variant)+'</div>')+'</div>';
 }
-function wbHTML(w, withIcon, v){
+function wbHTML(w, withIcon, v, panel){
   return '<div class="wb"><div class="wbrow">'+wxIcon(w.variant,170)+'<div class="russo wbtemp">'+w.temp+'°</div></div>'+
-    '<div class="wbcond">'+w.label+' à Bordeaux</div><div class="wbmm">Min '+w.min+'° · Max '+w.max+'° · Vent '+w.wind+' km/h</div>'+rainHTML('wbmm rh')+'</div>';
+    '<div class="wbcond">'+w.label+' à Bordeaux</div><div class="wbmm">Min '+w.min+'° · Max '+w.max+'° · Vent '+w.wind+' km/h</div>'+(panel?rainPanel():rainHTML('wbmm rh'))+'</div>';
 }
 var CARDS = {
   soleil: [
@@ -916,7 +916,7 @@ function announceHTML(item){
   return sceneOpen(w.variant,116,.62,[1090,560,40])+
     '<div class="sc-top">'+brandHTML()+'<div class="an-date" id="a-date">'+fmtDateShort(d)+' · '+fmtTime(d)+'</div></div>'+
     '<div class="an-left"><div class="an-lab">Thème du moment</div><h1 class="russo an-title">'+item.title+'</h1><p class="an-sub">Une courte vidéo à suivre</p></div>'+
-    '<div class="an-wx">'+wbHTML(w)+'</div>'+
+    '<div class="an-wx">'+wbHTML(w,0,0,true)+'</div>'+
     bandHTML(w.variant,116,'an-foot','<div style="height:5px;width:96px;background:#F26B1D;border-radius:3px"></div><div>Une question ? Votre pharmacien vous répond.</div>')+'</div>';
 }
 function promoHTML(p,i,n){
@@ -1054,7 +1054,7 @@ function dayHTML(i, secs){
     tile('Soleil','<span style="font-size:42px">'+(x.rise||'').replace(':','h').replace(/^0/,'')+' – '+(x.set||'').replace(':','h')+'</span>','Lever et coucher');
   var chips=days.map(function(d,k){ return '<span class="dyc'+(k===i?' on':'')+'">'+(k===0?'Auj.':cap(new Date(d.date+'T12:00:00').toLocaleDateString('fr-FR',{weekday:'short'}).replace('.','')))+'</span>'; }).join('');
   return bxFrame('La météo de la semaine','<div class="dy"><div class="dyl"><div class="russo dyn">'+dayName(x,i)+'</div><div class="dydt">'+dt.getDate()+' '+dt.toLocaleDateString('fr-FR',{month:'long'})+'</div>'+
-    '<div class="dyi">'+wkIcon(v.variant==='nuit'?'soleil':v.variant, false, 250)+'</div><div class="dylb">'+v.label+'</div><div class="russo dytp"><b>'+x.max+'°</b><span>'+x.min+'°</span></div></div>'+
+    '<div class="dyi">'+wkIcon(v.variant==='nuit'?'soleil':v.variant, false, 250)+'</div><div class="dylb">'+v.label+'</div><div class="russo dytp"><b>'+x.max+'°</b><span>'+x.min+'°</span></div>'+'</div>'+
     '<div class="dyr"><div class="dyg">'+tiles+'</div><div class="dych">'+chips+'</div></div></div>', dayTip(x) || 'Prévisions pour Bordeaux, mises à jour toutes les heures.', secs);
 }
 function weekHTML(secs){
@@ -1438,7 +1438,7 @@ var bonusQueue=[], bonusPos=0, lastBonusKinds=[], lastKid=null;
 var quizBags={};
 function drawQuiz(list,key){ var b=quizBags[key]; if (!b || !b.length) { b=quizBags[key]=list.map(function(_,i){ return i; }).sort(function(){ return Math.random()-0.5; }); } return list[b.pop()]; }
 var bonusPass=0;
-var BONUS_ORDER=['garde','pluie','quiz','air','semaine','jours','services','equipe','conseil','enfants'];
+var BONUS_ORDER=['garde','quiz','air','semaine','jours','services','equipe','conseil','enfants'];
 function pickBonus(){
   bonusPass++;
   var hasC=!!((EB.state.news||{}).conseil||{}).titre;
@@ -1446,7 +1446,6 @@ function pickBonus(){
   var kinds=BONUS_ORDER.filter(function(k,i){
     var f=EB.freq(CFG,k); if (!(f>0)) return false;
     if (k==='garde' && !gardeTime()) return false;
-    if (k==='pluie' && !rainSoon()) return false;
     if (k==='equipe' && !TEAM.length) return false;
     if (k==='conseil' && !hasC) return false;
     return (bonusPass+i)%f===0;
@@ -1459,7 +1458,6 @@ function pickBonus(){
       q.push({ title:'Quiz : réponse',  secs:9,  html:function(sec){ return quizHTML(c,true,sec); } }); }
     else if (k==='air')      q.push({ title:'Air et pollens', secs:12, html:airHTML });
     else if (k==='garde')    q.push({ title:'Pharmacie de garde', secs:10, html:gardeHTML });
-    else if (k==='pluie')    q.push({ title:'La pluie dans les 2 heures', secs:10, html:pluieHTML });
     else if (k==='semaine')  q.push({ title:'La météo de la semaine', secs:15, html:weekHTML });
     else if (k==='jours') {
       weekDays().forEach(function(x,i){ q.push({ title:'Météo : '+dayName(x,i).toLowerCase(), secs:CFG.weekDaySeconds||6, html:function(sec){ return dayHTML(i,sec); } }); });
