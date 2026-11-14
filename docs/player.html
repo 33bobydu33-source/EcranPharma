@@ -186,11 +186,16 @@ html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:'Nuni
 .prow .pb{display:flex;gap:8px}
 .prow .pb i{display:block;width:62px;height:24px;border-radius:7px;background:var(--track)}
 .prow .pl{font-size:32px;font-weight:700;color:var(--sub)}
-.sg{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:36px}
-.st{display:flex;align-items:center;gap:36px;border-radius:40px;padding:40px 44px;min-height:250px;box-sizing:border-box}
-.st svg{width:150px;height:150px;flex:none}
-.st .stt{font-size:56px;font-weight:800;line-height:1.1}
-.st .stb{font-size:34px;font-weight:600;color:var(--sub);margin-top:8px;line-height:1.25}
+.gd{display:flex;align-items:center;gap:60px;border-radius:48px;padding:56px 70px;margin-top:40px}
+.gdl{font-size:50px;font-weight:800;line-height:1.15}
+.gdn{font-size:230px;line-height:1;color:#F26B1D;margin-top:10px}
+.gds{font-size:38px;font-weight:700;color:var(--sub)}
+.gdx{font-size:36px;font-weight:700;color:var(--sub);margin-top:40px;max-width:1600px;line-height:1.3}
+.sg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:26px;margin-top:10px}
+.st{display:flex;flex-direction:column;align-items:flex-start;gap:16px;border-radius:40px;padding:32px 36px;min-height:300px;box-sizing:border-box}
+.st svg{width:100px;height:100px;flex:none}
+.st .stt{font-size:46px;font-weight:800;line-height:1.1}
+.st .stb{font-size:30px;font-weight:600;color:var(--sub);margin-top:8px;line-height:1.25}
 .tm{display:flex;gap:40px;margin-top:50px;justify-content:center}
 .tc{width:380px;border-radius:44px;padding:44px 24px;text-align:center;box-sizing:border-box}
 .tc .av{width:200px;height:200px;border-radius:50%;margin:0 auto;background:#1D2A44;border:6px solid #F26B1D;display:flex;align-items:center;justify-content:center}
@@ -940,15 +945,35 @@ function airHTML(secs){
   return bxFrame('Air et pollens','<div class="bp2"><div class="bpan" style="background:'+tb+'">'+left+'</div><div class="bpan" style="background:'+tb+'">'+right+'</div></div>','Données indicatives, mises à jour dans la journée.', secs);
 }
 var SVC = [
-  { t:'Vaccination', b:'Grippe et autres vaccins, directement à la pharmacie.', ic:'<svg viewBox="0 0 100 100" fill="none" stroke="#F26B1D" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><path d="M64 14l22 22M70 20l-6 6M24 62l34-34 14 14-34 34z"/><path d="M24 62l-10 24 24-10"/><path d="M44 52l8 8M36 60l8 8"/></svg>' },
-  { t:'Conseils et entretiens', b:'Votre traitement, expliqué simplement.', ic:'<svg viewBox="0 0 100 100" fill="none" stroke="#F26B1D" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 22h72v44H44L26 82V66H14z"/><path d="M32 40h36M32 52h24"/></svg>' },
-  { t:'Matériel médical', b:'Orthopédie, tensiomètres, location et conseils.', ic:'<svg viewBox="0 0 100 100" fill="none" stroke="#F26B1D" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><rect x="14" y="30" width="72" height="52" rx="10"/><path d="M36 30v-8h28v8M50 44v26M37 57h26"/></svg>' },
-  { t:'Tests et dépistages', b:'Des gestes rapides, sans rendez-vous selon les cas.', ic:'<svg viewBox="0 0 100 100" fill="none" stroke="#F26B1D" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><path d="M38 14h24M42 14v28L24 78a8 8 0 0 0 7 12h38a8 8 0 0 0 7-12L58 42V14"/><path d="M34 66h32"/></svg>' }
+  { t:'Ordonnance prête en 2 h', b:'Envoyez-la par le site ou l\'appli, retrait au comptoir prioritaire.', ic:'<svg viewBox="0 0 100 100" fill="none" stroke="#F26B1D" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><rect x="24" y="12" width="52" height="70" rx="6"/><path d="M36 30h28M36 42h28M36 54h16"/><circle cx="72" cy="72" r="16" fill="#FDE4D4"/><path d="M72 64v9l6 4"/></svg>' },
+  { t:'Vaccination', b:'Grippe, Covid, HPV et rappels, directement à la pharmacie.', ic:'<svg viewBox="0 0 100 100" fill="none" stroke="#F26B1D" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><path d="M64 14l22 22M70 20l-6 6M24 62l34-34 14 14-34 34z"/><path d="M24 62l-10 24 24-10"/><path d="M44 52l8 8M36 60l8 8"/></svg>' },
+  { t:'Tests et dépistages', b:'Angine, cystite, diabète, asthme… et autotests.', ic:'<svg viewBox="0 0 100 100" fill="none" stroke="#F26B1D" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><path d="M38 14h24M42 14v28L24 78a8 8 0 0 0 7 12h38a8 8 0 0 0 7-12L58 42V14"/><path d="M34 66h32"/></svg>' },
+  { t:'Suivi de traitement', b:'Anticoagulants, asthme, anticancéreux oraux : on fait le point ensemble.', ic:'<svg viewBox="0 0 100 100" fill="none" stroke="#F26B1D" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 22h72v44H44L26 82V66H14z"/><path d="M32 40h36M32 52h24"/></svg>' },
+  { t:'Matériel médical', b:'Vente et location : fauteuils, béquilles, tire-lait…', ic:'<svg viewBox="0 0 100 100" fill="none" stroke="#F26B1D" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><rect x="14" y="30" width="72" height="52" rx="10"/><path d="M36 30v-8h28v8M50 44v26M37 57h26"/></svg>' },
+  { t:'Rapportez vos déchets', b:'Médicaments périmés (Cyclamed) et boîtes à aiguilles (DASTRI).', ic:'<svg viewBox="0 0 100 100" fill="none" stroke="#F26B1D" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 30h56M40 30v-8h20v8M28 30l5 54h34l5-54"/><path d="M44 44v28M56 44v28"/></svg>' }
 ];
 function servicesHTML(secs){
   var tb=tipBg();
   var tiles=SVC.map(function(x){ return '<div class="st" style="background:'+tb+'">'+x.ic+'<div><div class="stt">'+x.t+'</div><div class="stb">'+x.b+'</div></div></div>'; }).join('');
-  return bxFrame('Nos services','<h1 class="russo bxt" style="font-size:80px">Demandez-nous</h1><div class="sg">'+tiles+'</div>','Exemples à adapter aux services réels de la pharmacie.', secs);
+  return bxFrame('Nos services','<div class="sg">'+tiles+'</div>','Tous ces services sont aussi sur le site de la pharmacie.', secs);
+}
+function conseilHTML(secs){
+  var c=(EB.state.news||{}).conseil||{}, tb=tipBg(), det=(c.detail||[]).filter(function(t){ return t; }).slice(0,4); if (!det.length) det=[c.texte||''];
+  var len=det.join('').length, fs = det.length>=4||len>330 ? 34 : len>220 ? 38 : 42;
+  var pts=det.map(function(t,k){ return '<div class="zp" style="background:'+tb+';font-size:'+fs+'px"><span class="zc russo">'+(k+1)+'</span><span>'+esc(t)+'</span></div>'; }).join('');
+  return bxFrame('Le conseil du mois', '<div class="zm">'+newsLead({ titre:String(c.titre||'').length>60 ? String(c.titre).split(/\s:\s/)[0] : c.titre },'Conseil du mois',false)+'<div class="nhs" style="font-size:34px;margin-top:20px">'+esc(c.texte||'')+'</div></div><div class="zr"><div class="zh">Les bons réflexes</div>'+pts+'</div></div>', 'Une question ? Votre pharmacien vous répond.', secs);
+}
+function gardeTime(){
+  if (CFG.garde===false) return false;
+  var d=new Date(), t=pad(d.getHours())+':'+pad(d.getMinutes());
+  return d.getDay()===6 || d.getDay()===0 || t>=(CFG.gardeFrom||'18:00');
+}
+var PHONE='<svg viewBox="0 0 100 100" width="170" height="170" fill="none" stroke="#F26B1D" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><path d="M30 14l12 22-8 8c4 10 12 18 22 22l8-8 22 12-6 14c-30 2-62-30-60-60z"/></svg>';
+function gardeHTML(secs){
+  var tb=tipBg();
+  return bxFrame('Pharmacie de garde','<div class="gd" style="background:'+tb+'">'+PHONE+'<div><div class="gdl">Quand nous sommes fermés, trouvez la pharmacie de garde</div><div class="russo gdn">3237</div><div class="gds">par téléphone ou sur 3237.fr</div></div></div>'+
+    '<div class="gdx">Le soir, présentez-vous avec votre ordonnance et votre carte Vitale. La nuit, il faut parfois passer d\'abord par le commissariat.</div>',
+    'En cas d\'urgence vitale : appelez le 15.', secs);
 }
 var TEAM = [];
 var AV = {
@@ -1249,10 +1274,12 @@ var quizBags={};
 function drawQuiz(list,key){ var b=quizBags[key]; if (!b || !b.length) { b=quizBags[key]=list.map(function(_,i){ return i; }).sort(function(){ return Math.random()-0.5; }); } return list[b.pop()]; }
 function pickBonus(){
   var bk=CFG.bonusKinds||{};
-  var kinds=['quiz','air','services','equipe','enfants','enfants2'].filter(function(k){ if (k==='enfants2') return bk.enfants; if (k==='equipe') return bk.equipe && TEAM.length; return bk[k]; }).sort(function(){ return Math.random()-0.5; });
+  var hasC=!!((EB.state.news||{}).conseil||{}).titre;
+  var kinds=['quiz','air','services','equipe','enfants','enfants2','conseil'].filter(function(k){ if (k==='enfants2') return bk.enfants; if (k==='equipe') return bk.equipe && TEAM.length; if (k==='conseil') return bk.conseil!==false && hasC; return bk[k]; }).sort(function(){ return Math.random()-0.5; });
   kinds.sort(function(a,b){ return (lastBonusKinds.indexOf(a)>=0?1:0)-(lastBonusKinds.indexOf(b)>=0?1:0); });
   kinds=kinds.slice(0,Math.min(CFG.bonusCount,kinds.length)); lastBonusKinds=kinds.slice();
   var q=[], kidsUsed=lastKid?[lastKid]:[];
+  if (gardeTime()) q.push({ title:'Pharmacie de garde', secs:10, html:gardeHTML });
   kinds.forEach(function(k){
     if (k==='quiz') { var qz=drawQuiz(QUIZ,'a');
       var order=[0,1,2].sort(function(){ return Math.random()-0.5; }), c={ q:qz.q, exp:qz.exp, o:order.map(function(i){return qz.o[i];}), ok:order.indexOf(qz.ok) };
@@ -1261,6 +1288,7 @@ function pickBonus(){
     else if (k==='air')      q.push({ title:'Air et pollens', secs:12, html:airHTML });
     else if (k==='services') q.push({ title:'Nos services',   secs:12, html:servicesHTML });
     else if (k==='equipe')   q.push({ title:'Votre équipe',   secs:10, html:teamHTML });
+    else if (k==='conseil')  q.push({ title:'Le conseil du mois', secs:14, html:conseilHTML });
     else { var kd=makeKid(kidsUsed); kidsUsed.push(kd.id); lastKid=kd.id;
       q.push({ title:'Enfants : jeu', secs:kd.g.q1, html:function(sec){ return kidsHTML(kd,false,sec); } });
       q.push({ title:'Enfants : réponse', secs:kd.g.q2, html:function(sec){ return kidsHTML(kd,true,sec); } }); }
@@ -1299,7 +1327,7 @@ function hoursHTML(){
     '<div class="sc-top">'+brandHTML()+'<div class="an-date" id="a-date">'+fmtDateShort(d)+' · '+fmtTime(d)+'</div></div>'+
     '<div class="ho-left'+(big?' ho-big':'')+'"><div class="an-lab">'+esc(o.title)+'</div>'+rows+'</div>'+
     (m?'<div class="ho-msg"><div class="russo ho-mt">'+esc(m.title)+'</div><div class="ho-mx">'+esc(m.text).replace(/\n/g,'<br>')+'</div></div>':'')+
-    bandHTML(w.variant,116,'an-foot','<div style="height:5px;width:96px;background:#F26B1D;border-radius:3px"></div><div>Une question ? Votre pharmacien vous répond.</div>')+'</div>';
+    bandHTML(w.variant,116,'an-foot','<div style="height:5px;width:96px;background:#F26B1D;border-radius:3px"></div><div>'+(CFG.garde!==false?'Fermé ? Pharmacie de garde : appelez le 3237.':'Une question ? Votre pharmacien vous répond.')+'</div>')+'</div>';
 }
 function enterHours(){
   phase='hours'; scBonus.innerHTML=hoursHTML(); showOnly(scBonus);
@@ -1551,7 +1579,7 @@ function refreshFiles(){
 function refreshNews(force){
   if (!CFG.gasUrl || !CFG.newsAuto) return;
   var n=EB.state.news||{}; if (!force && n.fetched && Date.now()-n.fetched < 6*3600*1000) return;
-  EB.gas({ action:'news', src: CFG.newsSource||'site' }).then(function(j){ if (j && j.items && j.items.length>=1) EB.set('news', { maj:j.maj, items:j.items.slice(0,4), auto:true, fetched:Date.now() }); }).catch(function(){});
+  EB.gas({ action:'news', src: CFG.newsSource||'site' }).then(function(j){ if (j && j.items && j.items.length>=1) EB.set('news', { maj:j.maj, items:j.items.slice(0,4), conseil:j.conseil||null, auto:true, fetched:Date.now() }); }).catch(function(){});
 }
 setInterval(refreshFiles, 10*60*1000); setInterval(function(){ refreshNews(false); }, 30*60*1000);
 setInterval(function(){ if (HAS_SHELL || Media.want.length) { rebuild(); } }, 15000);

@@ -12,7 +12,7 @@
     videoRate: 0.8, order: 'manual', playMode: 'all', autoAdd: true,
     promoCount: 2, promoSeconds: 12, demoPromos: false,
     news: true, newsAuto: true, newsSeconds: 16, newsEvery: 3,
-    bonusCount: 2, bonusKinds: { quiz:true, air:true, services:true, equipe:true, enfants:true },
+    bonusCount: 2, bonusKinds: { quiz:true, air:true, services:true, equipe:true, enfants:true, conseil:true }, garde: true, gardeFrom: '18:00',
     rappel: 'every', newsSource: 'site', rappelId: '', weatherMode: 'auto',
     hoursOn: '', hoursOff: '', gasUrl: '', name: 'Pharmacie de la Benauge'
   };

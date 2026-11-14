@@ -201,7 +201,7 @@ V.ecrans=function(){
   h+=hoursCard();
   h+='<div class="card"><h2>Écrans bonus</h2>'+
     row('Nombre par passage','', sel('bonusCount', c.bonusCount, [[0,'Aucun'],[1,'1'],[2,'2'],[3,'3']]))+
-    row('Quiz santé','', sw('bk:quiz', k.quiz))+row('Air et pollens','', sw('bk:air', k.air))+row('Nos services','', sw('bk:services', k.services))+
+    row('Quiz santé','', sw('bk:quiz', k.quiz))+row('Air et pollens','', sw('bk:air', k.air))+row('Nos services','', sw('bk:services', k.services))+row('Le conseil du mois','Repris du site de la pharmacie', sw('bk:conseil', k.conseil!==false))+row('Pharmacie de garde (3237)','Le soir à partir de '+esc(c.gardeFrom||'18:00')+', le samedi et le dimanche', sw('garde', c.garde!==false))+
     row('L\'équipe','Voir l\'onglet Équipe', sw('bk:equipe', k.equipe))+row('Coin des enfants','5 jeux tirés au hasard', sw('bk:enfants', k.enfants))+'</div>';
   h+='<div class="card"><h2>Actualités santé</h2>'+
     row('Afficher les actualités','Une actualité à la une, puis ses points clés', sw('news', c.news))+
@@ -285,7 +285,7 @@ document.addEventListener('click', function(e){
 function team(){ var t=EB.state.team||{}; return { show:t.show!==false, members:(t.members||[]).map(function(m){ return Object.assign({}, m); }) }; }
 function syncDrive(news){
   toast('Lecture de Google Drive…');
-  var p = news ? EB.gas({ action:'news', src: cfg().newsSource||'site' }).then(function(j){ if (!j.items || !j.items.length) throw new Error('aucun flux d\'actualités ne répond'); return EB.set('news', { maj:j.maj, items:j.items.slice(0,4), auto:true, fetched:Date.now() }); })
+  var p = news ? EB.gas({ action:'news', src: cfg().newsSource||'site' }).then(function(j){ if (!j.items || !j.items.length) throw new Error('aucun flux d\'actualités ne répond'); return EB.set('news', { maj:j.maj, items:j.items.slice(0,4), conseil:j.conseil||null, auto:true, fetched:Date.now() }); })
                : EB.gas({ action:'list' }).then(function(j){ return EB.set('files', { videos:j.videos||[], promos:j.promos||[], folder:j.folder||'', ts:Date.now() }); });
   p.then(function(){ toast('C\'est à jour'); }).catch(fail);
 }

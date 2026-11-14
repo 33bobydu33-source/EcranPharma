@@ -139,6 +139,30 @@ function lireSite_() {
   });
   return out;
 }
+/* Conseil du mois du site : le lien /conseils/... mis en avant sur la page d'accueil, sinon le premier de /conseils. */
+function lireArticle_(u) {
+  var r = UrlFetchApp.fetch(u, { muteHttpExceptions: true, followRedirects: true });
+  if (r.getResponseCode() !== 200) return null;
+  var h = r.getContentText(), titre = attr_(h, 'og:title') || texte_((h.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i) || [])[1]);
+  if (!titre) return null;
+  var desc = attr_(h, 'og:description') || attr_(h, 'description'), points = [], re = /<h2[^>]*>[\s\S]*?<\/h2>\s*(?:<[^p][^>]*>\s*)*<p[^>]*>([\s\S]*?)<\/p>/gi, k;
+  while ((k = re.exec(h)) && points.length < 4) { var ph = texte_(k[1]).split(/(?<=[.!?])\s+/)[0]; if (ph && ph.length > 30) points.push(couper_(ph, 150)); }
+  if (!points.length) points = desc.split(/(?<=[.!?])\s+/).filter(function (x) { return x.length > 25; }).slice(0, 3).map(function (x) { return couper_(x, 150); });
+  return { titre: couper_(titre.replace(/\s*-\s*Pharmacie de la Benauge.*$/i, ''), 90), texte: couper_(desc || titre, 160), detail: points, source: 'Site de la pharmacie' };
+}
+function conseil_() {
+  if (!SITE) return null;
+  var lien = function (url) {
+    var r = UrlFetchApp.fetch(url, { muteHttpExceptions: true, followRedirects: true });
+    if (r.getResponseCode() !== 200) return '';
+    var m = r.getContentText().match(/href=["'](?:https?:\/\/[^"'\/]+)?\/conseils\/(\d+-[a-z0-9-]+)["']/i);
+    return m ? SITE + '/conseils/' + m[1] : '';
+  };
+  var u = '';
+  try { u = lien(SITE + '/'); } catch (e) {}
+  if (!u) { try { u = lien(SITE + '/conseils'); } catch (e) {} }
+  return u ? lireArticle_(u) : null;
+}
 function actualites_(src) {
   src = (src === 'officiel' || !SITE) ? 'officiel' : 'site';
   var cache = CacheService.getScriptCache(), cle = 'news_' + src, c = cache.get(cle);
@@ -152,6 +176,7 @@ function actualites_(src) {
     tous = tous.concat(off.slice(0, 4 - tous.length));
   }
   var res = { maj: Utilities.formatDate(new Date(), 'Europe/Paris', "d MMMM yyyy"), items: tous.slice(0, 4) };
+  if (src === 'site') { try { res.conseil = conseil_(); } catch (e) {} }
   res.maj = res.maj.replace(/January/,'janvier').replace(/February/,'février').replace(/March/,'mars').replace(/April/,'avril').replace(/May/,'mai').replace(/June/,'juin')
     .replace(/July/,'juillet').replace(/August/,'août').replace(/September/,'septembre').replace(/October/,'octobre').replace(/November/,'novembre').replace(/December/,'décembre');
   if (res.items.length) cache.put(cle, JSON.stringify(res), 3 * 3600);
@@ -162,6 +187,7 @@ function testerActualites() {
   FLUX.forEach(function (f) { try { Logger.log(f.nom + ' : ' + lireFlux_(f).length + ' article(s)'); } catch (e) { Logger.log(f.nom + ' : erreur ' + e); } });
   try { Logger.log('Site de la pharmacie : ' + lireSite_().length + ' actualité(s) récente(s)'); } catch (e) { Logger.log('Site de la pharmacie : erreur ' + e); }
   CacheService.getScriptCache().removeAll(['news_site', 'news_officiel']);
+  try { Logger.log('Conseil du mois : ' + JSON.stringify(conseil_())); } catch (e) { Logger.log('Conseil du mois : erreur ' + e); }
   Logger.log(JSON.stringify(actualites_('site'), null, 1));
 }
 
