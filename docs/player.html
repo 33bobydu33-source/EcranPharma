@@ -83,26 +83,35 @@ html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:'Nuni
 .sc-wx .t{font-size:96px;line-height:1}
 .sc-wx .l{font-size:36px;font-weight:800;line-height:1.15}
 .sc-wx .m{font-size:28px;font-weight:700;color:var(--sub)}
-.rp{margin-top:30px;width:592px;border-radius:30px;padding:24px 26px 20px;box-sizing:border-box;background:rgba(29,42,68,.86);color:#FDE4D4}
-.rpt{font-size:26px;font-weight:800;letter-spacing:1px;text-transform:uppercase}
-.rph{display:flex;justify-content:space-between;font-size:26px;margin:16px 4px 8px;color:#FDE4D4}
-.rps{display:flex;gap:8px}
-.rpg{flex:1;height:58px;background:#fff;display:flex;align-items:center;justify-content:center;border-radius:12px;box-shadow:0 0 14px rgba(255,255,255,.35)}
-.rpg:first-child{border-radius:29px 12px 12px 29px}.rpg:last-child{border-radius:12px 29px 29px 12px}
-.rpk{position:relative;height:42px;font-size:24px;font-weight:700;opacity:.9}
-.rpk span{position:absolute;top:10px;transform:translateX(-50%)}
-.rpk span:before{content:'';position:absolute;left:50%;top:-12px;height:9px;border-left:2px solid currentColor;opacity:.6}
-.rpl{display:flex;justify-content:center;gap:18px;font-size:20px;font-weight:700;margin-top:14px;opacity:.9}
+.rp{margin-top:26px;width:592px;border-radius:30px;padding:20px 24px 16px;box-sizing:border-box;color:var(--ink)}
+.rpt{font-size:28px;font-weight:700;color:var(--sub)}
+.rph{display:flex;justify-content:space-between;font-size:24px;font-weight:800;margin:12px 4px 6px;color:var(--ink)}
+.rph b{color:inherit}
+.rps{display:flex;gap:6px}
+.rpg{flex:1;height:52px;background:#fff;display:flex;align-items:center;justify-content:center;border-radius:10px;box-shadow:0 2px 8px rgba(15,22,40,.10)}
+.rpg:first-child{border-radius:26px 10px 10px 26px}.rpg:last-child{border-radius:10px 26px 26px 10px}
+.rpk{position:relative;height:38px;font-size:22px;font-weight:700;color:var(--sub)}
+.rpk span{position:absolute;top:9px;transform:translateX(-50%)}
+.rpk span:before{content:'';position:absolute;left:50%;top:-10px;height:8px;border-left:2px solid currentColor;opacity:.5}
+.rpl{display:flex;justify-content:center;gap:18px;font-size:20px;font-weight:700;margin-top:8px;color:var(--sub)}
 .rpl span{display:flex;align-items:center;gap:4px}.rpl svg{width:22px;height:22px}
 .rh{display:flex;align-items:center;justify-content:center}
 .sc-wx .rh{justify-content:flex-start}
-.rh.rwet{color:var(--acc)!important;font-weight:800}
+.rh svg{color:#5B9BF0}
+.rh.rwet{font-weight:800}
 .sc b{color:var(--acc);font-weight:800}
 .h1-left{position:absolute;left:88px;top:200px;width:940px}
 .pp{margin-top:30px}
 .pp-t{font-size:32px;font-weight:800;color:var(--sub)}
 .pp-r{display:flex;gap:16px;margin-top:12px}
-.pp-i{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.9);color:#1D2A44;border-radius:999px;padding:10px 26px 10px 14px;font-size:32px;font-weight:800;white-space:nowrap;box-shadow:0 6px 18px rgba(15,22,40,.12)}
+.pp-i{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.92);color:#1D2A44;border-radius:999px;padding:10px 26px 10px 14px;font-size:32px;font-weight:800;white-space:nowrap;box-shadow:0 6px 18px rgba(15,22,40,.12);opacity:0;animation:pp-pop .55s cubic-bezier(.34,1.56,.64,1) forwards, pp-glow 3.2s ease-in-out infinite}
+.pp-c{opacity:0;animation:pp-in .01s linear forwards}
+.pp-k{display:inline-block;width:3px;height:1em;vertical-align:-.15em;margin-left:3px;background:currentColor;animation:pp-blink .5s steps(1) infinite, pp-out .2s linear forwards}
+@keyframes pp-in{to{opacity:1}}
+@keyframes pp-out{to{opacity:0;visibility:hidden}}
+@keyframes pp-blink{50%{opacity:0}}
+@keyframes pp-pop{0%{opacity:0;transform:translateY(24px) scale(.6)}100%{opacity:1;transform:none}}
+@keyframes pp-glow{0%,100%{box-shadow:0 6px 18px rgba(15,22,40,.12)}12%{box-shadow:0 0 0 6px rgba(242,107,29,.55),0 6px 18px rgba(15,22,40,.12)}24%{box-shadow:0 6px 18px rgba(15,22,40,.12)}}
 .pp-i svg{width:46px;height:46px;flex:none}
 .h2-left .pp{margin-top:22px}
 .h2-left .pp-t{font-size:28px}
@@ -746,15 +755,16 @@ function rainSoon(){ var sl=rainSlots(8); return !!(sl && sl.some(function(x){ r
 /* « Précipitations dans l'heure » à la manière de Météo-France : 4 quarts d'heure, goutte selon l'intensité */
 var RAIN_C=['','#9FE3F5','#5B9BF0','#14148F'];
 function dropSVG(l){
-  if (!l) return '<svg viewBox="0 0 24 24" width="40" height="40"><path d="M12 3C9 8 6 11 6 15a6 6 0 0 0 12 0c0-4-3-7-6-12z" fill="#C9CED6"/><line x1="7" y1="20" x2="17" y2="5" stroke="#fff" stroke-width="3"/><line x1="7" y1="20" x2="17" y2="5" stroke="#C9CED6" stroke-width="1.6"/></svg>';
-  return '<svg viewBox="0 0 24 24" width="40" height="40"><path d="M12 3C9 8 6 11 6 15a6 6 0 0 0 12 0c0-4-3-7-6-12z" fill="'+RAIN_C[l]+'"/></svg>';
+  if (!l) return '<svg viewBox="0 0 24 24" width="34" height="34"><path d="M12 3C9 8 6 11 6 15a6 6 0 0 0 12 0c0-4-3-7-6-12z" fill="#C9CED6"/><line x1="7" y1="20" x2="17" y2="5" stroke="#fff" stroke-width="3"/><line x1="7" y1="20" x2="17" y2="5" stroke="#C9CED6" stroke-width="1.6"/></svg>';
+  return '<svg viewBox="0 0 24 24" width="34" height="34"><path d="M12 3C9 8 6 11 6 15a6 6 0 0 0 12 0c0-4-3-7-6-12z" fill="'+RAIN_C[l]+'"/></svg>';
 }
 function rainPanel(){
   var sl=rainSlots(4); if (!sl) return '';
   var segs=sl.map(function(x){ return '<div class="rpg">'+dropSVG(rainLv(x.mm))+'</div>'; }).join('');
   var ticks=sl.slice(1).map(function(x,k){ return '<span style="left:'+((k+1)*100/sl.length)+'%">'+hm(x.d)+'</span>'; }).join('');
   var end=new Date(sl[sl.length-1].d.getTime()+15*60000), leg=[[0,'Pas de pluie'],[1,'Faibles'],[2,'Modérées'],[3,'Fortes']].map(function(x){ return '<span>'+dropSVG(x[0])+x[1]+'</span>'; }).join('');
-  return '<div class="rp"><div class="rpt">Précipitations dans l\'heure</div><div class="rph"><b>'+hm(sl[0].d)+'</b><b>'+hm(end)+'</b></div><div class="rps">'+segs+'</div><div class="rpk">'+ticks+'</div><div class="rpl">'+leg+'</div></div>';
+  var lt=SKY[getWeather().variant].light;
+  return '<div class="rp" style="background:'+(lt?'rgba(255,255,255,.5)':'rgba(255,255,255,.08)')+';border:2px solid '+(lt?'rgba(29,42,68,.08)':'rgba(253,228,212,.14)')+'"><div class="rpt">Précipitations dans l\'heure</div><div class="rph"><b>'+hm(sl[0].d)+'</b><b>'+hm(end)+'</b></div><div class="rps">'+segs+'</div><div class="rpk">'+ticks+'</div><div class="rpl">'+leg+'</div></div>';
 }
 function rainHTML(cls){ var r=rainHour(); return r ? '<div class="'+cls+(r.wet?' rwet':'')+'">'+DROP+r.t+'</div>' : ''; }
 function updateLive(){
@@ -887,8 +897,13 @@ var PREP_IC = {
 };
 function prepHTML(){
   if (CFG.prepShow===false) return '';
-  var it=[['ordo','Ordonnance'],['vitale','Carte Vitale'],['mutuelle','Carte mutuelle']].map(function(x){ return '<span class="pp-i">'+PREP_IC[x[0]]+x[1]+'</span>'; }).join('');
-  return '<div class="pp"><div class="pp-t">Pour gagner du temps, préparez&nbsp;:</div><div class="pp-r">'+it+'</div></div>';
+  /* le texte s'écrit lettre par lettre, puis les documents arrivent un par un */
+  var txt='Pour gagner du temps, préparez :', D=500, STEP=38, chars='';
+  for (var i=0;i<txt.length;i++) chars+='<span class="pp-c" style="animation-delay:'+(D+i*STEP)+'ms">'+(txt[i]===' '?'&nbsp;':esc(txt[i]))+'</span>';
+  var t0=D+txt.length*STEP+250;
+  var it=[['ordo','Ordonnance'],['vitale','Carte Vitale'],['mutuelle','Carte mutuelle']].map(function(x,k){ var d=t0+k*550;
+    return '<span class="pp-i" style="animation-delay:'+d+'ms,'+(d+2200+k*350)+'ms">'+PREP_IC[x[0]]+x[1]+'</span>'; }).join('');
+  return '<div class="pp"><div class="pp-t">'+chars+'<span class="pp-k" style="animation-delay:0ms,'+(t0-150)+'ms"></span></div><div class="pp-r">'+it+'</div></div>';
 }
 function wbHTML(w, withIcon, v, panel){
   return '<div class="wb"><div class="wbrow">'+wxIcon(w.variant,170)+'<div class="russo wbtemp">'+w.temp+'°</div></div>'+
