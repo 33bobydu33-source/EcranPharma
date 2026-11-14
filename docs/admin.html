@@ -201,7 +201,7 @@ V.ecrans=function(){
   h+=hoursCard();
   h+='<div class="card"><h2>Écrans bonus</h2>'+
     row('Nombre par passage','', sel('bonusCount', c.bonusCount, [[0,'Aucun'],[1,'1'],[2,'2'],[3,'3']]))+
-    row('Quiz santé','', sw('bk:quiz', k.quiz))+row('Air et pollens','', sw('bk:air', k.air))+row('Météo de la semaine','Prévisions, pluie, vent, UV, air et pollens', sw('bk:semaine', k.semaine!==false))+row('Nos services','', sw('bk:services', k.services))+row('Le conseil du mois','Repris du site de la pharmacie', sw('bk:conseil', k.conseil!==false))+row('Pharmacie de garde (3237)','Le soir à partir de '+esc(c.gardeFrom||'18:00')+', le samedi et le dimanche', sw('garde', c.garde!==false))+
+    row('Quiz santé','', sw('bk:quiz', k.quiz))+row('Air et pollens','', sw('bk:air', k.air))+row('Météo de la semaine','Les 7 jours sur un seul écran', sw('bk:semaine', k.semaine!==false))+row('Météo jour par jour','Carrousel : chaque jour en grand, l\'un après l\'autre', sw('weekCarousel', !!c.weekCarousel))+row('Durée de chaque jour','', sel('weekDaySeconds', c.weekDaySeconds||6, [[4,'4 s'],[5,'5 s'],[6,'6 s'],[8,'8 s'],[10,'10 s'],[12,'12 s'],[15,'15 s']]))+row('Nos services','', sw('bk:services', k.services))+row('Le conseil du mois','Repris du site de la pharmacie', sw('bk:conseil', k.conseil!==false))+row('Pharmacie de garde (3237)','Le soir à partir de '+esc(c.gardeFrom||'18:00')+', le samedi et le dimanche', sw('garde', c.garde!==false))+
     row('L\'équipe','Voir l\'onglet Équipe', sw('bk:equipe', k.equipe))+row('Coin des enfants','5 jeux tirés au hasard', sw('bk:enfants', k.enfants))+'</div>';
   h+='<div class="card"><h2>Actualités santé</h2>'+
     row('Afficher les actualités','Une actualité à la une, puis ses points clés', sw('news', c.news))+
@@ -303,7 +303,7 @@ document.addEventListener('change', function(e){
     else if (k.indexOf('p:')===0) EB.patch('promos/'+k.slice(2), { on:v }).catch(fail);
     else if (k.indexOf('bk:')===0) { var o2={}; o2[k.slice(3)]=v; EB.patch('config/bonusKinds', o2).catch(fail); }
     else if (k==='team:show') { var tm=team(); tm.show=v; EB.set('team', tm).catch(fail); }
-    else { if (/^(homeSeconds|announceSeconds|promoCount|promoSeconds|bonusCount|newsSeconds|newsEvery|videoRate)$/.test(k)) v=+v; if (k==='gasUrl') v=String(v).trim(); setCfg(k, v); if (k==='newsSource' && cfg().newsAuto) syncDrive(true); } }
+    else { if (/^(homeSeconds|announceSeconds|promoCount|promoSeconds|weekDaySeconds|bonusCount|newsSeconds|newsEvery|videoRate)$/.test(k)) v=+v; if (k==='gasUrl') v=String(v).trim(); setCfg(k, v); if (k==='newsSource' && cfg().newsAuto) syncDrive(true); } }
   else if (d.o) { var ov={}; ov[d.o]= t.type==='checkbox' ? t.checked : (d.o==='seconds' ? +t.value : t.value); EB.patch('opening', ov).catch(fail); }
   else if (d.ol) { var q=d.ol.split(':'), ls3=EB.opening().lines.map(function(x){ return Object.assign({}, x); }); ls3[+q[0]][q[1]]=t.value.trim(); EB.patch('opening', { lines:ls3 }).catch(fail); }
   else if (d.title) EB.patch('videos/'+d.title, { title:t.value.trim() }).catch(fail);

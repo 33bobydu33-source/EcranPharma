@@ -172,6 +172,24 @@ html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:'Nuni
 .qo.ok{background:#F26B1D!important;color:#1D2A44}
 .qo.ok i{background:#1D2A44;color:var(--acc)}
 .qo.no{opacity:.3}
+.dy{display:flex;gap:40px;margin-top:20px;height:720px}
+.dyl{flex:none;width:560px;border-radius:48px;background:#1D2A44;color:#FDE4D4;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px;box-sizing:border-box}
+.dyn{font-size:76px;line-height:1}
+.dydt{font-size:36px;font-weight:700;opacity:.75;margin-top:8px}
+.dyi{height:250px;margin:14px 0 0}
+.dylb{font-size:38px;font-weight:700;opacity:.8}
+.dytp{font-size:130px;line-height:1.1;display:flex;gap:26px;align-items:baseline}
+.dytp span{font-size:70px;opacity:.65}
+.dyr{flex:1;min-width:0;display:flex;flex-direction:column;gap:26px}
+.dyg{flex:1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
+.dyt{border-radius:36px;padding:30px 34px;display:flex;flex-direction:column;justify-content:center}
+.dyk{font-size:30px;font-weight:700;color:var(--sub)}
+.dyv{font-size:52px;font-weight:800;line-height:1.15;display:flex;align-items:center;gap:16px;white-space:nowrap}
+.dys{font-size:28px;font-weight:600;color:var(--sub);margin-top:4px}
+.dyv .dyd{width:34px;height:34px;flex:none}
+.dych{display:flex;gap:14px}
+.dyc{flex:1;text-align:center;font-size:30px;font-weight:800;padding:12px 0;border-radius:999px;background:var(--track);color:var(--sub)}
+.dyc.on{background:#F26B1D;color:#1D2A44}
 .wk{display:flex;gap:18px;margin-top:70px}
 .wkc{flex:1;min-width:0;border-radius:34px;padding:22px 20px 18px;box-sizing:border-box;display:flex;flex-direction:column;align-items:center}
 .wk0{color:#FDE4D4;--sub:rgba(253,228,212,.72)}
@@ -951,10 +969,39 @@ function weekDemo(){
   return out;
 }
 /* sur une carte claire, les nuages clairs reçoivent un contour pour rester visibles */
-function wkIcon(v, onLight){ var g=wxIcon(v,118); return onLight ? g.replace(/fill="#FDE4D4"/g,'fill="#FFFFFF" stroke="#1D2A44" stroke-width="4" stroke-linejoin="round"') : g; }
+function wkIcon(v, onLight, size){ var g=wxIcon(v,size||118); return onLight ? g.replace(/fill="#FDE4D4"/g,'fill="#FFFFFF" stroke="#1D2A44" stroke-width="4" stroke-linejoin="round"') : g; }
 function uvLv(u){ return u<3?{t:'Faible',c:'#5DCB8A'}:(u<6?{t:'Modéré',c:'#F6D86B'}:(u<8?{t:'Élevé',c:'#F6A04D'}:{t:'Très élevé',c:'#E8503C'})); }
 function polMax(p){ if (!p) return null; var m=0; Object.keys(p).forEach(function(k){ m=Math.max(m,pollenLevel(p[k])*(p[k]>0?1:0)); }); return m; }
 function dot(c){ return '<i class="wkd" style="background:'+c+'"></i>'; }
+function dayTip(t){
+  if ((t.uv||0)>=6) return 'UV élevés : crème solaire et lunettes, surtout pour les enfants.';
+  if ((t.gust||0)>=60) return 'Fortes rafales annoncées : prudence à l\'extérieur.';
+  if (t.max>=30) return 'Forte chaleur : buvez souvent, sans attendre d\'avoir soif.';
+  if (t.min<=2) return 'Gel possible : couvrez-vous bien, attention aux trottoirs glissants.';
+  if (t.aqi!=null && t.aqi>60) return 'Air dégradé : évitez les efforts intenses dehors si vous êtes sensible.';
+  if ((t.rain||0)>=70) return 'Pluie probable : pensez au parapluie.';
+  return '';
+}
+function weekDays(){ return (WEEK.ok && WEEK.days.length ? WEEK.days : weekDemo()).slice(0,7); }
+function dayName(x,i){ var dt=new Date(x.date+'T12:00:00'); return i===0 ? 'Aujourd\'hui' : (i===1 ? 'Demain' : cap(dt.toLocaleDateString('fr-FR',{weekday:'long'}))); }
+/* carrousel : un jour à la fois, en grand */
+function dayHTML(i, secs){
+  var days=weekDays(), x=days[i]||days[0], tb=tipBg(), light=SKY[getWeather().variant].light, dt=new Date(x.date+'T12:00:00');
+  var v=classify(x.code,true), uv=uvLv(x.uv||0), al=x.aqi!=null?airLevel(x.aqi):null, pm=polMax(x.pol);
+  var pc = pm==null ? null : (pm===0?'#5DCB8A':(pm===1?'#A6D86B':(pm===2?'#F6A04D':'#E8503C')));
+  function tile(k,val,sub){ return '<div class="dyt" style="background:'+tb+'"><div class="dyk">'+k+'</div><div class="dyv">'+val+'</div>'+(sub?'<div class="dys">'+sub+'</div>':'')+'</div>'; }
+  var big='<i class="wkd dyd" style="background:';
+  var tiles=tile('Pluie',(x.rain==null?'–':x.rain+' %'),(x.mm?String(x.mm).replace('.',',')+' mm prévus':'Pas de pluie prévue'))+
+    tile('Vent',x.wind+' km/h','Rafales '+x.gust+' km/h')+
+    tile('Indice UV',big+uv.c+'"></i>'+uv.t,'Indice '+Math.round(x.uv||0))+
+    tile('Qualité de l\'air',al?big+al.c+'"></i>'+al.t:'–',al?'Indice '+Math.round(x.aqi)+' sur 100':'Pas encore de prévision')+
+    tile('Pollens',pm==null?'–':big+pc+'"></i>'+(pm===0?'Aucun':PLV[pm]),pm==null?'Pas encore de prévision':'')+
+    tile('Soleil',(x.rise||'').replace(':','h')+' – '+(x.set||'').replace(':','h'),'Lever et coucher');
+  var chips=days.map(function(d,k){ return '<span class="dyc'+(k===i?' on':'')+'">'+(k===0?'Auj.':cap(new Date(d.date+'T12:00:00').toLocaleDateString('fr-FR',{weekday:'short'}).replace('.','')))+'</span>'; }).join('');
+  return bxFrame('La météo de la semaine','<div class="dy"><div class="dyl"><div class="russo dyn">'+dayName(x,i)+'</div><div class="dydt">'+dt.getDate()+' '+dt.toLocaleDateString('fr-FR',{month:'long'})+'</div>'+
+    '<div class="dyi">'+wkIcon(v.variant==='nuit'?'soleil':v.variant, false, 250)+'</div><div class="dylb">'+v.label+'</div><div class="russo dytp"><b>'+x.max+'°</b><span>'+x.min+'°</span></div></div>'+
+    '<div class="dyr"><div class="dyg">'+tiles+'</div><div class="dych">'+chips+'</div></div></div>', dayTip(x) || 'Prévisions pour Bordeaux, mises à jour toutes les heures.', secs);
+}
 function weekHTML(secs){
   var days = WEEK.ok && WEEK.days.length ? WEEK.days : weekDemo(), tb=tipBg(), light=SKY[getWeather().variant].light;
   var cols = days.slice(0,7).map(function(x,i){
@@ -972,13 +1019,8 @@ function weekHTML(secs){
       '<div class="wkr"><span class="wkk">Pollens</span><span>'+(pm==null?'–':dot(pc)+(pm===0?'Aucun':PLV[pm]))+'</span></div>'+
     '</div>';
   }).join('');
-  var t=days[0]||{}, tips=[];
-  if ((t.uv||0)>=6) tips.push('UV élevés : crème solaire et lunettes, surtout pour les enfants.');
-  if ((t.gust||0)>=60) tips.push('Fortes rafales annoncées : prudence à l\'extérieur.');
-  if (t.max>=30) tips.push('Forte chaleur : buvez souvent, sans attendre d\'avoir soif.');
-  if (t.min<=2) tips.push('Gel possible : couvrez-vous bien, attention aux trottoirs glissants.');
-  if (t.aqi!=null && t.aqi>60) tips.push('Air dégradé : évitez les efforts intenses dehors si vous êtes sensible.');
-  var foot = tips[0] || ('Lever du soleil '+(t.rise||'').replace(':','h')+' · coucher '+(t.set||'').replace(':','h')+'. Air et pollens prévus sur 4 à 5 jours.');
+  var t=days[0]||{};
+  var foot = dayTip(t) || ('Lever du soleil '+(t.rise||'').replace(':','h')+' · coucher '+(t.set||'').replace(':','h')+'. Air et pollens prévus sur 4 à 5 jours.');
   return bxFrame('La météo de la semaine','<div class="wk">'+cols+'</div>', foot, secs);
 }
 
@@ -1343,7 +1385,7 @@ function drawQuiz(list,key){ var b=quizBags[key]; if (!b || !b.length) { b=quizB
 function pickBonus(){
   var bk=CFG.bonusKinds||{};
   var hasC=!!((EB.state.news||{}).conseil||{}).titre;
-  var kinds=['quiz','air','semaine','services','equipe','enfants','enfants2','conseil'].filter(function(k){ if (k==='semaine') return bk.semaine!==false; if (k==='enfants2') return bk.enfants; if (k==='equipe') return bk.equipe && TEAM.length; if (k==='conseil') return bk.conseil!==false && hasC; return bk[k]; }).sort(function(){ return Math.random()-0.5; });
+  var kinds=['quiz','air','semaine','services','equipe','enfants','enfants2','conseil'].filter(function(k){ if (k==='semaine') return bk.semaine!==false || CFG.weekCarousel; if (k==='enfants2') return bk.enfants; if (k==='equipe') return bk.equipe && TEAM.length; if (k==='conseil') return bk.conseil!==false && hasC; return bk[k]; }).sort(function(){ return Math.random()-0.5; });
   kinds.sort(function(a,b){ return (lastBonusKinds.indexOf(a)>=0?1:0)-(lastBonusKinds.indexOf(b)>=0?1:0); });
   kinds=kinds.slice(0,Math.min(CFG.bonusCount,kinds.length)); lastBonusKinds=kinds.slice();
   var q=[], kidsUsed=lastKid?[lastKid]:[];
@@ -1354,7 +1396,10 @@ function pickBonus(){
       q.push({ title:'Quiz : question', secs:9,  html:function(sec){ return quizHTML(c,false,sec); } });
       q.push({ title:'Quiz : réponse',  secs:9,  html:function(sec){ return quizHTML(c,true,sec); } }); }
     else if (k==='air')      q.push({ title:'Air et pollens', secs:12, html:airHTML });
-    else if (k==='semaine')  q.push({ title:'La météo de la semaine', secs:15, html:weekHTML });
+    else if (k==='semaine') {
+      if (bk.semaine!==false) q.push({ title:'La météo de la semaine', secs:15, html:weekHTML });
+      if (CFG.weekCarousel) weekDays().forEach(function(x,i){ q.push({ title:'Météo : '+dayName(x,i).toLowerCase(), secs:CFG.weekDaySeconds||6, html:function(sec){ return dayHTML(i,sec); } }); });
+    }
     else if (k==='services') q.push({ title:'Nos services',   secs:12, html:servicesHTML });
     else if (k==='equipe')   q.push({ title:'Votre équipe',   secs:10, html:teamHTML });
     else if (k==='conseil')  q.push({ title:'Le conseil du mois', secs:14, html:conseilHTML });
