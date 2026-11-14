@@ -1720,8 +1720,9 @@ setInterval(function(){ if (HAS_SHELL || Media.want.length) { rebuild(); } }, 15
 /* --- horaires : écran noir en dehors des heures d'ouverture --- */
 var sleeping=false;
 function checkHours(){
-  var on=CFG.hoursOn, off=CFG.hoursOff, s=false;
-  if (on && off && on!==off) { var d=new Date(), t=pad(d.getHours())+':'+pad(d.getMinutes()); s = on<off ? !(t>=on && t<off) : !(t>=on || t<off); }
+  var d=new Date(), on=CFG.hoursOn, off=CFG.hoursOff, s=false, pw=(CFG.power||{})[d.getDay()];
+  if (pw) { if (pw.open===false) { on='00:00'; off='00:01'; s=true; } else { on=pw.on||''; off=pw.off||''; } }   // réglage jour par jour
+  if (!s && on && off && on!==off) { var t=pad(d.getHours())+':'+pad(d.getMinutes()); s = on<off ? !(t>=on && t<off) : !(t>=on || t<off); }
   if (s===sleeping) return; sleeping=s;
   document.getElementById('sleep').style.display = s ? 'block' : 'none';
   if (s) { if (!paused) togglePause(); } else { if (paused) togglePause(); }

@@ -111,6 +111,17 @@ function cmd(type,arg){ return EB.set('cmd', { type:type, arg:arg||'', ts:Date.n
 function sw(id, on, dis){ return '<label class="sw"><input type="checkbox" data-k="'+id+'" '+(on?'checked':'')+(dis?' disabled':'')+'><span></span></label>'; }
 function sel(id, val, opts){ return '<select data-k="'+id+'">'+opts.map(function(o){ return '<option value="'+o[0]+'"'+(String(o[0])===String(val)?' selected':'')+'>'+o[1]+'</option>'; }).join('')+'</select>'; }
 var FREQS=[[0,'Jamais'],[1,'À chaque passage'],[2,'1 passage sur 2'],[3,'1 passage sur 3'],[4,'1 passage sur 4'],[6,'1 passage sur 6'],[10,'1 passage sur 10']];
+/* allumage jour par jour : power[0..6] = { open, on, off } (0 = dimanche) */
+var JOURS=[[1,'Lundi'],[2,'Mardi'],[3,'Mercredi'],[4,'Jeudi'],[5,'Vendredi'],[6,'Samedi'],[0,'Dimanche']];
+function powerOf(c,d){ var p=(c.power||{})[d]; if (p) return { open:p.open!==false, on:p.on||'', off:p.off||'' }; return { open:true, on:c.hoursOn||'', off:c.hoursOff||'' }; }
+function powerCard(){
+  var c=cfg();
+  var rows=JOURS.map(function(j){ var p=powerOf(c,j[0]);
+    return '<div style="border-top:1px solid #F3E4DA;padding:10px 0"><div style="display:flex;align-items:center;justify-content:space-between"><b>'+j[1]+'</b><label class="sw"><input type="checkbox" data-pw="'+j[0]+':open"'+(p.open?' checked':'')+'><span></span></label></div>'+
+      (p.open?'<div style="display:flex;align-items:center;gap:10px;margin-top:8px"><input type="time" data-pw="'+j[0]+':on" value="'+esc(p.on)+'" aria-label="Allumage '+j[1]+'" style="flex:1"><span>→</span><input type="time" data-pw="'+j[0]+':off" value="'+esc(p.off)+'" aria-label="Extinction '+j[1]+'" style="flex:1"></div>':'<div class="hint" style="margin:4px 0 0">Éteint toute la journée</div>')+'</div>'; }).join('');
+  return '<div class="card"><h2>Allumage de l\'écran</h2><div class="hint">Jour par jour. En dehors de ces heures, l\'écran devient noir. Heures vides : jamais éteint ce jour-là. Interrupteur coupé : éteint toute la journée.</div>'+rows+
+    '<button class="btn sm" id="pw-copy" style="margin-top:10px">Copier les heures du lundi sur les autres jours ouverts</button></div>';
+}
 function freqRow(k,label,hint){ return row(label,hint,sel('bf:'+k, EB.freq(cfg(),k), FREQS)); }
 function row(label, hint, control){ return '<div class="row"><div class="lab">'+label+(hint?'<small>'+hint+'</small>':'')+'</div>'+control+'</div>'; }
 
@@ -221,8 +232,7 @@ V.ecrans=function(){
         '<textarea data-n="'+i+':detail" placeholder="Détails pour le zoom : une phrase par ligne (4 au plus)" style="margin-top:8px">'+esc((it.detail||[]).join('\n'))+'</textarea></div>'; }
     h+='<button class="btn pri" id="n-save">Enregistrer les actualités</button>'; }
   else h+='<button class="btn sm" id="n-now">Mettre à jour maintenant</button>';
-  h+='</div><div class="card"><h2>Allumage de l\'écran</h2><div class="hint">En dehors de ces heures, l\'écran devient noir. Laisse vide pour ne jamais l\'éteindre.</div>'+
-    row('Allumage','', '<input type="time" data-k="hoursOn" value="'+esc(c.hoursOn)+'">')+row('Extinction','', '<input type="time" data-k="hoursOff" value="'+esc(c.hoursOff)+'">')+'</div>';
+  h+='</div>'+powerCard();
   return h;
 };
 var AVS={ f:'👩', m:'👨', croix:'✚' };
@@ -276,6 +286,7 @@ document.addEventListener('click', function(e){
   else if (d.up!=null || d.down!=null) { var l=videoList(), i=+(d.up!=null?d.up:d.down), j=i+(d.up!=null?-1:1); if (j<0||j>=l.length) return; var x=l[i]; l[i]=l[j]; l[j]=x; saveOrder(l); }
   else if (id==='v-all' || id==='v-none') { var o={}; videoList().forEach(function(v,i){ v.pos=i; v.on=(id==='v-all'); o[v.id]=metaOf(v); }); EB.patch('videos',o).catch(fail); }
   else if (id==='v-sync' || id==='n-now') { syncDrive(id==='n-now'); }
+  else if (id==='pw-copy') { var c=cfg(), m=powerOf(c,1), o={}; JOURS.forEach(function(j){ var p=powerOf(c,j[0]); o[j[0]]= j[0]===1 ? m : { open:p.open, on:p.open?m.on:p.on, off:p.open?m.off:p.off }; }); EB.set('config/power', o).then(function(){ toast('Heures copiées'); }).catch(fail); }
   else if (id==='pair-go') { var pc=$('pair-in').value.replace(/[^a-z0-9]/gi,'').toUpperCase(); if (pc.length!==6) return toast('Le code a 6 caractères');
     EB.rawSet('pair/'+pc, { code:EB.code(), ts:Date.now() }).then(function(){ toast('Écran associé : il démarre dans quelques secondes'); $('pair-in').value=''; }).catch(fail); }
   else if (id==='m-add') { var tm=team(); tm.members.push({ name:'', role:'', avatar:'croix' }); EB.set('team', tm).catch(fail); }
@@ -303,6 +314,7 @@ function saveNews(){
 }
 document.addEventListener('change', function(e){
   var t=e.target, d=t.dataset;
+  if (d.pw) { var pp=d.pw.split(':'), cur=powerOf(cfg(),+pp[0]); if (pp[1]==='open') cur.open=t.checked; else cur[pp[1]]=t.value; EB.set('config/power/'+pp[0], cur).catch(fail); return; }
   if (d.k) { var k=d.k, v = t.type==='checkbox' ? t.checked : t.value;
     if (k.indexOf('v:')===0) { var l=videoList(), o={}; l.forEach(function(x,i){ x.pos=i; if (x.id===k.slice(2)) x.on=v; o[x.id]=metaOf(x); }); EB.patch('videos',o).catch(fail); }
     else if (k.indexOf('p:')===0) EB.patch('promos/'+k.slice(2), { on:v }).catch(fail);
