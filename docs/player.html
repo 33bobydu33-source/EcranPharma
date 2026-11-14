@@ -115,6 +115,14 @@ html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:'Nuni
 .rh svg{color:#5B9BF0}
 .rh.rwet{font-weight:800}
 .sc b{color:var(--acc);font-weight:800}
+.hc{position:absolute;left:0;right:0;top:160px;text-align:center}
+.hc-hello{margin:0;font-size:110px;line-height:1;text-transform:uppercase;letter-spacing:4px;color:var(--acc)}
+.hc-clock{font-size:250px;line-height:1;margin-top:6px;font-variant-numeric:tabular-nums}
+.hc-date{font-size:44px;font-weight:800;color:var(--sub);margin-top:4px}
+.hc .pp{margin-top:40px}
+.hc .pp-r{justify-content:center}
+.hc-wx .t{font-size:76px}
+#sc-home .fs-fly{display:none}
 .h1-left{position:absolute;left:88px;top:270px;width:960px}
 .pp{margin-top:70px}
 .pp-t{font-size:32px;font-weight:800;color:var(--sub)}
@@ -867,7 +875,7 @@ function skyDeco(variant, moon){
   var v=VARIANTS[variant];
   if (variant==='soleil') return v.bgHTML.split('fill="#FDE4D4" fill-opacity=".7"').join('fill="#1D2A44" fill-opacity=".5"')
       .split('rgba(255,205,120,.13)').join('rgba(255,255,255,.38)').split('rgba(255,190,80,.30)').join('rgba(255,214,120,.75)').split('rgba(255,154,61,.14)').join('rgba(255,190,110,.32)')
-      + cloudsSVG([[180,150,3.4,'#FFFFFF',.9,70,-10],[980,90,2.4,'#FFFFFF',.8,90,-40],[1380,330,2.9,'#FFFFFF',.85,80,-25],[520,430,2,'#FFFFFF',.7,100,-60]]);
+      + (HOME_CALM ? cloudsSVG([[60,300,2.6,'#FFFFFF',.85,80,-10],[1560,420,2.4,'#FFFFFF',.8,90,-40]]) : cloudsSVG([[180,150,3.4,'#FFFFFF',.9,70,-10],[980,90,2.4,'#FFFFFF',.8,90,-40],[1380,330,2.9,'#FFFFFF',.85,80,-25],[520,430,2,'#FFFFFF',.7,100,-60]]));
   if (variant==='couvert') return cloudsSVG([[-120,-210,9,'#8D9AB0',.9,120,-30],[520,-260,10,'#98A4B8',.9,140,-70],[1220,-230,9.5,'#8D9AB0',.9,130,-10],
       [120,60,5.2,'#F4F5F8',.92,90,-20],[860,10,6,'#ECEEF2',.95,110,-50],[1420,110,4.6,'#F4F5F8',.9,100,-80],[560,300,3.6,'#FFFFFF',.8,95,-35],[1180,380,3,'#FFFFFF',.7,105,-5]]);
   if (variant==='pluie') return cloudsSVG([[-150,-330,9,'#3D527C',1,120,-30],[420,-380,10,'#34476B',1,140,-70],[1080,-350,9.5,'#3D527C',1,130,-10],[1560,-330,8,'#34476B',1,110,-55]])+v.bgHTML;
@@ -923,7 +931,7 @@ function ssnTree(bandH){
   var balls='', pts=[[150,95,'#F26B1D'],[118,150,'#FFD45C'],[178,160,'#5B9BF0'],[98,215,'#F27BA5'],[150,225,'#FFD45C'],[205,222,'#F26B1D'],[75,280,'#5B9BF0'],[130,290,'#F26B1D'],[185,285,'#F27BA5'],[232,282,'#FFD45C']];
   pts.forEach(function(p,i){ balls+='<circle class="ssn-b" style="animation-delay:'+(i%4*0.6)+'s" cx="'+p[0]+'" cy="'+p[1]+'" r="9" fill="'+p[2]+'"/>'; });
   function gift(x,w,h,c,r){ return '<rect x="'+x+'" y="'+(340-h)+'" width="'+w+'" height="'+h+'" rx="4" fill="'+c+'"/><rect x="'+(x+w/2-5)+'" y="'+(340-h)+'" width="10" height="'+h+'" fill="'+r+'"/><path d="M'+(x+w/2)+' '+(340-h)+' q-16 -18 -22 -4 q8 8 22 4 q16 -18 22 -4 q-8 8 -22 4" fill="'+r+'"/>'; }
-  return '<svg style="position:absolute;left:1010px;bottom:'+(bandH-4)+'px" width="230" height="261" viewBox="0 0 300 340"><rect x="138" y="300" width="24" height="40" fill="#7A4A21"/>'+
+  return '<svg style="position:absolute;left:'+(HOME_CALM?1560:1010)+'px;bottom:'+(bandH-4)+'px" width="230" height="261" viewBox="0 0 300 340"><rect x="138" y="300" width="24" height="40" fill="#7A4A21"/>'+
     '<path d="M150 30 L205 120 H178 L228 200 H196 L255 300 H45 L104 200 H72 L122 120 H95Z" fill="#2E7D4F"/><polygon points="150,8 157,26 176,27 161,39 166,57 150,47 134,57 139,39 124,27 143,26" fill="#FFD45C"/>'+balls+
     gift(8,58,44,'#E8503C','#FFD45C')+gift(232,62,52,'#5B9BF0','#fff')+gift(60,40,30,'#F27BA5','#fff')+'</svg>';
 }
@@ -938,7 +946,7 @@ function ssnEggs(bandH){
   var E=[[0,'#F27BA5','#FFD45C'],[70,'#5B9BF0','#fff'],[150,'#FFD45C','#F26B1D'],[214,'#5DCB8A','#fff']], h='';
   E.forEach(function(e,i){ var x=e[0]+30, r=(i%2?-8:6);
     h+='<g transform="translate('+x+' 70) rotate('+r+')"><ellipse cx="0" cy="0" rx="26" ry="34" fill="'+e[1]+'"/><path d="M-25 -4 q8 -8 16 0 t16 0 t16 0" fill="none" stroke="'+e[2]+'" stroke-width="5"/><path d="M-22 12 h44" stroke="'+e[2]+'" stroke-width="4" stroke-dasharray="4 6"/></g>'; });
-  return '<svg style="position:absolute;left:1000px;bottom:'+(bandH-12)+'px" width="300" height="110" viewBox="0 0 300 110"><path d="M0 104 q20 -26 30 0 q12 -24 24 0 q14 -28 28 0 q12 -24 26 0 q14 -28 28 0 q12 -24 26 0 q14 -28 28 0 q12 -24 26 0 q14 -28 28 0 q14 -24 28 0 q10 -20 28 0 V110 H0Z" fill="#5DCB8A"/>'+h+'</svg>';
+  return '<svg style="position:absolute;left:'+(HOME_CALM?1540:1000)+'px;bottom:'+(bandH-12)+'px" width="300" height="110" viewBox="0 0 300 110"><path d="M0 104 q20 -26 30 0 q12 -24 24 0 q14 -28 28 0 q12 -24 26 0 q14 -28 28 0 q12 -24 26 0 q14 -28 28 0 q12 -24 26 0 q14 -28 28 0 q14 -24 28 0 q10 -20 28 0 V110 H0Z" fill="#5DCB8A"/>'+h+'</svg>';
 }
 function seasonDeco(bandH){
   var s=season();
@@ -970,13 +978,17 @@ function bandHTML(variant, bandH, cls, inner){ return '<div class="sc-band '+cls
 function helloWord(w,d){ return (w.variant==='nuit' || d.getHours()>=18 || d.getHours()<5) ? 'Bonsoir' : 'Bonjour'; }
 function brandHTML(){ return '<div class="sc-brand">'+CROSS+'<div>Pharmacie de la Benauge</div>'+seasonTag()+'</div>'; }
 
+/* accueil centré et épuré : bonjour, heure, date, documents. Météo réduite à l'icône et la température. */
+var HOME_CALM=false;
 function homeHTML(){
-  var w=getWeather(), d=new Date();
-  return sceneOpen(w.variant,70,.8,[1040,640,44])+
-    '<div class="sc-top">'+brandHTML()+'<div class="sc-wx">'+wxIcon(w.variant,104)+'<div class="russo t">'+w.temp+'°</div><div><div class="l">'+w.label+' à Bordeaux</div><div class="m">Min '+w.min+'° · Max '+w.max+'°</div>'+rainHTML('m rh')+'</div></div></div>'+
-    '<div class="h1-left"><h1 class="russo h1-hello">'+helloWord(w,d)+'</h1>'+prepHTML()+'</div>'+
-    '<div class="h1-right"><div class="russo h1-clock" id="h-time">'+fmtTime(d)+'</div><div class="h1-date" id="h-date">'+fmtDate(d)+'</div><div class="h1-saint" id="h-saint">'+saintHTML(d)+'</div></div>'+
+  var w=getWeather(), d=new Date(), out;
+  HOME_CALM=true;
+  out = sceneOpen(w.variant,70,.8,[1500,620,40])+
+    '<div class="sc-top">'+brandHTML()+'<div class="sc-wx hc-wx">'+wxIcon(w.variant,92)+'<div class="russo t">'+w.temp+'°</div></div></div>'+
+    '<div class="hc"><h1 class="russo hc-hello">'+helloWord(w,d)+'</h1><div class="russo hc-clock" id="h-time">'+fmtTime(d)+'</div><div class="hc-date" id="h-date">'+fmtDate(d)+'</div>'+prepHTML()+'</div>'+
     bandHTML(w.variant,70,'','')+'</div>';
+  HOME_CALM=false;
+  return out;
 }
 /* Rappel sur les accueils : préparer ses documents avant d'arriver au comptoir */
 var PREP_IC = {
