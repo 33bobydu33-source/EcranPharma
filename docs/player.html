@@ -83,6 +83,12 @@ html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:'Nuni
 .sc-wx .t{font-size:96px;line-height:1}
 .sc-wx .l{font-size:36px;font-weight:800;line-height:1.15}
 .sc-wx .m{font-size:28px;font-weight:700;color:var(--sub)}
+.plbox{border-radius:44px;padding:40px 50px 30px;margin-top:20px}
+.plt{font-size:72px;line-height:1.05}
+.pls{font-size:34px;font-weight:700;color:var(--sub);margin:10px 0 24px}
+.pll{display:flex;gap:40px;margin-top:14px;font-size:28px;font-weight:700;color:var(--sub)}
+.plg{display:flex;align-items:center;gap:12px}
+.plg i{width:28px;height:28px;border-radius:8px;display:inline-block}
 .rh{display:flex;align-items:center;justify-content:center}
 .sc-wx .rh{justify-content:flex-start}
 .rh.rwet{color:var(--acc)!important;font-weight:800}
@@ -712,6 +718,35 @@ function rainHour(){
   return first ? { wet:true, t:'Pluie prévue vers '+hm(first.d) } : { wet:false, t:'Pas de pluie dans l\'heure' };
 }
 var DROP='<svg viewBox="0 0 24 24" width="1em" height="1em" style="vertical-align:-.12em;margin-right:.3em;flex:none"><path d="M12 3C9 8 6 11 6 15a6 6 0 0 0 12 0c0-4-3-7-6-12z" fill="currentColor"/></svg>';
+/* Graphique façon RainToday : intensité de la pluie par quart d'heure sur les 2 prochaines heures */
+function rainSlots(n){
+  var q=LIVE.q15, now=Date.now(), out=[];
+  if (CFG.weatherMode && CFG.weatherMode!=='auto') { var w=CFG.weatherMode==='pluie'||CFG.weatherMode==='orage', demo=[0.2,0.6,1.4,0.9,0.4,0.1,0,0];
+    for (var k=0;k<n;k++) out.push({ d:new Date(Math.floor(now/900000)*900000+k*900000), mm:w?demo[k]:0 }); return out; }
+  if (!q || !q.time) return null;
+  q.time.forEach(function(t,i){ var d=new Date(t); if (d.getTime()+15*60000>now && out.length<n) out.push({ d:d, mm:q.precipitation[i]||0 }); });
+  return out.length ? out : null;
+}
+function rainLv(mm){ return mm<0.1 ? 0 : mm<0.5 ? 1 : mm<1.5 ? 2 : 3; }
+var RAIN_C=['','#7FC4F0','#2E8BD8','#1D4FA8'], RAIN_T=['Sec','Faible','Modérée','Forte'];
+function rainChart(W, H, dark){
+  var sl=rainSlots(8); if (!sl) return '';
+  var n=sl.length, gap=Math.round(W*0.018), bw=(W-gap*(n-1))/n, top=8, base=H-46, ink=dark?'#FDE4D4':'#1D2A44', track=dark?'rgba(253,228,212,.16)':'rgba(29,42,68,.10)', g='';
+  for (var lv=1; lv<=3; lv++){ var y=base-(base-top)*lv/3; g+='<line x1="0" x2="'+W+'" y1="'+y+'" y2="'+y+'" stroke="'+track+'" stroke-width="2" stroke-dasharray="6 8"/>'; }
+  sl.forEach(function(x,i){ var lv=rainLv(x.mm), h=lv?Math.max(14,(base-top)*Math.min(x.mm,2.5)/2.5):6, X=i*(bw+gap);
+    g+='<rect x="'+X.toFixed(1)+'" y="'+(base-h).toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+h.toFixed(1)+'" rx="'+Math.min(14,bw/4)+'" fill="'+(lv?RAIN_C[lv]:track)+'"/>';
+    if (i%2===0) g+='<text x="'+(X+2)+'" y="'+(H-8)+'" font-size="'+Math.min(34,Math.round(H*0.09))+'" font-weight="700" fill="'+ink+'" opacity=".75">'+(i===0?'Maint.':hm(x.d))+'</text>';
+  });
+  return '<svg viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'" style="display:block">'+g+'</svg>';
+}
+function rainSoon(){ var sl=rainSlots(8); return !!(sl && sl.some(function(x){ return rainLv(x.mm)>0; })); }
+function pluieHTML(secs){
+  var r=rainHour()||{ t:'Pas de pluie prévue' }, sl=rainSlots(8)||[], mx=0; sl.forEach(function(x){ mx=Math.max(mx,rainLv(x.mm)); });
+  var legend=[1,2,3].map(function(l){ return '<span class="plg"><i style="background:'+RAIN_C[l]+'"></i>'+RAIN_T[l]+'</span>'; }).join('');
+  return bxFrame('La pluie dans les 2 heures','<div class="plbox" style="background:'+tipBg()+'"><div class="russo plt">'+r.t+'</div>'+
+    '<div class="pls">'+(mx?'Intensité maximale : '+RAIN_T[mx].toLowerCase():'Rien à l\'horizon pour les 2 prochaines heures')+'</div>'+rainChart(1560,380,false)+'<div class="pll">'+legend+'</div></div>',
+    mx>=2?'Pensez au parapluie avant de repartir.':'Prévisions au quart d\'heure pour Bordeaux.', secs);
+}
 function rainHTML(cls){ var r=rainHour(); return r ? '<div class="'+cls+(r.wet?' rwet':'')+'">'+DROP+r.t+'</div>' : ''; }
 function updateLive(){
   var el=document.getElementById('live');
@@ -1403,7 +1438,7 @@ var bonusQueue=[], bonusPos=0, lastBonusKinds=[], lastKid=null;
 var quizBags={};
 function drawQuiz(list,key){ var b=quizBags[key]; if (!b || !b.length) { b=quizBags[key]=list.map(function(_,i){ return i; }).sort(function(){ return Math.random()-0.5; }); } return list[b.pop()]; }
 var bonusPass=0;
-var BONUS_ORDER=['garde','quiz','air','semaine','jours','services','equipe','conseil','enfants'];
+var BONUS_ORDER=['garde','pluie','quiz','air','semaine','jours','services','equipe','conseil','enfants'];
 function pickBonus(){
   bonusPass++;
   var hasC=!!((EB.state.news||{}).conseil||{}).titre;
@@ -1411,6 +1446,7 @@ function pickBonus(){
   var kinds=BONUS_ORDER.filter(function(k,i){
     var f=EB.freq(CFG,k); if (!(f>0)) return false;
     if (k==='garde' && !gardeTime()) return false;
+    if (k==='pluie' && !rainSoon()) return false;
     if (k==='equipe' && !TEAM.length) return false;
     if (k==='conseil' && !hasC) return false;
     return (bonusPass+i)%f===0;
@@ -1423,6 +1459,7 @@ function pickBonus(){
       q.push({ title:'Quiz : réponse',  secs:9,  html:function(sec){ return quizHTML(c,true,sec); } }); }
     else if (k==='air')      q.push({ title:'Air et pollens', secs:12, html:airHTML });
     else if (k==='garde')    q.push({ title:'Pharmacie de garde', secs:10, html:gardeHTML });
+    else if (k==='pluie')    q.push({ title:'La pluie dans les 2 heures', secs:10, html:pluieHTML });
     else if (k==='semaine')  q.push({ title:'La météo de la semaine', secs:15, html:weekHTML });
     else if (k==='jours') {
       weekDays().forEach(function(x,i){ q.push({ title:'Météo : '+dayName(x,i).toLowerCase(), secs:CFG.weekDaySeconds||6, html:function(sec){ return dayHTML(i,sec); } }); });
