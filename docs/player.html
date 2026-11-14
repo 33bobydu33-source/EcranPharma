@@ -86,6 +86,8 @@ html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:'Nuni
 .ssn-p{position:absolute;top:-50px;animation:ssn-fall linear infinite;will-change:transform}
 .ssn-r{animation:ssn-spin 5s linear infinite}
 .ssn-g{position:absolute;left:0;top:0}
+.ssn-f{position:absolute;opacity:0;animation:ssn-fw 4s ease-out infinite}
+@keyframes ssn-fw{0%{opacity:0;transform:scale(.15)}12%{opacity:1}45%{opacity:.9;transform:scale(1)}70%,100%{opacity:0;transform:scale(1.15)}}
 .ssn-b{animation:ssn-tw 2.4s ease-in-out infinite}
 .ssn-t{display:inline-flex;align-items:center;gap:10px;margin-left:14px;background:#F26B1D;color:#1D2A44;border-radius:999px;padding:6px 24px;font-size:30px;font-weight:800;white-space:nowrap}
 @keyframes ssn-fall{0%{transform:translate(0,0)}50%{transform:translate(40px,560px)}100%{transform:translate(-10px,1150px)}}
@@ -888,7 +890,7 @@ function wxIcon(variant, size){
 /* ---------- THÈMES DE SAISON (accueils, horaires, annonce) : décor seulement, sans symbole religieux ---------- */
 function seasonAuto(d){
   var m=d.getMonth()+1, j=d.getDate();
-  if (m===12) return 'fetes';
+  if (m===12) return j<=25 ? 'noel' : 'fetes';
   if (m===1 && j<=10) return 'nouvelan';
   if (m===10) return 'octobrerose';
   if ((m===3 && j>=20) || m===4 || m===5 || (m===6 && j<=20)) return 'printemps';
@@ -910,28 +912,46 @@ function ssnGarland(colors, flags){
   return h+'</svg>';
 }
 var LEAF='M0 -14 C10 -10 12 2 0 14 C-12 2 -10 -10 0 -14Z';
-function seasonDeco(){
+function ssnTree(bandH){
+  var balls='', pts=[[150,95,'#F26B1D'],[118,150,'#FFD45C'],[178,160,'#5B9BF0'],[98,215,'#F27BA5'],[150,225,'#FFD45C'],[205,222,'#F26B1D'],[75,280,'#5B9BF0'],[130,290,'#F26B1D'],[185,285,'#F27BA5'],[232,282,'#FFD45C']];
+  pts.forEach(function(p,i){ balls+='<circle class="ssn-b" style="animation-delay:'+(i%4*0.6)+'s" cx="'+p[0]+'" cy="'+p[1]+'" r="9" fill="'+p[2]+'"/>'; });
+  function gift(x,w,h,c,r){ return '<rect x="'+x+'" y="'+(340-h)+'" width="'+w+'" height="'+h+'" rx="4" fill="'+c+'"/><rect x="'+(x+w/2-5)+'" y="'+(340-h)+'" width="10" height="'+h+'" fill="'+r+'"/><path d="M'+(x+w/2)+' '+(340-h)+' q-16 -18 -22 -4 q8 8 22 4 q16 -18 22 -4 q-8 8 -22 4" fill="'+r+'"/>'; }
+  return '<svg style="position:absolute;left:1010px;bottom:'+(bandH-4)+'px" width="230" height="261" viewBox="0 0 300 340"><rect x="138" y="300" width="24" height="40" fill="#7A4A21"/>'+
+    '<path d="M150 30 L205 120 H178 L228 200 H196 L255 300 H45 L104 200 H72 L122 120 H95Z" fill="#2E7D4F"/><polygon points="150,8 157,26 176,27 161,39 166,57 150,47 134,57 139,39 124,27 143,26" fill="#FFD45C"/>'+balls+
+    gift(8,58,44,'#E8503C','#FFD45C')+gift(232,62,52,'#5B9BF0','#fff')+gift(60,40,30,'#F27BA5','#fff')+'</svg>';
+}
+function ssnFire(){
+  var h='', P=[[260,230,'#FFD45C'],[760,150,'#F27BA5'],[1180,260,'#5DCB8A'],[1560,170,'#F26B1D'],[980,420,'#5B9BF0']];
+  P.forEach(function(p,i){ var r='';
+    for (var k=0;k<14;k++){ var a=k*Math.PI/7; r+='<line x1="'+(Math.cos(a)*26).toFixed(1)+'" y1="'+(Math.sin(a)*26).toFixed(1)+'" x2="'+(Math.cos(a)*110).toFixed(1)+'" y2="'+(Math.sin(a)*110).toFixed(1)+'" stroke="'+p[2]+'" stroke-width="7" stroke-linecap="round"/>'; }
+    h+='<svg class="ssn-f" style="left:'+(p[0]-120)+'px;top:'+(p[1]-120)+'px;animation-delay:'+(i*0.8)+'s" width="240" height="240" viewBox="-120 -120 240 240">'+r+'</svg>'; });
+  return h;
+}
+var RIBBON_P='M12 2C6 2 5 8 8 13L3 30l5-3 3 4 4-13M12 2c6 0 7 6 4 11l5 17-5-3-3 4-4-13';
+function seasonDeco(bandH){
   var s=season();
+  if (s==='noel') return ssnGarland(['#F26B1D','#FFD45C','#5DCB8A','#5B9BF0','#F27BA5'],false)+ssnFall(26,function(){ var r=4+Math.random()*7; return '<i style="width:'+r+'px;height:'+r+'px;border-radius:50%;background:#fff;opacity:.85;display:block"></i>'; });
   if (s==='fetes') return ssnGarland(['#F26B1D','#FFD45C','#5DCB8A','#5B9BF0','#F27BA5'],false)+ssnFall(26,function(){ var r=4+Math.random()*7; return '<i style="width:'+r+'px;height:'+r+'px;border-radius:50%;background:#fff;opacity:.85;display:block"></i>'; });
-  if (s==='nouvelan') return ssnFall(30,function(i){ var c=['#F26B1D','#FFD45C','#5DCB8A','#5B9BF0','#F27BA5'][i%5]; return '<i class="ssn-r" style="width:12px;height:20px;background:'+c+';display:block;border-radius:2px"></i>'; });
+  if (s==='nouvelan') return ssnFire()+ssnFall(30,function(i){ var c=['#F26B1D','#FFD45C','#5DCB8A','#5B9BF0','#F27BA5'][i%5]; return '<i class="ssn-r" style="width:12px;height:20px;background:'+c+';display:block;border-radius:2px"></i>'; });
   if (s==='automne') return ssnFall(18,function(i){ var c=['#E8803C','#C9541A','#E3A93B','#A8430F'][i%4], z=(1+Math.random()).toFixed(2); return '<svg class="ssn-r" width="40" height="40" viewBox="-16 -16 32 32" style="transform-origin:center;scale:'+z+'"><path d="'+LEAF+'" fill="'+c+'"/><path d="M0 -12 V13" stroke="rgba(0,0,0,.25)" stroke-width="1.5"/></svg>'; });
   if (s==='printemps') return ssnFall(18,function(i){ var c=['#F7A8C4','#FBD0DE','#FFFFFF'][i%3]; return '<i class="ssn-r" style="width:18px;height:12px;border-radius:60% 40% 60% 40%;background:'+c+';display:block"></i>'; });
-  if (s==='octobrerose') return ssnFall(14,function(){ return '<i class="ssn-r" style="width:16px;height:11px;border-radius:60% 40% 60% 40%;background:#F27BA5;opacity:.8;display:block"></i>'; });
+  if (s==='octobrerose') return ssnFall(14,function(){ return '<svg width="30" height="40" viewBox="0 0 24 32"><path d="'+RIBBON_P+'" fill="none" stroke="#F27BA5" stroke-width="3.4" stroke-linejoin="round" stroke-linecap="round"/></svg>'; });
   if (s==='ete') return ssnGarland(['#F26B1D','#FFD45C','#3DB6C9','#F27BA5','#5DCB8A'],true);
   return '';
 }
 var RIBBON='<svg viewBox="0 0 24 32" width="30" height="40"><path d="M12 2C6 2 5 8 8 13L3 30l5-3 3 4 4-13M12 2c6 0 7 6 4 11l5 17-5-3-3 4-4-13" fill="none" stroke="#F27BA5" stroke-width="3.4" stroke-linejoin="round" stroke-linecap="round"/></svg>';
 function seasonTag(){
   var s=season();
+  if (s==='noel') return '<span class="ssn-t">Joyeux Noël</span>';
   if (s==='fetes') return '<span class="ssn-t">Bonnes fêtes de fin d\'année</span>';
   if (s==='nouvelan') return '<span class="ssn-t">Bonne année '+new Date().getFullYear()+'</span>';
-  if (s==='octobrerose') return '<span class="ssn-t" style="background:#F27BA5;color:#1D2A44">'+RIBBON+'Octobre rose</span>';
+  if (s==='octobrerose') return '<span class="ssn-t" style="background:#fff;color:#C2356E;padding-left:14px">'+RIBBON+'Octobre rose</span>';
   return '';
 }
 function sceneOpen(variant, bandH, k, moon){
   var th=SKY[variant], sk=skylineSVG(k, th.city, !th.light, true);
-  return '<div class="sc" style="--ink:'+th.ink+';--sub:'+th.sub+';--acc:'+th.acc+'"><div class="sc-sky" style="background:'+th.sky+'"></div><div class="sc-deco">'+skyDeco(variant,moon)+'</div><div class="ssn">'+seasonDeco()+'</div>'+
-    sk.svg.replace('class="sc-city"','class="sc-city" style="bottom:'+(bandH-1)+'px"')+'<div class="sc-band" style="height:'+bandH+'px;background:'+th.city+'"></div>';
+  return '<div class="sc" style="--ink:'+th.ink+';--sub:'+th.sub+';--acc:'+th.acc+'"><div class="sc-sky" style="background:'+th.sky+'"></div><div class="sc-deco">'+skyDeco(variant,moon)+'</div><div class="ssn">'+seasonDeco(bandH)+'</div>'+
+    sk.svg.replace('class="sc-city"','class="sc-city" style="bottom:'+(bandH-1)+'px"')+'<div class="sc-band" style="height:'+bandH+'px;background:'+th.city+'"></div>'+(season()==='noel'?ssnTree(bandH):'');
 }
 function bandHTML(variant, bandH, cls, inner){ return '<div class="sc-band '+cls+'" style="height:'+bandH+'px">'+inner+'</div>'; }
 function helloWord(w,d){ return (w.variant==='nuit' || d.getHours()>=18 || d.getHours()<5) ? 'Bonsoir,' : 'Bonjour,'; }
