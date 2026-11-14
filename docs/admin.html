@@ -110,6 +110,8 @@ function setCfg(k,v){ var o={}; o[k]=v; return EB.patch('config', o).catch(fail)
 function cmd(type,arg){ return EB.set('cmd', { type:type, arg:arg||'', ts:Date.now() }).then(function(){ toast('Envoyé à l\'écran'); }).catch(fail); }
 function sw(id, on, dis){ return '<label class="sw"><input type="checkbox" data-k="'+id+'" '+(on?'checked':'')+(dis?' disabled':'')+'><span></span></label>'; }
 function sel(id, val, opts){ return '<select data-k="'+id+'">'+opts.map(function(o){ return '<option value="'+o[0]+'"'+(String(o[0])===String(val)?' selected':'')+'>'+o[1]+'</option>'; }).join('')+'</select>'; }
+var FREQS=[[0,'Jamais'],[1,'À chaque passage'],[2,'1 passage sur 2'],[3,'1 passage sur 3'],[4,'1 passage sur 4'],[6,'1 passage sur 6'],[10,'1 passage sur 10']];
+function freqRow(k,label,hint){ return row(label,hint,sel('bf:'+k, EB.freq(cfg(),k), FREQS)); }
 function row(label, hint, control){ return '<div class="row"><div class="lab">'+label+(hint?'<small>'+hint+'</small>':'')+'</div>'+control+'</div>'; }
 
 /* ---------- données dérivées ---------- */
@@ -200,9 +202,12 @@ V.ecrans=function(){
     row('Météo','Réelle à Bordeaux, ou forcée pour essayer', sel('weatherMode', c.weatherMode, [['auto','Réelle'],['soleil','Soleil'],['couvert','Couvert'],['pluie','Pluie'],['orage','Orage'],['nuit','Nuit']]))+'</div>';
   h+=hoursCard();
   h+='<div class="card"><h2>Écrans bonus</h2>'+
-    row('Nombre par passage','', sel('bonusCount', c.bonusCount, [[0,'Aucun'],[1,'1'],[2,'2'],[3,'3']]))+
-    row('Quiz santé','', sw('bk:quiz', k.quiz))+row('Air et pollens','', sw('bk:air', k.air))+row('Météo de la semaine','Les 7 jours sur un seul écran', sw('bk:semaine', k.semaine!==false))+row('Météo jour par jour','Carrousel : chaque jour en grand, l\'un après l\'autre', sw('weekCarousel', !!c.weekCarousel))+row('Durée de chaque jour','', sel('weekDaySeconds', c.weekDaySeconds||6, [[4,'4 s'],[5,'5 s'],[6,'6 s'],[8,'8 s'],[10,'10 s'],[12,'12 s'],[15,'15 s']]))+row('Nos services','', sw('bk:services', k.services))+row('Le conseil du mois','Repris du site de la pharmacie', sw('bk:conseil', k.conseil!==false))+row('Pharmacie de garde (3237)','Le soir à partir de '+esc(c.gardeFrom||'18:00')+', le samedi et le dimanche', sw('garde', c.garde!==false))+
-    row('L\'équipe','Voir l\'onglet Équipe', sw('bk:equipe', k.equipe))+row('Coin des enfants','5 jeux tirés au hasard', sw('bk:enfants', k.enfants))+'</div>';
+    '<div class="hint" style="margin-bottom:6px">Choisis à quelle fréquence chaque écran passe. Un passage = une vidéo et les écrans qui la précèdent.</div>'+
+    freqRow('quiz','Quiz santé','')+freqRow('enfants','Coin des enfants','Un jeu avec Benny')+freqRow('air','Air et pollens','')+
+    freqRow('semaine','Météo de la semaine','Les 7 jours sur un seul écran')+freqRow('jours','Météo jour par jour','Chaque jour en grand, l\'un après l\'autre')+
+    row('Durée de chaque jour','Météo jour par jour', sel('weekDaySeconds', c.weekDaySeconds||6, [[4,'4 s'],[5,'5 s'],[6,'6 s'],[8,'8 s'],[10,'10 s'],[12,'12 s'],[15,'15 s']]))+
+    freqRow('services','Nos services','')+freqRow('conseil','Le conseil du mois','Repris du site de la pharmacie')+freqRow('equipe','L\'équipe','Voir l\'onglet Équipe')+
+    freqRow('garde','Pharmacie de garde (3237)','Seulement le soir à partir de '+esc(c.gardeFrom||'18:00')+', le samedi et le dimanche')+'</div>';
   h+='<div class="card"><h2>Actualités santé</h2>'+
     row('Afficher les actualités','Une actualité à la une, puis ses points clés', sw('news', c.news))+
     row('Fréquence','Un passage = une vidéo et les écrans qui la précèdent', sel('newsEvery', c.newsEvery||3, [[1,'À chaque passage'],[2,'1 passage sur 2'],[3,'1 passage sur 3'],[4,'1 passage sur 4'],[6,'1 passage sur 6']]))+
@@ -301,6 +306,7 @@ document.addEventListener('change', function(e){
   if (d.k) { var k=d.k, v = t.type==='checkbox' ? t.checked : t.value;
     if (k.indexOf('v:')===0) { var l=videoList(), o={}; l.forEach(function(x,i){ x.pos=i; if (x.id===k.slice(2)) x.on=v; o[x.id]=metaOf(x); }); EB.patch('videos',o).catch(fail); }
     else if (k.indexOf('p:')===0) EB.patch('promos/'+k.slice(2), { on:v }).catch(fail);
+    else if (k.indexOf('bf:')===0) { var o3={}; o3[k.slice(3)]=+v; EB.patch('config/bonusFreq', o3).catch(fail); }
     else if (k.indexOf('bk:')===0) { var o2={}; o2[k.slice(3)]=v; EB.patch('config/bonusKinds', o2).catch(fail); }
     else if (k==='team:show') { var tm=team(); tm.show=v; EB.set('team', tm).catch(fail); }
     else { if (/^(homeSeconds|announceSeconds|promoCount|promoSeconds|weekDaySeconds|bonusCount|newsSeconds|newsEvery|videoRate)$/.test(k)) v=+v; if (k==='gasUrl') v=String(v).trim(); setCfg(k, v); if (k==='newsSource' && cfg().newsAuto) syncDrive(true); } }

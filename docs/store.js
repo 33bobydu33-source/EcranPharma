@@ -91,6 +91,14 @@
     var es=new EventSource(url(base,'')); es.addEventListener('put', function(ev){ try{ var d=JSON.parse(ev.data); if (d && d.data) cb(d.data); }catch(e){} });
     return function(){ es.close(); };
   };
+  /* fréquence de chaque écran bonus : 0 = jamais, 1 = à chaque passage, 3 = 1 passage sur 3… */
+  EB.FREQ = { quiz:1, enfants:1, air:3, semaine:3, jours:4, services:4, equipe:3, conseil:3, garde:3 };
+  EB.freq = function(c, k){
+    var f=(c.bonusFreq||{})[k]; if (f!=null && f!=='') return +f;
+    if (k==='jours') return c.weekCarousel ? EB.FREQ.jours : 0;      // anciens réglages
+    if (k==='garde') return c.garde===false ? 0 : EB.FREQ.garde;
+    return (c.bonusKinds||{})[k]===false ? 0 : EB.FREQ[k];
+  };
   EB.cfg = function(){ var c=Object.assign({}, EB.DEFAULTS, EB.state.config||{}); c.bonusKinds=Object.assign({}, EB.DEFAULTS.bonusKinds, (EB.state.config||{}).bonusKinds||{}); return c; };
   /* Appel du script Google Drive. */
   EB.gas = function(params){

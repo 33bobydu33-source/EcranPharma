@@ -1382,23 +1382,30 @@ var bonusQueue=[], bonusPos=0, lastBonusKinds=[], lastKid=null;
 /* tire chaque question une fois avant de recommencer */
 var quizBags={};
 function drawQuiz(list,key){ var b=quizBags[key]; if (!b || !b.length) { b=quizBags[key]=list.map(function(_,i){ return i; }).sort(function(){ return Math.random()-0.5; }); } return list[b.pop()]; }
+var bonusPass=0;
+var BONUS_ORDER=['garde','quiz','air','semaine','jours','services','equipe','conseil','enfants'];
 function pickBonus(){
-  var bk=CFG.bonusKinds||{};
+  bonusPass++;
   var hasC=!!((EB.state.news||{}).conseil||{}).titre;
-  var kinds=['quiz','air','semaine','services','equipe','enfants','enfants2','conseil'].filter(function(k){ if (k==='semaine') return bk.semaine!==false || CFG.weekCarousel; if (k==='enfants2') return bk.enfants; if (k==='equipe') return bk.equipe && TEAM.length; if (k==='conseil') return bk.conseil!==false && hasC; return bk[k]; }).sort(function(){ return Math.random()-0.5; });
-  kinds.sort(function(a,b){ return (lastBonusKinds.indexOf(a)>=0?1:0)-(lastBonusKinds.indexOf(b)>=0?1:0); });
-  kinds=kinds.slice(0,Math.min(CFG.bonusCount,kinds.length)); lastBonusKinds=kinds.slice();
+  /* chaque écran passe selon sa fréquence ; le décalage par écran évite qu'ils tombent tous au même passage */
+  var kinds=BONUS_ORDER.filter(function(k,i){
+    var f=EB.freq(CFG,k); if (!(f>0)) return false;
+    if (k==='garde' && !gardeTime()) return false;
+    if (k==='equipe' && !TEAM.length) return false;
+    if (k==='conseil' && !hasC) return false;
+    return (bonusPass+i)%f===0;
+  });
   var q=[], kidsUsed=lastKid?[lastKid]:[];
-  if (gardeTime()) q.push({ title:'Pharmacie de garde', secs:10, html:gardeHTML });
   kinds.forEach(function(k){
     if (k==='quiz') { var qz=drawQuiz(QUIZ,'a');
       var order=[0,1,2].sort(function(){ return Math.random()-0.5; }), c={ q:qz.q, exp:qz.exp, o:order.map(function(i){return qz.o[i];}), ok:order.indexOf(qz.ok) };
       q.push({ title:'Quiz : question', secs:9,  html:function(sec){ return quizHTML(c,false,sec); } });
       q.push({ title:'Quiz : réponse',  secs:9,  html:function(sec){ return quizHTML(c,true,sec); } }); }
     else if (k==='air')      q.push({ title:'Air et pollens', secs:12, html:airHTML });
-    else if (k==='semaine') {
-      if (bk.semaine!==false) q.push({ title:'La météo de la semaine', secs:15, html:weekHTML });
-      if (CFG.weekCarousel) weekDays().forEach(function(x,i){ q.push({ title:'Météo : '+dayName(x,i).toLowerCase(), secs:CFG.weekDaySeconds||6, html:function(sec){ return dayHTML(i,sec); } }); });
+    else if (k==='garde')    q.push({ title:'Pharmacie de garde', secs:10, html:gardeHTML });
+    else if (k==='semaine')  q.push({ title:'La météo de la semaine', secs:15, html:weekHTML });
+    else if (k==='jours') {
+      weekDays().forEach(function(x,i){ q.push({ title:'Météo : '+dayName(x,i).toLowerCase(), secs:CFG.weekDaySeconds||6, html:function(sec){ return dayHTML(i,sec); } }); });
     }
     else if (k==='services') q.push({ title:'Nos services',   secs:12, html:servicesHTML });
     else if (k==='equipe')   q.push({ title:'Votre équipe',   secs:10, html:teamHTML });
@@ -1459,7 +1466,7 @@ function afterPromos(){
     if (nn) { var hi=(newsTurn++)%nn;
       nw=[{ title:'Actualités santé', secs:CFG.newsSeconds, html:function(sec){ return newsHTML(aa,hi,sec); } }];
       if (newsPoints(aa.items[hi]).length>=2) nw.push({ title:'Actualité : points clés', secs:CFG.newsSeconds, html:function(sec){ return newsZoomHTML(aa,hi,sec); } }); } }
-  bonusQueue=nw.concat(CFG.bonusCount>0?pickBonus():[]); bonusPos=0;
+  bonusQueue=nw.concat(pickBonus()); bonusPos=0;
   if (bonusQueue.length) enterBonus(); else enterAnnounce();
 }
 function enterBonus(){
