@@ -232,7 +232,7 @@ V.ecrans=function(){
         '<textarea data-n="'+i+':detail" placeholder="Détails pour le zoom : une phrase par ligne (4 au plus)" style="margin-top:8px">'+esc((it.detail||[]).join('\n'))+'</textarea></div>'; }
     h+='<button class="btn pri" id="n-save">Enregistrer les actualités</button>'; }
   else h+='<button class="btn sm" id="n-now">Mettre à jour maintenant</button>';
-  h+='</div>'+powerCard();
+  h+='</div><div class="card"><h2>Rappel sur les accueils</h2>'+row('« Préparez : ordonnance, carte Vitale, carte mutuelle »','Affiché sous le message de bienvenue', sw('prepShow', c.prepShow!==false))+'</div>'+powerCard();
   return h;
 };
 var AVS={ f:'👩', m:'👨', croix:'✚' };
