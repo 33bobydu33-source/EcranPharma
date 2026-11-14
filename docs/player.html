@@ -78,6 +78,19 @@ html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:'Nuni
 .sc-city{position:absolute;left:0;display:block}
 .sc-band{position:absolute;left:0;bottom:0;width:1920px;box-sizing:border-box;padding:0 88px;color:#FDE4D4;display:flex}
 .sc-top{position:absolute;left:88px;right:88px;top:52px;display:flex;justify-content:space-between;align-items:center}
+.sc{isolation:isolate}
+.sc-sky{z-index:-3}
+.sc-deco{z-index:-2}
+.ssn{position:absolute;left:0;top:0;width:1920px;height:1080px;overflow:hidden;pointer-events:none;z-index:-1}
+.sc-brand>div{white-space:nowrap}
+.ssn-p{position:absolute;top:-50px;animation:ssn-fall linear infinite;will-change:transform}
+.ssn-r{animation:ssn-spin 5s linear infinite}
+.ssn-g{position:absolute;left:0;top:0}
+.ssn-b{animation:ssn-tw 2.4s ease-in-out infinite}
+.ssn-t{display:inline-flex;align-items:center;gap:10px;margin-left:14px;background:#F26B1D;color:#1D2A44;border-radius:999px;padding:6px 24px;font-size:30px;font-weight:800;white-space:nowrap}
+@keyframes ssn-fall{0%{transform:translate(0,0)}50%{transform:translate(40px,560px)}100%{transform:translate(-10px,1150px)}}
+@keyframes ssn-spin{to{transform:rotate(360deg)}}
+@keyframes ssn-tw{0%,100%{opacity:1}50%{opacity:.35}}
 .sc-brand{display:flex;align-items:center;gap:20px;font-size:36px;font-weight:700}
 .sc-wx{display:flex;align-items:center;gap:22px}
 .sc-wx .t{font-size:96px;line-height:1}
@@ -872,14 +885,57 @@ function wxIcon(variant, size){
   else g='<path d="M70 12A48 48 0 1 0 104 78A38 38 0 1 1 70 12Z" fill="#FDE4D4"/><circle class="fn-star" cx="98" cy="26" r="5" fill="#F26B1D"/>';
   return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 120 120" fill="none">'+g+'</svg>';
 }
+/* ---------- THÈMES DE SAISON (accueils, horaires, annonce) : décor seulement, sans symbole religieux ---------- */
+function seasonAuto(d){
+  var m=d.getMonth()+1, j=d.getDate();
+  if (m===12) return 'fetes';
+  if (m===1 && j<=10) return 'nouvelan';
+  if (m===10) return 'octobrerose';
+  if ((m===3 && j>=20) || m===4 || m===5 || (m===6 && j<=20)) return 'printemps';
+  if ((m===6 && j>=21) || m===7 || m===8 || (m===9 && j<=22)) return 'ete';
+  if ((m===9 && j>=23) || m===11) return 'automne';
+  return 'none';
+}
+function season(){ var s=CFG.seasonTheme||'auto'; return s==='auto' ? seasonAuto(new Date()) : s; }
+function ssnFall(n, make){
+  var h=''; for (var i=0;i<n;i++){ var dur=9+Math.random()*9;
+    h+='<span class="ssn-p" style="left:'+(Math.random()*100).toFixed(1)+'%;animation-duration:'+dur.toFixed(1)+'s;animation-delay:-'+(Math.random()*dur).toFixed(1)+'s">'+make(i)+'</span>'; }
+  return h;
+}
+function ssnGarland(colors, flags){
+  var h='<svg class="ssn-g" viewBox="0 0 1920 70" width="1920" height="70"><path d="M0 4 Q240 50 480 10 Q720 50 960 10 Q1200 50 1440 10 Q1680 50 1920 4" fill="none" stroke="rgba(29,42,68,.55)" stroke-width="3"/>';
+  for (var i=0;i<24;i++){ var x=40+i*80, t=((x%480)/480), y=10+ (4*t*(1-t))*30 + (x<480||x>1440? -2:0), c=colors[i%colors.length];
+    h+= flags ? '<path d="M'+(x-17)+' '+(y+1)+' L'+(x+17)+' '+(y+1)+' L'+x+' '+(y+38)+'Z" fill="'+c+'"/>'
+              : '<circle class="ssn-b" style="animation-delay:'+(i%4*0.6)+'s" cx="'+x+'" cy="'+(y+12)+'" r="10" fill="'+c+'"/>'; }
+  return h+'</svg>';
+}
+var LEAF='M0 -14 C10 -10 12 2 0 14 C-12 2 -10 -10 0 -14Z';
+function seasonDeco(){
+  var s=season();
+  if (s==='fetes') return ssnGarland(['#F26B1D','#FFD45C','#5DCB8A','#5B9BF0','#F27BA5'],false)+ssnFall(26,function(){ var r=4+Math.random()*7; return '<i style="width:'+r+'px;height:'+r+'px;border-radius:50%;background:#fff;opacity:.85;display:block"></i>'; });
+  if (s==='nouvelan') return ssnFall(30,function(i){ var c=['#F26B1D','#FFD45C','#5DCB8A','#5B9BF0','#F27BA5'][i%5]; return '<i class="ssn-r" style="width:12px;height:20px;background:'+c+';display:block;border-radius:2px"></i>'; });
+  if (s==='automne') return ssnFall(18,function(i){ var c=['#E8803C','#C9541A','#E3A93B','#A8430F'][i%4], z=(1+Math.random()).toFixed(2); return '<svg class="ssn-r" width="40" height="40" viewBox="-16 -16 32 32" style="transform-origin:center;scale:'+z+'"><path d="'+LEAF+'" fill="'+c+'"/><path d="M0 -12 V13" stroke="rgba(0,0,0,.25)" stroke-width="1.5"/></svg>'; });
+  if (s==='printemps') return ssnFall(18,function(i){ var c=['#F7A8C4','#FBD0DE','#FFFFFF'][i%3]; return '<i class="ssn-r" style="width:18px;height:12px;border-radius:60% 40% 60% 40%;background:'+c+';display:block"></i>'; });
+  if (s==='octobrerose') return ssnFall(14,function(){ return '<i class="ssn-r" style="width:16px;height:11px;border-radius:60% 40% 60% 40%;background:#F27BA5;opacity:.8;display:block"></i>'; });
+  if (s==='ete') return ssnGarland(['#F26B1D','#FFD45C','#3DB6C9','#F27BA5','#5DCB8A'],true);
+  return '';
+}
+var RIBBON='<svg viewBox="0 0 24 32" width="30" height="40"><path d="M12 2C6 2 5 8 8 13L3 30l5-3 3 4 4-13M12 2c6 0 7 6 4 11l5 17-5-3-3 4-4-13" fill="none" stroke="#F27BA5" stroke-width="3.4" stroke-linejoin="round" stroke-linecap="round"/></svg>';
+function seasonTag(){
+  var s=season();
+  if (s==='fetes') return '<span class="ssn-t">Bonnes fêtes de fin d\'année</span>';
+  if (s==='nouvelan') return '<span class="ssn-t">Bonne année '+new Date().getFullYear()+'</span>';
+  if (s==='octobrerose') return '<span class="ssn-t" style="background:#F27BA5;color:#1D2A44">'+RIBBON+'Octobre rose</span>';
+  return '';
+}
 function sceneOpen(variant, bandH, k, moon){
   var th=SKY[variant], sk=skylineSVG(k, th.city, !th.light, true);
-  return '<div class="sc" style="--ink:'+th.ink+';--sub:'+th.sub+';--acc:'+th.acc+'"><div class="sc-sky" style="background:'+th.sky+'"></div><div class="sc-deco">'+skyDeco(variant,moon)+'</div>'+
+  return '<div class="sc" style="--ink:'+th.ink+';--sub:'+th.sub+';--acc:'+th.acc+'"><div class="sc-sky" style="background:'+th.sky+'"></div><div class="sc-deco">'+skyDeco(variant,moon)+'</div><div class="ssn">'+seasonDeco()+'</div>'+
     sk.svg.replace('class="sc-city"','class="sc-city" style="bottom:'+(bandH-1)+'px"')+'<div class="sc-band" style="height:'+bandH+'px;background:'+th.city+'"></div>';
 }
 function bandHTML(variant, bandH, cls, inner){ return '<div class="sc-band '+cls+'" style="height:'+bandH+'px">'+inner+'</div>'; }
 function helloWord(w,d){ return (w.variant==='nuit' || d.getHours()>=18 || d.getHours()<5) ? 'Bonsoir,' : 'Bonjour,'; }
-function brandHTML(){ return '<div class="sc-brand">'+CROSS+'<div>Pharmacie de la Benauge</div></div>'; }
+function brandHTML(){ return '<div class="sc-brand">'+CROSS+'<div>Pharmacie de la Benauge</div>'+seasonTag()+'</div>'; }
 
 function homeHTML(){
   var w=getWeather(), d=new Date();
