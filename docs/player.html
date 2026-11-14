@@ -1551,7 +1551,7 @@ function refreshFiles(){
 function refreshNews(force){
   if (!CFG.gasUrl || !CFG.newsAuto) return;
   var n=EB.state.news||{}; if (!force && n.fetched && Date.now()-n.fetched < 6*3600*1000) return;
-  EB.gas({ action:'news' }).then(function(j){ if (j && j.items && j.items.length>=1) EB.set('news', { maj:j.maj, items:j.items.slice(0,4), auto:true, fetched:Date.now() }); }).catch(function(){});
+  EB.gas({ action:'news', src: CFG.newsSource||'site' }).then(function(j){ if (j && j.items && j.items.length>=1) EB.set('news', { maj:j.maj, items:j.items.slice(0,4), auto:true, fetched:Date.now() }); }).catch(function(){});
 }
 setInterval(refreshFiles, 10*60*1000); setInterval(function(){ refreshNews(false); }, 30*60*1000);
 setInterval(function(){ if (HAS_SHELL || Media.want.length) { rebuild(); } }, 15000);

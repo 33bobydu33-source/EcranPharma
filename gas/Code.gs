@@ -13,6 +13,10 @@
  */
 var DOSSIER = 'Ecran Pharmacie';
 /* Flux d'actualités officiels (RSS). Modifiable. Le premier qui répond avec des articles est utilisé en priorité. */
+/* Site de la pharmacie : ses actualités santé passent en premier. Vide = flux officiels seulement. */
+var SITE = 'https://pharmacie-benauge.rocade.fr';
+var SITE_JOURS = 60;   // les actualités plus anciennes ne sont pas reprises
+
 var FLUX = [
   { nom: 'Santé publique France', url: 'https://www.santepubliquefrance.fr/rss/actualites.xml' },
   { nom: 'Ministère de la Santé', url: 'https://sante.gouv.fr/spip.php?page=backend' },
@@ -100,23 +104,65 @@ function lireFlux_(flux) {
   }
   return out;
 }
-function actualites_() {
-  var cache = CacheService.getScriptCache(), c = cache.get('news');
+/* Actualités du site de la pharmacie : la liste, puis chaque article (titre, résumé, image, intertitres). */
+function attr_(html, prop) {
+  var m = html.match(new RegExp('<meta[^>]+(?:property|name)=["\']' + prop + '["\'][^>]*content=["\']([^"\']*)', 'i'))
+       || html.match(new RegExp('<meta[^>]+content=["\']([^"\']*)["\'][^>]*(?:property|name)=["\']' + prop + '["\']', 'i'));
+  return m ? texte_(m[1]) : '';
+}
+function lireSite_() {
+  if (!SITE) return [];
+  var r = UrlFetchApp.fetch(SITE + '/actualites', { muteHttpExceptions: true, followRedirects: true });
+  if (r.getResponseCode() !== 200) return [];
+  var html = r.getContentText(), vus = {}, liens = [], re = /href=["'](?:https?:\/\/[^"'\/]+)?\/actualites\/(\d+-[a-z0-9-]+)["']/gi, m;
+  while ((m = re.exec(html)) && liens.length < 8) if (!vus[m[1]]) { vus[m[1]] = 1; liens.push(SITE + '/actualites/' + m[1]); }
+  if (!liens.length) return [];
+  var reps = UrlFetchApp.fetchAll(liens.map(function (u) { return { url: u, muteHttpExceptions: true, followRedirects: true }; }));
+  var limite = Date.now() - SITE_JOURS * 864e5, out = [];
+  reps.forEach(function (rp) {
+    if (rp.getResponseCode() !== 200 || out.length >= 4) return;
+    var h = rp.getContentText();
+    var titre = attr_(h, 'og:title') || texte_((h.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i) || [])[1]);
+    var desc = attr_(h, 'og:description') || attr_(h, 'description');
+    var d = h.match(/Publi[ée]+e? le\s*(\d{2})\/(\d{2})\/(\d{4})/i), t = d ? new Date(+d[3], +d[2] - 1, +d[1]).getTime() : 0;
+    if (!titre || (t && t < limite)) return;
+    var cat = texte_((h.match(/(Alertes sanitaires|[ÉE]v[èe]nements|Epid[ée]mies|Nouveaut[ée]s|Nature et sant[ée]|Recherche m[ée]dicale)/i) || [])[1]);
+    // points clés : la première phrase sous chacun des intertitres de l'article
+    var points = [], reh = /<h2[^>]*>[\s\S]*?<\/h2>\s*(?:<[^p][^>]*>\s*)*<p[^>]*>([\s\S]*?)<\/p>/gi, k;
+    while ((k = reh.exec(h)) && points.length < 4) {
+      var ph = texte_(k[1]).split(/(?<=[.!?])\s+/)[0];
+      if (ph && ph.length > 30) points.push(couper_(ph, 150));
+    }
+    if (!points.length) points = desc.split(/(?<=[.!?])\s+/).filter(function (x) { return x.length > 25; }).slice(0, 3).map(function (x) { return couper_(x, 150); });
+    out.push({ tag: cat || 'Votre pharmacie', titre: couper_(titre, 70), texte: couper_(desc || titre, 140), detail: points.length ? points : [couper_(desc || titre, 150)],
+      source: 'Site de la pharmacie', image: attr_(h, 'og:image'), t: t });
+  });
+  return out;
+}
+function actualites_(src) {
+  src = (src === 'officiel' || !SITE) ? 'officiel' : 'site';
+  var cache = CacheService.getScriptCache(), cle = 'news_' + src, c = cache.get(cle);
   if (c) return JSON.parse(c);
   var tous = [];
-  FLUX.forEach(function (f) { try { tous = tous.concat(lireFlux_(f).slice(0, 4)); } catch (e) {} });
-  tous.sort(function (a, b) { return b.t - a.t; });
+  if (src === 'site') { try { tous = lireSite_(); } catch (e) {} }
+  if (tous.length < 4) {   // complété par les flux officiels s'il n'y a pas assez d'actualités récentes sur le site
+    var off = [];
+    FLUX.forEach(function (f) { try { off = off.concat(lireFlux_(f).slice(0, 4)); } catch (e) {} });
+    off.sort(function (a, b) { return b.t - a.t; });
+    tous = tous.concat(off.slice(0, 4 - tous.length));
+  }
   var res = { maj: Utilities.formatDate(new Date(), 'Europe/Paris', "d MMMM yyyy"), items: tous.slice(0, 4) };
   res.maj = res.maj.replace(/January/,'janvier').replace(/February/,'février').replace(/March/,'mars').replace(/April/,'avril').replace(/May/,'mai').replace(/June/,'juin')
     .replace(/July/,'juillet').replace(/August/,'août').replace(/September/,'septembre').replace(/October/,'octobre').replace(/November/,'novembre').replace(/December/,'décembre');
-  if (res.items.length) cache.put('news', JSON.stringify(res), 3 * 3600);
+  if (res.items.length) cache.put(cle, JSON.stringify(res), 3 * 3600);
   return res;
 }
 /* À lancer à la main pour vérifier quels flux répondent. */
 function testerActualites() {
   FLUX.forEach(function (f) { try { Logger.log(f.nom + ' : ' + lireFlux_(f).length + ' article(s)'); } catch (e) { Logger.log(f.nom + ' : erreur ' + e); } });
-  CacheService.getScriptCache().remove('news');
-  Logger.log(JSON.stringify(actualites_(), null, 1));
+  try { Logger.log('Site de la pharmacie : ' + lireSite_().length + ' actualité(s) récente(s)'); } catch (e) { Logger.log('Site de la pharmacie : erreur ' + e); }
+  CacheService.getScriptCache().removeAll(['news_site', 'news_officiel']);
+  Logger.log(JSON.stringify(actualites_('site'), null, 1));
 }
 
 function doGet(e) {
@@ -125,7 +171,7 @@ function doGet(e) {
     if (a === 'list') out = lister_();
     else if (a === 'file') out = fichier_(e.parameter.id);
     else if (a === 'promo') out = promo_(e.parameter.id);
-    else if (a === 'news') out = actualites_();
+    else if (a === 'news') out = actualites_(e.parameter.src);
     else out = { error: 'Action inconnue' };
   } catch (err) { out = { error: String(err.message || err) }; }
   return ContentService.createTextOutput(JSON.stringify(out)).setMimeType(ContentService.MimeType.JSON);

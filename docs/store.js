@@ -13,7 +13,7 @@
     promoCount: 2, promoSeconds: 12, demoPromos: false,
     news: true, newsAuto: true, newsSeconds: 16, newsEvery: 3,
     bonusCount: 2, bonusKinds: { quiz:true, air:true, services:true, equipe:true, enfants:true },
-    rappel: 'every', rappelId: '', weatherMode: 'auto',
+    rappel: 'every', newsSource: 'site', rappelId: '', weatherMode: 'auto',
     hoursOn: '', hoursOff: '', gasUrl: '', name: 'Pharmacie de la Benauge'
   };
   EB.OPENING = { show:true, seconds:12, title:'Votre pharmacie vous accueille',
