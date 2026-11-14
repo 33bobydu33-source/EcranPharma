@@ -996,7 +996,7 @@ function dayHTML(i, secs){
     tile('Indice UV',big+uv.c+'"></i>'+uv.t,'Indice '+Math.round(x.uv||0))+
     tile('Qualité de l\'air',al?big+al.c+'"></i>'+al.t:'–',al?'Indice '+Math.round(x.aqi)+' sur 100':'Pas encore de prévision')+
     tile('Pollens',pm==null?'–':big+pc+'"></i>'+(pm===0?'Aucun':PLV[pm]),pm==null?'Pas encore de prévision':'')+
-    tile('Soleil',(x.rise||'').replace(':','h')+' – '+(x.set||'').replace(':','h'),'Lever et coucher');
+    tile('Soleil','<span style="font-size:42px">'+(x.rise||'').replace(':','h').replace(/^0/,'')+' – '+(x.set||'').replace(':','h')+'</span>','Lever et coucher');
   var chips=days.map(function(d,k){ return '<span class="dyc'+(k===i?' on':'')+'">'+(k===0?'Auj.':cap(new Date(d.date+'T12:00:00').toLocaleDateString('fr-FR',{weekday:'short'}).replace('.','')))+'</span>'; }).join('');
   return bxFrame('La météo de la semaine','<div class="dy"><div class="dyl"><div class="russo dyn">'+dayName(x,i)+'</div><div class="dydt">'+dt.getDate()+' '+dt.toLocaleDateString('fr-FR',{month:'long'})+'</div>'+
     '<div class="dyi">'+wkIcon(v.variant==='nuit'?'soleil':v.variant, false, 250)+'</div><div class="dylb">'+v.label+'</div><div class="russo dytp"><b>'+x.max+'°</b><span>'+x.min+'°</span></div></div>'+
