@@ -1475,8 +1475,13 @@ function enterAnnounce(){
 }
 var curFile='', rappelCount=0;
 function playFile(ph, file){
-  phase=ph; curFile=file; showOnly(scVid); phaseDur=0; phaseStart=Date.now();
   clearTimeout(errTimer);
+  if (String(file).indexOf('lite:')===0) {   // aperçu sur téléphone : carton à la place de la vidéo
+    var it = ph==='rappel' ? { title:'Rappel des documents' } : (PLAYLIST[idx]||{});
+    phase=ph; curFile=file; scBonus.innerHTML=bxFrame(ph==='rappel'?'Vidéo de rappel':'Vidéo','<h1 class="russo bxt" style="font-size:96px;margin-top:120px">'+esc(it.title||'Vidéo')+'</h1><p class="bxs" style="font-size:44px">Sur la télé, la vidéo passe ici en entier.</p>','Aperçu sur téléphone : vidéos remplacées par ce carton.', 5);
+    showOnly(scBonus); phaseDur=5000; phaseStart=Date.now(); setStatus(); return;
+  }
+  phase=ph; curFile=file; showOnly(scVid); phaseDur=0; phaseStart=Date.now();
   video.src=file; video.load(); applyRate();
   var p=video.play(); if(p&&p.catch) p.catch(function(){});
   if (paused) video.pause();
@@ -1535,11 +1540,12 @@ setInterval(function(){
   var s2=document.getElementById('h2-saint'); if(s2) s2.innerHTML=saintHTML(d);
   var ad=document.getElementById('a-date'); if(ad) ad.textContent=fmtDateShort(d)+' · '+fmtTime(d);
   var gb=document.getElementById('gbar'), fr=-1;
-  if (phase==='video' || phase==='rappel') { if (video.duration>0) fr=1-video.currentTime/video.duration; }
+  if ((phase==='video' || phase==='rappel') && String(curFile).indexOf('lite:')!==0) { if (video.duration>0) fr=1-video.currentTime/video.duration; }
   else if (phase!=='bonus' && phaseDur>0) fr=1-(now-phaseStart)/phaseDur;
   gb.style.display = fr>=0 ? 'block' : 'none';
   if (fr>=0) gb.firstChild.style.transform='scaleX('+Math.max(0,Math.min(1,fr)).toFixed(4)+')';
-  if (phase!=='video' && phase!=='rappel' && now-phaseStart>=phaseDur) advance(); else setStatus();
+  var lite=String(curFile).indexOf('lite:')===0;
+  if ((lite || (phase!=='video' && phase!=='rappel')) && now-phaseStart>=phaseDur) advance(); else setStatus();
 }, 250);
 
 /* ---------- commandes ---------- */
@@ -1601,8 +1607,12 @@ if (!Q.get('bar')) document.body.classList.add('tv');
 /* --- fichiers (vidéos, promos) : gardés dans la TV, ou en mémoire dans un navigateur --- */
 var Media = { blobs:{}, busy:{}, want:[] };
 Media.fname = function(f, kind){ return f.id+'_'+String(f.modified||0)+(kind==='video'?'.mp4':'.png'); };
+/* Aperçu sur téléphone : les vidéos ne sont pas téléchargées (le navigateur du téléphone manque de mémoire
+   et recharge la page). Elles sont remplacées par un carton de quelques secondes. ?lite=0 force les vidéos. */
+var LITE = !HAS_SHELL && (/[?&]lite=1/.test(location.search) || (!/[?&]lite=0/.test(location.search) && /iPhone|iPad|iPod|Android|Mobile/i.test(navigator.userAgent)));
 Media.url = function(f, kind){
   var n=Media.fname(f,kind);
+  if (LITE && kind==='video') return 'lite:'+f.id;
   if (HAS_SHELL) { try { return Shell.ready(n) ? SHELL_BASE+n : null; } catch(e){ return null; } }
   return Media.blobs[n] || null;
 };
@@ -1613,8 +1623,9 @@ Media.sync = function(items){
   if (!next || Media.loading) return;
   var n=Media.fname(next.f,next.kind); Media.busy[n]=true; Media.loading=true;
   EB.gas({ action: next.kind==='video'?'file':'promo', id: next.f.id }).then(function(j){
-    var bin=atob(j.b64), u=new Uint8Array(bin.length); for (var i=0;i<bin.length;i++) u[i]=bin.charCodeAt(i);
-    Media.blobs[n]=URL.createObjectURL(new Blob([u], { type: j.mime || (next.kind==='video'?'video/mp4':'image/png') }));
+    /* décodage par le navigateur lui-même : bien moins de mémoire qu'une boucle en JavaScript */
+    return fetch('data:'+(j.mime || (next.kind==='video'?'video/mp4':'image/png'))+';base64,'+j.b64).then(function(r){ return r.blob(); })
+      .then(function(b){ Media.blobs[n]=URL.createObjectURL(b); });
   }).catch(function(){ setTimeout(function(){ delete Media.busy[n]; }, 60000); }).then(function(){ Media.loading=false; rebuild(); Media.sync(Media.want); });
 };
 
@@ -1628,7 +1639,7 @@ function rebuild(){
     var on = isR ? CFG.rappel!=='off' : (m.fixed || f.base) ? true : (m.on==null ? CFG.autoAdd!==false : m.on===true);
     if (!on) return;
     /* la vidéo de rappel est téléchargée en premier : sans elle, les premiers passages s'en passaient */
-    if (isR) want.unshift({ f:f, kind:'video' }); else want.push({ f:f, kind:'video' });
+    if (!LITE) { if (isR) want.unshift({ f:f, kind:'video' }); else want.push({ f:f, kind:'video' }); }
     var u=Media.url(f,'video'); if (!u) return;
     if (isR) { RAPPEL.file=u; return; }
     list.push({ id:f.id, file:u, title:m.title||EB.titleFromName(f.name), pos:(m.pos==null?9999:m.pos), name:f.name });
