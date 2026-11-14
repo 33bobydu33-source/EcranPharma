@@ -730,6 +730,8 @@ function classify(code, isDay){
   else if ((code>=71 && code<=77) || code===85 || code===86) { v='couvert'; label='Neige'; }
   else if (code===45 || code===48) { v='couvert'; label='Brouillard'; }
   else if (code===3) { v='couvert'; label='Couvert'; }
+  /* la nuit, ciel couvert, brouillard ou neige gardent le décor de nuit (sinon le ciel gris de jour revenait le soir) */
+  if (v==='couvert' && !isDay) { v='nuit'; if (label==='Couvert') label='Nuit couverte'; }
   else {
     if (!isDay) { v='nuit'; label = code===0 ? 'Nuit claire' : 'Nuit nuageuse'; }
     else { v='soleil'; label = code===0 ? 'Ensoleillé' : (code===1 ? 'Plutôt dégagé' : 'Éclaircies'); }
