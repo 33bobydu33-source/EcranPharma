@@ -186,8 +186,8 @@ html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:'Nuni
 .prow .pb{display:flex;gap:8px}
 .prow .pb i{display:block;width:62px;height:24px;border-radius:7px;background:var(--track)}
 .prow .pl{font-size:32px;font-weight:700;color:var(--sub)}
-.gd{display:flex;align-items:center;gap:60px;border-radius:48px;padding:56px 70px;margin-top:40px}
-.gdl{font-size:50px;font-weight:800;line-height:1.15}
+.gd{display:flex;align-items:center;gap:70px;border-radius:48px;padding:60px 80px;margin-top:60px}
+.gdl{font-size:100px;line-height:1.05}
 .gdn{font-size:230px;line-height:1;color:#F26B1D;margin-top:10px}
 .gds{font-size:38px;font-weight:700;color:var(--sub)}
 .gdx{font-size:36px;font-weight:700;color:var(--sub);margin-top:40px;max-width:1600px;line-height:1.3}
@@ -950,7 +950,7 @@ var SVC = [
   { t:'Tests et dépistages', b:'Angine, cystite, diabète, asthme… et autotests.', ic:'<svg viewBox="0 0 100 100" fill="none" stroke="#F26B1D" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><path d="M38 14h24M42 14v28L24 78a8 8 0 0 0 7 12h38a8 8 0 0 0 7-12L58 42V14"/><path d="M34 66h32"/></svg>' },
   { t:'Suivi de traitement', b:'Anticoagulants, asthme, anticancéreux oraux : on fait le point ensemble.', ic:'<svg viewBox="0 0 100 100" fill="none" stroke="#F26B1D" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 22h72v44H44L26 82V66H14z"/><path d="M32 40h36M32 52h24"/></svg>' },
   { t:'Matériel médical', b:'Vente et location : fauteuils, béquilles, tire-lait…', ic:'<svg viewBox="0 0 100 100" fill="none" stroke="#F26B1D" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><rect x="14" y="30" width="72" height="52" rx="10"/><path d="M36 30v-8h28v8M50 44v26M37 57h26"/></svg>' },
-  { t:'Rapportez vos déchets', b:'Médicaments périmés (Cyclamed) et boîtes à aiguilles (DASTRI).', ic:'<svg viewBox="0 0 100 100" fill="none" stroke="#F26B1D" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 30h56M40 30v-8h20v8M28 30l5 54h34l5-54"/><path d="M44 44v28M56 44v28"/></svg>' }
+  { t:'Médicaments périmés et DASTRI', b:'Rapportez-les ici : Cyclamed et boîtes à aiguilles.', ic:'<svg viewBox="0 0 100 100" fill="none" stroke="#F26B1D" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 30h56M40 30v-8h20v8M28 30l5 54h34l5-54"/><path d="M44 44v28M56 44v28"/></svg>' }
 ];
 function servicesHTML(secs){
   var tb=tipBg();
@@ -971,8 +971,7 @@ function gardeTime(){
 var PHONE='<svg viewBox="0 0 100 100" width="170" height="170" fill="none" stroke="#F26B1D" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><path d="M30 14l12 22-8 8c4 10 12 18 22 22l8-8 22 12-6 14c-30 2-62-30-60-60z"/></svg>';
 function gardeHTML(secs){
   var tb=tipBg();
-  return bxFrame('Pharmacie de garde','<div class="gd" style="background:'+tb+'">'+PHONE+'<div><div class="gdl">Quand nous sommes fermés, trouvez la pharmacie de garde</div><div class="russo gdn">3237</div><div class="gds">par téléphone ou sur 3237.fr</div></div></div>'+
-    '<div class="gdx">Le soir, présentez-vous avec votre ordonnance et votre carte Vitale. La nuit, il faut parfois passer d\'abord par le commissariat.</div>',
+  return bxFrame('Pharmacie de garde','<div class="gd" style="background:'+tb+'">'+PHONE+'<div><div class="russo gdl">Pharmacie de garde</div><div class="russo gdn">3237</div><div class="gds">par téléphone ou sur 3237.fr</div></div></div>',
     'En cas d\'urgence vitale : appelez le 15.', secs);
 }
 var TEAM = [];
