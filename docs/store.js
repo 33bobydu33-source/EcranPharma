@@ -10,7 +10,7 @@
   EB.DEFAULTS = {
     homeSeconds: 30, homeMode: 'alt', announce: true, announceSeconds: 8,
     videoRate: 0.8, order: 'manual', playMode: 'all', autoAdd: true,
-    promoCount: 2, promoSeconds: 12, demoPromos: false,
+    promoCount: 2, promoSeconds: 12, pubSeconds: 8, demoPromos: false,
     news: true, newsAuto: true, newsSeconds: 16, newsEvery: 3,
     bonusCount: 2, bonusKinds: { quiz:true, air:true, services:true, equipe:true, enfants:true, conseil:true, semaine:true }, weekCarousel: true, weekDaySeconds: 6, garde: true, gardeFrom: '18:00',
     rappel: 'every', newsSource: 'site', rappelId: '', weatherMode: 'auto',

@@ -69,6 +69,7 @@ Sortie de secours sur la TV : cinq appuis rapides sur Retour ouvrent les paramè
 | Garder une vidéo en permanence | Dossier `Videos/Base`, ou rôle « Base » |
 | Régler le nombre de promos, les durées, la vitesse | Onglets Promos, Vidéos, Écrans |
 | Mettre une date de fin à une promo | Onglet Promos |
+| Montrer un produit (PDF) juste après une vidéo | Onglet Vidéos : cocher « Afficher une pub produit après cette vidéo » et choisir le PDF du dossier `Promos` |
 | Changer les noms, avatars ou photos de l'équipe | Onglet Équipe |
 | Mettre en pause, passer, lancer une vidéo | Onglet En direct |
 | Éteindre l'écran le soir | Onglet Écrans > Horaires |

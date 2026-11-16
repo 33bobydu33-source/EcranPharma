@@ -55,6 +55,10 @@ select:focus,input:focus,textarea:focus,button:focus-visible{outline:3px solid #
 .now .ctl button.main{background:#F26B1D}
 .vid{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid #F3E4DA}
 .vid:first-child{border-top:0}
+.pub{padding:0 0 10px 56px;font-size:14px;font-weight:700;color:var(--sub)}
+.pub label{display:flex;align-items:center;gap:8px;cursor:pointer}
+.pub input[type=checkbox]{width:18px;height:18px;accent-color:#E85D0C}
+.pub select{width:100%;margin-top:6px}
 .vid{flex-wrap:wrap}
 .vid .mid{flex:1 1 150px;min-width:0}
 .vid .mid input{width:100%}
@@ -131,10 +135,10 @@ function videoList(){
   var rid=c.rappelId || ((f.filter(function(x){ return /rappel/i.test(x.name); })[0]||{}).id)||'';
   return f.map(function(x){ var m=meta[x.id]||{}; var fixed=!!(m.fixed||x.base);
     return { id:x.id, name:x.name, base:!!x.base, fixed:fixed, rappel:x.id===rid, title:m.title||EB.titleFromName(x.name),
-      on: fixed ? true : (m.on==null ? c.autoAdd!==false : m.on===true), pos:(m.pos==null?9999:m.pos) }; })
+      on: fixed ? true : (m.on==null ? c.autoAdd!==false : m.on===true), pos:(m.pos==null?9999:m.pos), pub:m.pub||'' }; })
     .sort(function(a,b){ return a.pos-b.pos || a.name.localeCompare(b.name); });
 }
-function metaOf(v){ return { title:v.title, on:v.on, fixed:v.fixed && !v.base ? true : (v.fixed?true:false), pos:v.pos }; }
+function metaOf(v){ return { title:v.title, on:v.on, fixed:v.fixed && !v.base ? true : (v.fixed?true:false), pos:v.pos, pub:v.pub||null }; }
 function saveOrder(list){ var o={}; list.forEach(function(v,i){ v.pos=i; o[v.id]=metaOf(v); }); return EB.patch('videos', o).catch(fail); }
 
 /* ---------- onglets ---------- */
@@ -180,7 +184,8 @@ V.videos=function(){
     row('Annoncer le thème avant la vidéo','Écran « Thème du moment »', sw('announce', c.announce))+
     (c.announce?row('Durée de l\'annonce','', sel('announceSeconds', c.announceSeconds, [[5,'5 s'],[8,'8 s'],[12,'12 s']])):'')+
     row('Activer les nouvelles vidéos toutes seules','Celles que Claude ou toi déposez dans Drive', sw('autoAdd', c.autoAdd!==false))+
-    row('Vidéo de rappel des documents','Avant chaque écran d\'accueil', sel('rappel', c.rappel, [['every','À chaque passage'],['every2','Un passage sur deux'],['off','Jamais']]))+'</div>';
+    row('Vidéo de rappel des documents','Avant chaque écran d\'accueil', sel('rappel', c.rappel, [['every','À chaque passage'],['every2','Un passage sur deux'],['off','Jamais']]))+
+    row('Durée de la pub produit','Affichée juste après une vidéo, si tu l\'as cochée', sel('pubSeconds', c.pubSeconds, [[5,'5 s'],[8,'8 s'],[10,'10 s'],[12,'12 s'],[15,'15 s'],[20,'20 s']]))+'</div>';
   h+='<div class="card"><h2>Vidéos ('+l.filter(function(v){return v.on&&!v.rappel;}).length+' actives sur '+l.filter(function(v){return !v.rappel;}).length+')</h2>'+
     '<div class="hint">Coche celles qui passent. « Base » : toujours diffusée. Pour ajouter ou supprimer une vidéo, fais-le dans Google Drive.</div>'+
     '<div class="btns" style="margin-bottom:6px"><button class="btn sm" id="v-all">Tout activer</button><button class="btn sm" id="v-none">Tout désactiver</button><button class="btn sm" id="v-sync">Relire Google Drive</button>'+(f.folder?'<a class="btn sm" target="_blank" href="'+esc(f.folder)+'" style="text-decoration:none">Ouvrir le dossier</a>':'')+'</div>';
@@ -189,17 +194,28 @@ V.videos=function(){
     h+='<div class="vid">'+sw('v:'+v.id, v.on, v.fixed||v.rappel)+'<div class="mid"><input type="text" data-title="'+v.id+'" value="'+esc(v.title)+'" aria-label="Titre affiché">'+
       '<div class="fn">'+(v.rappel?'<span class="tag o">Rappel</span>':'')+(v.fixed?'<span class="tag">Base</span>':'')+esc(v.name)+'</div></div>'+
       '<div class="arr"><button data-up="'+i+'" aria-label="Monter">▲</button><button data-down="'+i+'" aria-label="Descendre">▼</button></div>'+
-      '<select data-role="'+v.id+'" aria-label="Rôle" style="width:104px"><option value="">Normale</option><option value="fixed"'+(v.fixed&&!v.rappel?' selected':'')+(v.base?' disabled':'')+'>Base</option><option value="rappel"'+(v.rappel?' selected':'')+'>Rappel</option></select></div>';
+      '<select data-role="'+v.id+'" aria-label="Rôle" style="width:104px"><option value="">Normale</option><option value="fixed"'+(v.fixed&&!v.rappel?' selected':'')+(v.base?' disabled':'')+'>Base</option><option value="rappel"'+(v.rappel?' selected':'')+'>Rappel</option></select></div>'+
+      (v.rappel?'':pubRow(v));
   });
   return h+'</div>';
 };
+/* option « pub produit après la vidéo » : une case, puis le choix du PDF (dossier Promos de Drive) */
+function pubRow(v){
+  var pf=(EB.state.files||{}).promos||[], on=!!v.pub || pubOpen[v.id];
+  var h='<div class="pub"><label><input type="checkbox" data-pubon="'+v.id+'"'+(on?' checked':'')+'> Afficher une pub produit après cette vidéo</label>';
+  if (on) h+= pf.length ? '<select data-pub="'+v.id+'" aria-label="PDF de la pub"><option value="">Choisir le PDF…</option>'+
+      pf.map(function(x){ return '<option value="'+x.id+'"'+(x.id===v.pub?' selected':'')+'>'+esc(x.name.replace(/\.[a-z0-9]+$/i,''))+'</option>'; }).join('')+'</select>'
+    : '<div class="hint" style="margin:4px 0 0">Dépose d\'abord le PDF dans le dossier « Promos » de Drive, puis « Relire Google Drive ».</div>';
+  return h+'</div>';
+}
+var pubOpen={};
 V.promos=function(){
   var c=cfg(), f=(EB.state.files||{}).promos||[], meta=EB.state.promos||{};
   var h='<div class="card"><h2>Diffusion</h2>'+
     row('Promos par passage','Tirées au hasard à chaque tour', sel('promoCount', c.promoCount, [[0,'Aucune'],[1,'1'],[2,'2'],[3,'3'],[4,'4'],[5,'5']]))+
     row('Durée de chaque promo','', sel('promoSeconds', c.promoSeconds, [[8,'8 s'],[10,'10 s'],[12,'12 s'],[15,'15 s'],[20,'20 s']]))+
     row('Promos d\'exemple','Affichées tant qu\'il n\'y a aucun fichier', sw('demoPromos', c.demoPromos))+'</div>';
-  h+='<div class="card"><h2>Fichiers ('+f.length+')</h2><div class="hint">PDF (1re page) ou images déposés dans le dossier « Promos » de Drive. Une date de fin retire la promo toute seule.</div>';
+  h+='<div class="card"><h2>Fichiers ('+f.length+')</h2><div class="hint">PDF (1re page) ou images déposés dans le dossier « Promos » de Drive. Une date de fin retire la promo toute seule. Une promo décochée ne passe plus dans la rotation, mais reste utilisable comme pub après une vidéo (onglet Vidéos).</div>';
   if (!f.length) h+='<div class="empty">Aucune promo dans le dossier.</div>';
   f.forEach(function(x){ var m=meta[x.id]||{};
     h+='<div class="vid">'+sw('p:'+x.id, m.on!==false)+'<div class="mid"><b>'+esc(x.name.replace(/\.[a-z0-9]+$/i,''))+'</b><div class="fn">Fin : '+(m.until?esc(m.until):'sans date')+'</div></div><input type="date" data-until="'+x.id+'" value="'+esc(m.until||'')+'" aria-label="Date de fin"></div>'; });
@@ -320,7 +336,7 @@ document.addEventListener('change', function(e){
     else if (k.indexOf('bf:')===0) { var o3={}; o3[k.slice(3)]=+v; EB.patch('config/bonusFreq', o3).catch(fail); }
     else if (k.indexOf('bk:')===0) { var o2={}; o2[k.slice(3)]=v; EB.patch('config/bonusKinds', o2).catch(fail); }
     else if (k==='team:show') { var tm=team(); tm.show=v; EB.set('team', tm).catch(fail); }
-    else { if (/^(homeSeconds|announceSeconds|promoCount|promoSeconds|weekDaySeconds|bonusCount|newsSeconds|newsEvery|videoRate)$/.test(k)) v=+v; if (k==='gasUrl') v=String(v).trim(); setCfg(k, v); if (k==='newsSource' && cfg().newsAuto) syncDrive(true); } }
+    else { if (/^(homeSeconds|announceSeconds|promoCount|promoSeconds|pubSeconds|weekDaySeconds|bonusCount|newsSeconds|newsEvery|videoRate)$/.test(k)) v=+v; if (k==='gasUrl') v=String(v).trim(); setCfg(k, v); if (k==='newsSource' && cfg().newsAuto) syncDrive(true); } }
   else if (d.o) { var ov={}; ov[d.o]= t.type==='checkbox' ? t.checked : (d.o==='seconds' ? +t.value : t.value); EB.patch('opening', ov).catch(fail); }
   else if (d.ol) { var q=d.ol.split(':'), ls3=EB.opening().lines.map(function(x){ return Object.assign({}, x); }); ls3[+q[0]][q[1]]=t.value.trim(); EB.patch('opening', { lines:ls3 }).catch(fail); }
   else if (d.title) EB.patch('videos/'+d.title, { title:t.value.trim() }).catch(fail);
@@ -329,6 +345,8 @@ document.addEventListener('change', function(e){
     if (val==='rappel') ps.push(setCfg('rappelId', id)); else if (was && was.id===id) ps.push(setCfg('rappelId', 'aucune'));
     Promise.all(ps).catch(fail); }
   else if (d.until) EB.patch('promos/'+d.until, { until:t.value||null }).catch(fail);
+  else if (d.pubon) { var vid=d.pubon; if (t.checked) { pubOpen[vid]=true; render(true); } else { delete pubOpen[vid]; EB.patch('videos/'+vid, { pub:null }).catch(fail); } }
+  else if (d.pub) EB.patch('videos/'+d.pub, { pub:t.value||null }).then(function(){ if (t.value) toast('Pub enregistrée'); }).catch(fail);
   else if (d.m) { var p=d.m.split(':'), tm2=team(), mm=tm2.members[+p[0]]; if (p[1]==='avatar' && t.value.indexOf('e:')===0) { mm.avatar='emoji'; mm.ebase=t.value.slice(2); mm.emoji=toned(mm.ebase, mm.tone||''); } else if (p[1]==='tone') { mm.tone=t.value; mm.emoji=toned(mm.ebase||mm.emoji, mm.tone); } else mm[p[1]]=t.value.trim(); EB.set('team', tm2).catch(fail); }
   else if (d.photo!=null && t.files && t.files[0]) { var i=+d.photo, img=new Image(), u=URL.createObjectURL(t.files[0]);
     img.onload=function(){ var s=320, c2=document.createElement('canvas'); c2.width=c2.height=s; var m=Math.min(img.width,img.height);
