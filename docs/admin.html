@@ -135,10 +135,10 @@ function videoList(){
   var rid=c.rappelId || ((f.filter(function(x){ return /rappel/i.test(x.name); })[0]||{}).id)||'';
   return f.map(function(x){ var m=meta[x.id]||{}; var fixed=!!(m.fixed||x.base);
     return { id:x.id, name:x.name, base:!!x.base, fixed:fixed, rappel:x.id===rid, title:m.title||EB.titleFromName(x.name),
-      on: fixed ? true : (m.on==null ? c.autoAdd!==false : m.on===true), pos:(m.pos==null?9999:m.pos), pub:m.pub||'' }; })
+      on: fixed ? true : (m.on==null ? c.autoAdd!==false : m.on===true), pos:(m.pos==null?9999:m.pos), pub:m.pub||'', rate:(+m.rate||0) }; })
     .sort(function(a,b){ return a.pos-b.pos || a.name.localeCompare(b.name); });
 }
-function metaOf(v){ return { title:v.title, on:v.on, fixed:v.fixed && !v.base ? true : (v.fixed?true:false), pos:v.pos, pub:v.pub||null }; }
+function metaOf(v){ return { title:v.title, on:v.on, fixed:v.fixed && !v.base ? true : (v.fixed?true:false), pos:v.pos, pub:v.pub||null, rate:v.rate||null }; }
 function saveOrder(list){ var o={}; list.forEach(function(v,i){ v.pos=i; o[v.id]=metaOf(v); }); return EB.patch('videos', o).catch(fail); }
 
 /* ---------- onglets ---------- */
@@ -180,7 +180,7 @@ V.videos=function(){
   var c=cfg(), l=videoList(), f=EB.state.files||{};
   var h='<div class="card"><h2>Lecture</h2>'+
     row('Ordre','', sel('order', c.order, [['manual','Dans l\'ordre de la liste'],['random','Au hasard']]))+
-    row('Vitesse des vidéos','1 = vitesse normale', sel('videoRate', c.videoRate, [[0.6,'× 0,6'],[0.7,'× 0,7'],[0.8,'× 0,8'],[0.9,'× 0,9'],[1,'× 1']]))+
+    row('Vitesse des vidéos','Par défaut. Chaque vidéo peut avoir sa propre vitesse (liste des vidéos)', sel('videoRate', c.videoRate, [[0.6,'× 0,6'],[0.7,'× 0,7'],[0.8,'× 0,8'],[0.9,'× 0,9'],[1,'× 1']]))+
     row('Annoncer le thème avant la vidéo','Écran « Thème du moment »', sw('announce', c.announce))+
     (c.announce?row('Durée de l\'annonce','', sel('announceSeconds', c.announceSeconds, [[5,'5 s'],[8,'8 s'],[12,'12 s']])):'')+
     row('Activer les nouvelles vidéos toutes seules','Celles que Claude ou toi déposez dans Drive', sw('autoAdd', c.autoAdd!==false))+
@@ -195,10 +195,16 @@ V.videos=function(){
       '<div class="fn">'+(v.rappel?'<span class="tag o">Rappel</span>':'')+(v.fixed?'<span class="tag">Base</span>':'')+esc(v.name)+'</div></div>'+
       '<div class="arr"><button data-up="'+i+'" aria-label="Monter">▲</button><button data-down="'+i+'" aria-label="Descendre">▼</button></div>'+
       '<select data-role="'+v.id+'" aria-label="Rôle" style="width:104px"><option value="">Normale</option><option value="fixed"'+(v.fixed&&!v.rappel?' selected':'')+(v.base?' disabled':'')+'>Base</option><option value="rappel"'+(v.rappel?' selected':'')+'>Rappel</option></select></div>'+
-      (v.rappel?'':pubRow(v));
+      (v.rappel?'':rateRow(v)+pubRow(v));
   });
   return h+'</div>';
 };
+/* vitesse propre à une vidéo (sinon : réglage général) */
+function rateRow(v){
+  var g=String(cfg().videoRate||1).replace('.',','), o=[[0,'Réglage général (× '+g+')'],[0.6,'× 0,6'],[0.7,'× 0,7'],[0.8,'× 0,8'],[0.9,'× 0,9'],[1,'× 1 (normale)']];
+  return '<div class="pub"><label>Vitesse <select data-rate="'+v.id+'" aria-label="Vitesse de cette vidéo" style="width:auto;margin:0">'+
+    o.map(function(x){ return '<option value="'+x[0]+'"'+((+v.rate||0)===x[0]?' selected':'')+'>'+x[1]+'</option>'; }).join('')+'</select></label></div>';
+}
 /* option « pub produit après la vidéo » : une case, puis le choix du PDF (dossier Promos de Drive) */
 function pubRow(v){
   var pf=(EB.state.files||{}).promos||[], on=!!v.pub || pubOpen[v.id];
@@ -346,6 +352,7 @@ document.addEventListener('change', function(e){
     Promise.all(ps).catch(fail); }
   else if (d.until) EB.patch('promos/'+d.until, { until:t.value||null }).catch(fail);
   else if (d.pubon) { var vid=d.pubon; if (t.checked) { pubOpen[vid]=true; render(true); } else { delete pubOpen[vid]; EB.patch('videos/'+vid, { pub:null }).catch(fail); } }
+  else if (d.rate) EB.patch('videos/'+d.rate, { rate:(+t.value||null) }).then(function(){ toast('Vitesse enregistrée'); }).catch(fail);
   else if (d.pub) EB.patch('videos/'+d.pub, { pub:t.value||null }).then(function(){ if (t.value) toast('Pub enregistrée'); }).catch(fail);
   else if (d.m) { var p=d.m.split(':'), tm2=team(), mm=tm2.members[+p[0]]; if (p[1]==='avatar' && t.value.indexOf('e:')===0) { mm.avatar='emoji'; mm.ebase=t.value.slice(2); mm.emoji=toned(mm.ebase, mm.tone||''); } else if (p[1]==='tone') { mm.tone=t.value; mm.emoji=toned(mm.ebase||mm.emoji, mm.tone); } else mm[p[1]]=t.value.trim(); EB.set('team', tm2).catch(fail); }
   else if (d.photo!=null && t.files && t.files[0]) { var i=+d.photo, img=new Image(), u=URL.createObjectURL(t.files[0]);

@@ -1714,7 +1714,8 @@ video.addEventListener('error', function(){
   clearTimeout(errTimer); errTimer=setTimeout(advance, 1500);
 });
 
-function applyRate(){ video.defaultPlaybackRate=CFG.videoRate; video.playbackRate=CFG.videoRate; }
+/* vitesse : celle de la vidéo si elle en a une, sinon le réglage général */
+function applyRate(){ var it=(phase==='video' && PLAYLIST[idx])||{}, r=+it.rate||+CFG.videoRate||1; video.defaultPlaybackRate=r; video.playbackRate=r; }
 video.addEventListener('loadedmetadata', applyRate);
 function setStatus(){
   var el=document.getElementById('status'), n=PLAYLIST.length, it=PLAYLIST[idx]||{title:'—'};
@@ -1843,7 +1844,7 @@ function rebuild(){
     if (!LITE) { if (isR) want.unshift({ f:f, kind:'video' }); else want.push({ f:f, kind:'video' }); }
     var u=Media.url(f,'video'); if (!u) return;
     if (isR) { RAPPEL.file=u; return; }
-    list.push({ id:f.id, file:u, title:m.title||EB.titleFromName(f.name), pos:(m.pos==null?9999:m.pos), name:f.name, pub:m.pub||'' });
+    list.push({ id:f.id, file:u, title:m.title||EB.titleFromName(f.name), pos:(m.pos==null?9999:m.pos), name:f.name, pub:m.pub||'', rate:(+m.rate||0) });
   });
   if (!vids.some(function(f){ return f.id===rid && Media.url(f,'video'); })) RAPPEL.file='';
   list.sort(function(a,b){ return a.pos-b.pos || a.name.localeCompare(b.name); });
