@@ -81,7 +81,7 @@ function promo_(id) {
 /* ---------- actualités ---------- */
 function texte_(s) {
   return String(s || '').replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&#39;|&rsquo;|&apos;/g, "'")
-    .replace(/&quot;|&laquo;|&raquo;/g, '"').replace(/&[a-z]+;/g, ' ').replace(/\s+/g, ' ').trim();
+    .replace(/&quot;|&laquo;|&raquo;/g, '"').replace(/&[a-z]+;/g, ' ').replace(/\s+/g, ' ').replace(/\s+([.,)])/g, '$1').replace(/\(\s+/g, '(').trim();
 }
 function couper_(s, n) { if (s.length <= n) return s; var c = s.slice(0, n), i = c.lastIndexOf(' '); return c.slice(0, i > 40 ? i : n).replace(/[ ,;:]+$/, '') + '…'; }
 function lireFlux_(flux) {
@@ -125,18 +125,37 @@ function lireSite_() {
     var desc = attr_(h, 'og:description') || attr_(h, 'description');
     var d = h.match(/Publi[ée]+e? le\s*(\d{2})\/(\d{2})\/(\d{4})/i), t = d ? new Date(+d[3], +d[2] - 1, +d[1]).getTime() : 0;
     if (!titre || (t && t < limite)) return;
-    var cat = texte_((h.match(/(Alertes sanitaires|[ÉE]v[èe]nements|Epid[ée]mies|Nouveaut[ée]s|Nature et sant[ée]|Recherche m[ée]dicale)/i) || [])[1]);
-    // points clés : la première phrase sous chacun des intertitres de l'article
-    var points = [], reh = /<h2[^>]*>[\s\S]*?<\/h2>\s*(?:<[^p][^>]*>\s*)*<p[^>]*>([\s\S]*?)<\/p>/gi, k;
-    while ((k = reh.exec(h)) && points.length < 4) {
-      var ph = texte_(k[1]).split(/(?<=[.!?])\s+/)[0];
-      if (ph && ph.length > 30) points.push(couper_(ph, 150));
-    }
-    if (!points.length) points = desc.split(/(?<=[.!?])\s+/).filter(function (x) { return x.length > 25; }).slice(0, 3).map(function (x) { return couper_(x, 150); });
-    out.push({ tag: cat || 'Votre pharmacie', titre: couper_(titre, 70), texte: couper_(desc || titre, 140), detail: points.length ? points : [couper_(desc || titre, 150)],
+    var points = pointsCles_(h, desc);
+    var MOIS = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+    out.push({ tag: d ? (+d[1]) + ' ' + MOIS[+d[2] - 1] : 'Nouveau', titre: couper_(titre, 70), texte: couper_(desc || titre, 140), detail: points.length ? points : [couper_(desc || titre, 150)],
       source: 'Site de la pharmacie', image: attr_(h, 'og:image'), t: t });
   });
   return out;
+}
+/* Points clés d'un article : de vraies phrases courtes et utiles, jamais coupées.
+   On préfère les listes à puces de l'article, puis les phrases avec un chiffre ou un conseil concret. */
+var MOTS_UTILES = /(dépist|consult|médecin|pharmacien|prévention|prévenir|symptôme|signe|risque|conseil|vaccin|test|traitement|examen|appel|composez|gratuit|rembours|\d)/i;
+var DEBUTS_FLOUS = /^(bien que|tout un chacun|en effet|ainsi|par ailleurs|de plus|cependant|néanmoins|il est|c'est|cette|ce mois|depuis|chaque année)/i;
+function corps_(h) {
+  var i = h.search(/<h1[\s>]/i); if (i > 0) h = h.slice(i);
+  var j = h.search(/<footer[\s>]|>\s*Sources?\s*:?\s*</i); if (j > 0) h = h.slice(0, j);
+  return h;
+}
+function pointsCles_(h, desc) {
+  var b = corps_(h), cand = [], k, re;
+  re = /<li[^>]*>([\s\S]*?)<\/li>/gi;
+  while ((k = re.exec(b))) { var t = texte_(k[1]); if (t.length >= 25 && t.length <= 130 && !/^(accueil|actualit|conseil|nos |mon compte)/i.test(t)) cand.push({ t: t.replace(/[;:,]$/, '') + (/[.!?]$/.test(t) ? '' : '.'), s: 3 }); }
+  re = /<p[^>]*>([\s\S]*?)<\/p>/gi;
+  while ((k = re.exec(b))) texte_(k[1]).split(/(?<=[.!?])\s+/).forEach(function (t) {
+    if (t.length < 40 || t.length > 130) return;
+    var sc = (/\d/.test(t) ? 2 : 0) + (MOTS_UTILES.test(t) ? 1 : 0) - (DEBUTS_FLOUS.test(t) ? 2 : 0);
+    cand.push({ t: t, s: sc });
+  });
+  var vus = {}, ordre = 0;
+  cand = cand.filter(function (c) { var key = c.t.toLowerCase().slice(0, 40); if (vus[key]) return false; vus[key] = 1; c.o = ordre++; return c.s >= 0; });
+  var choix = cand.slice().sort(function (a, c) { return c.s - a.s || a.o - c.o; }).slice(0, 3).sort(function (a, c) { return a.o - c.o; }).map(function (c) { return c.t; });
+  if (choix.length < 2) choix = choix.concat(String(desc || '').split(/(?<=[.!?])\s+/).filter(function (x) { return x.length > 30 && x.length <= 130; })).slice(0, 3);
+  return choix;
 }
 /* Conseil du mois du site : le lien /conseils/... mis en avant sur la page d'accueil, sinon le premier de /conseils. */
 function lireArticle_(u) {
@@ -144,9 +163,7 @@ function lireArticle_(u) {
   if (r.getResponseCode() !== 200) return null;
   var h = r.getContentText(), titre = attr_(h, 'og:title') || texte_((h.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i) || [])[1]);
   if (!titre) return null;
-  var desc = attr_(h, 'og:description') || attr_(h, 'description'), points = [], re = /<h2[^>]*>[\s\S]*?<\/h2>\s*(?:<[^p][^>]*>\s*)*<p[^>]*>([\s\S]*?)<\/p>/gi, k;
-  while ((k = re.exec(h)) && points.length < 4) { var ph = texte_(k[1]).split(/(?<=[.!?])\s+/)[0]; if (ph && ph.length > 30) points.push(couper_(ph, 150)); }
-  if (!points.length) points = desc.split(/(?<=[.!?])\s+/).filter(function (x) { return x.length > 25; }).slice(0, 3).map(function (x) { return couper_(x, 150); });
+  var desc = attr_(h, 'og:description') || attr_(h, 'description'), points = pointsCles_(h, desc);
   return { titre: couper_(titre.replace(/\s*-\s*Pharmacie de la Benauge.*$/i, ''), 90), texte: couper_(desc || titre, 160), detail: points, source: 'Site de la pharmacie' };
 }
 function conseil_() {

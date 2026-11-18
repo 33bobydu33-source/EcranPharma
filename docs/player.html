@@ -480,14 +480,6 @@ body.tv{cursor:none}
       <option value="120">2 min</option>
     </select>
   </label>
-  <label>Accueil :
-    <select id="s-homes">
-      <option value="alt" selected>alterner les 2 écrans</option>
-      <option value="1">toujours l'écran 1</option>
-      <option value="2">toujours l'écran 2</option>
-      <option value="both">les 2 à la suite</option>
-    </select>
-  </label>
   <label>Vidéo rappel documents :
     <select id="s-rappel">
       <option value="every" selected>avant chaque accueil</option>
@@ -1291,7 +1283,7 @@ function avatarHTML(m){
   if (m.avatar==='f' || m.avatar==='m') return AV[m.avatar];
   return CROSS.replace('width="48" height="48"','width="96" height="96"');
 }
-function esc(t){ return String(t==null?'':t).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+function esc(t){ return String(t==null?'':t).replace(/\s+([.,)])/g,'$1').replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
 function teamHTML(secs){
   var tb=tipBg(), list=TEAM.slice(0,5);
   var cards=list.map(function(m){ return '<div class="tc" style="background:'+tb+(list.length>4?';width:320px':'')+'"><div class="av">'+avatarHTML(m)+'</div><div class="tn">'+esc(m.name)+'</div><div class="tr">'+esc(m.role)+'</div></div>'; }).join('');
@@ -1775,7 +1767,6 @@ document.getElementById('b-prev').onclick=prev;
 document.getElementById('b-pause').onclick=togglePause;
 document.getElementById('b-full').onclick=toggleFull;
 document.getElementById('s-home').onchange=function(){ CFG.homeSeconds=+this.value; if(phase==='home') phaseDur=CFG.homeSeconds*1000; this.blur(); };
-document.getElementById('s-homes').onchange=function(){ CFG.homeMode=this.value; this.blur(); };
 document.getElementById('s-rappel').onchange=function(){ CFG.rappel=this.value; this.blur(); };
 document.getElementById('s-news').onchange=function(){ var v=+this.value; CFG.news=v>0; if (v>0) CFG.newsEvery=v; this.blur(); };
 document.getElementById('s-bonus').onchange=function(){ CFG.bonusCount=+this.value; this.blur(); };
