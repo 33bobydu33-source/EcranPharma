@@ -169,7 +169,9 @@ html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:'Nuni
 .an-lab{font-size:40px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--acc)}
 .an-title{margin:22px 0 0;font-size:100px;line-height:1.06;text-transform:uppercase;letter-spacing:1px}
 .an-sub{margin:26px 0 0;font-size:46px;font-weight:700;color:var(--sub)}
-.an-wx{position:absolute;left:1240px;top:210px;width:592px;display:flex;flex-direction:column;align-items:center;text-align:center}
+.an-wx{position:absolute;left:1240px;top:190px;width:592px;display:flex;flex-direction:column;align-items:center;text-align:center;box-sizing:border-box;padding:30px 30px 24px;border-radius:36px;background:rgba(255,255,255,.08);border:2px solid rgba(253,228,212,.14)}
+.an-wx.an-lt{background:rgba(255,255,255,.5);border-color:rgba(29,42,68,.08)}
+.an-wx .rp{background:none!important;border:0!important;padding:0!important;margin-top:24px;width:100%}
 .an-foot{align-items:center;gap:24px;font-size:38px;font-weight:700}
 .an-date{font-size:36px;font-weight:800;font-variant-numeric:tabular-nums}
 .ho-left{position:absolute;left:88px;top:214px;width:980px}
@@ -1057,7 +1059,7 @@ function announceHTML(item){
   return sceneOpen(w.variant,116,.62,[1090,560,40])+
     '<div class="sc-top">'+brandHTML()+'<div class="an-date" id="a-date">'+fmtDateShort(d)+' · '+fmtTime(d)+'</div></div>'+
     '<div class="an-left"><div class="an-lab">Thème du moment</div><h1 class="russo an-title">'+item.title+'</h1><p class="an-sub">Une courte vidéo à suivre</p></div>'+
-    '<div class="an-wx">'+wbHTML(w,0,0,true)+'</div>'+
+    '<div class="an-wx'+(SKY[w.variant].light?' an-lt':'')+'">'+wbHTML(w,0,0,true)+'</div>'+
     bandHTML(w.variant,116,'an-foot','<div style="height:5px;width:96px;background:#F26B1D;border-radius:3px"></div><div>Une question ? Votre pharmacien vous répond.</div>')+'</div>';
 }
 function promoHTML(p,i,n){
