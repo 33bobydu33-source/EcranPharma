@@ -243,6 +243,9 @@ html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:'Nuni
 .dys{font-size:28px;font-weight:600;color:var(--sub);margin-top:4px}
 .dyv .dyd{width:34px;height:34px;flex:none}
 .dych{display:flex;gap:14px}
+.dyr .rp{width:100%;margin-top:0;padding:14px 24px 10px}
+.dyr .rpl{display:none}
+.dyr .rps .rpg{height:48px}
 .dyc{flex:1;text-align:center;font-size:30px;font-weight:800;padding:12px 0;border-radius:999px;background:var(--track);color:var(--sub)}
 .dyc.on{background:#F26B1D;color:#1D2A44}
 .wk{display:flex;gap:18px;margin-top:70px}
@@ -1187,10 +1190,10 @@ function dayHTML(i, secs){
     tile('Qualité de l\'air',al?big+al.c+'"></i>'+al.t:'–',al?'Indice '+Math.round(x.aqi)+' sur 100':'Pas encore de prévision')+
     tile('Pollens',pm==null?'–':big+pc+'"></i>'+(pm===0?'Aucun':PLV[pm]),pm==null?'Pas encore de prévision':'')+
     tile('Soleil','<span style="font-size:42px">'+(x.rise||'').replace(':','h').replace(/^0/,'')+' – '+(x.set||'').replace(':','h')+'</span>','Lever et coucher');
-  var chips=days.map(function(d,k){ return '<span class="dyc'+(k===i?' on':'')+'">'+(k===0?'Auj.':cap(new Date(d.date+'T12:00:00').toLocaleDateString('fr-FR',{weekday:'short'}).replace('.','')))+'</span>'; }).join('');
+  var chips=days.slice(0,4).map(function(d,k){ return '<span class="dyc'+(k===i?' on':'')+'">'+(k===0?'Auj.':cap(new Date(d.date+'T12:00:00').toLocaleDateString('fr-FR',{weekday:'short'}).replace('.','')))+'</span>'; }).join('');
   return bxFrame('La météo de la semaine','<div class="dy"><div class="dyl"><div class="russo dyn">'+dayName(x,i)+'</div><div class="dydt">'+dt.getDate()+' '+dt.toLocaleDateString('fr-FR',{month:'long'})+'</div>'+
     '<div class="dyi">'+wkIcon(v.variant==='nuit'?'soleil':v.variant, false, 250)+'</div><div class="dylb">'+v.label+'</div><div class="russo dytp"><b>'+x.max+'°</b><span>'+x.min+'°</span></div>'+'</div>'+
-    '<div class="dyr"><div class="dyg">'+tiles+'</div><div class="dych">'+chips+'</div></div></div>', dayTip(x) || 'Prévisions pour Bordeaux, mises à jour toutes les heures.', secs);
+    '<div class="dyr"><div class="dyg">'+tiles+'</div>'+(i===0 && rainPanel() ? rainPanel() : '<div class="dych">'+chips+'</div>')+'</div></div>', dayTip(x) || 'Prévisions pour Bordeaux, mises à jour toutes les heures.', secs);
 }
 function weekHTML(secs){
   var days = WEEK.ok && WEEK.days.length ? WEEK.days : weekDemo(), tb=tipBg(), light=SKY[getWeather().variant].light;
@@ -1595,7 +1598,7 @@ function pickBonus(){
     else if (k==='garde')    q.push({ title:'Pharmacie de garde', secs:10, html:gardeHTML });
     else if (k==='semaine')  q.push({ title:'La météo de la semaine', secs:15, html:weekHTML });
     else if (k==='jours') {
-      weekDays().forEach(function(x,i){ q.push({ title:'Météo : '+dayName(x,i).toLowerCase(), secs:CFG.weekDaySeconds||6, html:function(sec){ return dayHTML(i,sec); } }); });
+      weekDays().slice(0,4).forEach(function(x,i){ q.push({ title:'Météo : '+dayName(x,i).toLowerCase(), secs:CFG.weekDaySeconds||6, html:function(sec){ return dayHTML(i,sec); } }); });
     }
     else if (k==='services') q.push({ title:'Nos services',   secs:12, html:servicesHTML });
     else if (k==='equipe')   q.push({ title:'Votre équipe',   secs:10, html:teamHTML });
