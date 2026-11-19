@@ -784,7 +784,10 @@ function dropSVG(l){
 }
 function rainPanel(){
   var sl=rainSlots(4); if (!sl) return '';
-  var segs=sl.map(function(x){ return '<div class="rpg">'+dropSVG(rainLv(x.mm))+'</div>'; }).join('');
+  /* comme Météo-France : la case entière prend la couleur de la pluie, goutte blanche dedans */
+  var segs=sl.map(function(x){ var l=rainLv(x.mm);
+    return l ? '<div class="rpg" style="background:'+RAIN_C[l]+'"><svg viewBox="0 0 24 24" width="34" height="34"><path d="M12 3C9 8 6 11 6 15a6 6 0 0 0 12 0c0-4-3-7-6-12z" fill="'+(l===1?'#1D4FA8':'#fff')+'"/></svg></div>'
+             : '<div class="rpg">'+dropSVG(0)+'</div>'; }).join('');
   var ticks=sl.slice(1).map(function(x,k){ return '<span style="left:'+((k+1)*100/sl.length)+'%">'+hm(x.d)+'</span>'; }).join('');
   var end=new Date(sl[sl.length-1].d.getTime()+15*60000), leg=[[0,'Pas de pluie'],[1,'Faibles'],[2,'Modérées'],[3,'Fortes']].map(function(x){ return '<span>'+dropSVG(x[0])+x[1]+'</span>'; }).join('');
   var lt=SKY[getWeather().variant].light;
